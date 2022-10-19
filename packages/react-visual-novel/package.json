@@ -1,0 +1,59 @@
+{
+  "name": "react-visual-novel",
+  "version": "0.0.0",
+  "description": "React library for building web-based visual novels",
+  "repository": "https://github.com/yenbekbay/react-visual-novel",
+  "license": "MIT",
+  "author": "Ayan Yenbekbay <ayan.yenb@gmail.com> (https://yenbekbay.com)",
+  "sideEffects": false,
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsup",
+    "dev": "tsup --watch",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@radix-ui/react-popover": "1.0.2",
+    "@radix-ui/react-use-rect": "1.0.0",
+    "@react-hookz/web": "16.0.0",
+    "@supercharge/promise-pool": "2.3.2",
+    "async-preloader": "7.0.0",
+    "framer-motion": "7.6.1",
+    "intrinsic-scale": "3.0.4",
+    "mdast-util-from-markdown": "1.2.0",
+    "micro-observables": "1.7.2",
+    "moize": "6.1.3",
+    "phosphor-react": "1.4.1",
+    "react-keyed-flatten-children": "1.3.0",
+    "string-dedent": "3.0.1",
+    "tailwind-merge": "1.6.2",
+    "use-event-callback": "0.1.0",
+    "use-long-press": "2.0.2"
+  },
+  "devDependencies": {
+    "@types/howler": "2.2.7",
+    "@types/intrinsic-scale": "3.0.0",
+    "@types/mdast": "3.0.10",
+    "@types/react": "18.0.21",
+    "csstype": "3.1.1",
+    "howler": "2.2.3",
+    "next": "12.3.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "rimraf": "3.0.2",
+    "tsup": "6.3.0",
+    "use-query-params": "2.1.1"
+  },
+  "peerDependencies": {
+    "howler": "^2.2.0",
+    "next": "^12.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "use-query-params": "^2.1.0"
+  }
+}

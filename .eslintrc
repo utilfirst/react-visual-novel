@@ -1,0 +1,93 @@
+{
+  "root": true,
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": ["demo/tsconfig.json", "packages/*/tsconfig.json"]
+      }
+    },
+    "next": {
+      "rootDir": "demo/"
+    },
+    "react": {
+      "version": "18.2.0"
+    },
+    "tailwindcss": {
+      "callees": ["twMerge"],
+      "config": "demo/tailwind.config.js",
+      "whitelist": ["rvn\\-.*"]
+    }
+  },
+  "plugins": ["codegen", "eslint-comments", "promise", "tailwindcss"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:eslint-comments/recommended",
+    "plugin:promise/recommended",
+    "plugin:tailwindcss/recommended"
+  ],
+  "rules": {
+    "arrow-body-style": "warn",
+    "object-shorthand": "warn",
+    "prefer-const": "warn",
+    "quotes": ["warn", "single", {"avoidEscape": true}],
+    "codegen/codegen": "warn",
+    "import/no-unresolved": ["error"],
+    "eslint-comments/disable-enable-pair": "off",
+    "eslint-comments/no-unlimited-disable": "off",
+    "eslint-comments/no-unused-disable": "warn",
+    "promise/always-return": "off",
+    "react/jsx-curly-brace-presence": "warn",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "(useUpdateEffect)"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "parserOptions": {
+        "project": ["demo/tsconfig.json", "packages/*/tsconfig.json"]
+      },
+      "plugins": ["@typescript-eslint"],
+      "extends": ["plugin:@typescript-eslint/strict"],
+      "rules": {
+        "@typescript-eslint/array-type": ["warn", {"default": "array-simple"}],
+        "@typescript-eslint/await-thenable": "warn",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/ban-tslint-comment": "off",
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/consistent-type-assertions": "warn",
+        "@typescript-eslint/consistent-type-imports": [
+          "warn",
+          {"disallowTypeAnnotations": false}
+        ],
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-extra-semi": "off",
+        "@typescript-eslint/no-floating-promises": "warn",
+        "@typescript-eslint/no-for-in-array": "warn",
+        "no-implied-eval": "off",
+        "@typescript-eslint/no-implied-eval": "warn",
+        "@typescript-eslint/no-invalid-void-type": "off",
+        "@typescript-eslint/no-non-null-assertion": "warn",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+        "@typescript-eslint/no-unsafe-argument": "warn",
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-call": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+        "@typescript-eslint/no-unsafe-return": "warn",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "require-await": "off",
+        "@typescript-eslint/require-await": "warn",
+        "@typescript-eslint/restrict-plus-operands": "warn",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/unbound-method": "warn"
+      }
+    }
+  ]
+}

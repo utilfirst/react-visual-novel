@@ -1,0 +1,60 @@
+{
+  "name": "react-visual-novel-root",
+  "version": "0.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yenbekbay/react-visual-novel.git"
+  },
+  "author": "Ayan Yenbekbay <ayan.yenb@gmail.com>",
+  "scripts": {
+    "dev": "pnpm --recursive --parallel run dev",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "eslint --ext .js,.ts,.tsx --cache .",
+    "prepare": "is-ci || husky install",
+    "release": "auto shipit",
+    "typecheck": "pnpm --recursive --parallel exec tsc --project . --noEmit"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,tsx,json,yml,yaml}": "prettier --write",
+    "**/*.{js,ts,tsx}": "eslint --fix"
+  },
+  "devDependencies": {
+    "@auto-it/conventional-commits": "10.37.6",
+    "@auto-it/npm": "10.37.6",
+    "@trivago/prettier-plugin-sort-imports": "3.3.1",
+    "@types/node": "16.11.12",
+    "@types/prettier": "2.7.1",
+    "@typescript-eslint/eslint-plugin": "5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "auto": "10.37.6",
+    "eslint": "8.25.0",
+    "eslint-config-next": "12.3.1",
+    "eslint-plugin-codegen": "0.16.1",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "eslint-plugin-promise": "6.1.0",
+    "eslint-plugin-tailwindcss": "3.6.2",
+    "husky": "8.0.1",
+    "is-ci": "3.0.1",
+    "lerna": "6.0.1",
+    "lint-staged": "13.0.3",
+    "prettier": "2.7.1",
+    "prettier-plugin-packagejson": "2.3.0",
+    "typescript": "4.8.4"
+  },
+  "engines": {
+    "node": "16",
+    "pnpm": "7"
+  },
+  "auto": {
+    "plugins": [
+      "npm",
+      "conventional-commits"
+    ]
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "eslint-plugin-codegen@0.16.1": "patches/eslint-plugin-codegen@0.16.1.patch"
+    }
+  }
+}

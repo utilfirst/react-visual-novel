@@ -1,0 +1,41 @@
+{
+  "name": "react-visual-novel-demo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "run-s --silent build:*",
+    "build:css": "pnpm run generate:css --minify",
+    "build:migration": "pnpm --dir ../../ migration up",
+    "build:next": "next build",
+    "dev": "run-p --silent dev:*",
+    "dev:css": "pnpm run generate:css --watch",
+    "dev:next": "next dev",
+    "generate:css": "tailwindcss -i ./global.css -o ./__generated__/tailwind.css",
+    "start": "next start"
+  },
+  "dependencies": {
+    "howler": "2.2.3",
+    "next": "12.3.1",
+    "next-query-params": "4.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-error-boundary": "3.1.4",
+    "react-visual-novel": "workspace:*",
+    "use-query-params": "2.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "0.5.3",
+    "@tailwindcss/typography": "0.5.7",
+    "@types/howler": "2.2.7",
+    "@types/react": "18.0.21",
+    "autoprefixer": "*",
+    "csstype": "*",
+    "daisyui": "2.31.0",
+    "next-transpile-modules": "9.1.0",
+    "npm-run-all": "4.1.5",
+    "postcss": "*",
+    "tailwindcss": "3.1.8",
+    "tailwindcss-radix": "2.6.1",
+    "tailwindcss-scrims": "1.0.0"
+  }
+}

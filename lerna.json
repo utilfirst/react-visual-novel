@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/lerna",
+  "version": "0.0.0",
+  "npmClient": "pnpm",
+  "useWorkspaces": true,
+  "conventionalCommits": true,
+  "command": {
+    "publish": {
+      "npmClient": "npm"
+    }
+  }
+}

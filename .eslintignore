@@ -1,0 +1,6 @@
+**/__generated__/**
+**/vendor/**
+/demo/.next/**
+/demo/public/**
+/packages/*/dist
+pnpm-lock.yaml
