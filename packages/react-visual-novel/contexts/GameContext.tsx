@@ -14,9 +14,9 @@ import {unmute} from './internal/vendor/unmute'
 export type SoundName = 'click' | 'mouseover' | 'skip' | 'not_allowed'
 
 export interface GameOptions {
-  onGoToRoot: () => void
-  onLinkClick: (href: string, name: string, event: React.MouseEvent) => void
-  onPlaySound: (name: SoundName) => void
+  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void
+  onPlaySound?: (name: SoundName) => void
+  onGoHome?: () => void
 }
 
 export interface GameContextValue {
@@ -29,7 +29,7 @@ export interface GameContextValue {
   goToLocation: (branchId: BranchId, statementIndex: number) => void
   goBack: () => boolean
   canGoBack: () => boolean
-  goToRoot: () => void
+  goHome?: () => void
   handleLinkClick: (href: string, name: string, event: React.MouseEvent) => void
   playSound: (name: SoundName) => void
 }
@@ -39,17 +39,17 @@ const GameContext = React.createContext<GameContextValue | null>(null)
 export interface GameProviderProps {
   children: React.ReactNode
   initialBranchId: BranchId
-  onGoToRoot: () => void
-  onLinkClick: (href: string, name: string, event: React.MouseEvent) => void
-  onPlaySound: (name: SoundName) => void
+  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void
+  onPlaySound?: (name: SoundName) => void
+  onGoHome?: () => void
 }
 
 export function GameProvider({
   children,
   initialBranchId,
-  onGoToRoot,
   onLinkClick,
   onPlaySound,
+  onGoHome,
 }: GameProviderProps) {
   const initialLocation: GameLocation = {
     branchId: initialBranchId,
@@ -146,11 +146,11 @@ export function GameProvider({
         return ok
       },
       canGoBack: history.canGoBack,
-      goToRoot: onGoToRoot,
-      handleLinkClick: onLinkClick,
+      goHome: onGoHome,
+      handleLinkClick: onLinkClick ?? ((href) => window.open(href, '_blank')),
       playSound: (name) => {
         if (!muted) {
-          onPlaySound(name)
+          onPlaySound?.(name)
         }
       },
     }),
@@ -158,7 +158,7 @@ export function GameProvider({
       focusedLocation,
       history,
       muted,
-      onGoToRoot,
+      onGoHome,
       onLinkClick,
       onPlaySound,
       paused,

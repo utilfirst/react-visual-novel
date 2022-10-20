@@ -23,9 +23,9 @@ export interface GameProps {
   assets: Record<string, string | {src: string}>
   branches: Branches
   initialBranchId: BranchId
-  onGoToRoot: () => void
-  onLinkClick: (href: string, name: string, event: React.MouseEvent) => void
-  onPlaySound: (name: SoundName) => void
+  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void
+  onPlaySound?: (name: SoundName) => void
+  onGoHome?: () => void
   children?: (
     render: () => React.ReactNode,
     preloadRes: Result<Error, undefined>,
@@ -37,17 +37,17 @@ export function Game({
   assets,
   branches,
   initialBranchId,
-  onGoToRoot,
   onLinkClick,
   onPlaySound,
+  onGoHome,
   children,
 }: GameProps) {
   return (
     <GameProvider
       initialBranchId={initialBranchId}
-      onGoToRoot={onGoToRoot}
       onLinkClick={onLinkClick}
       onPlaySound={onPlaySound}
+      onGoHome={onGoHome}
     >
       <GameView
         assets={assets}
@@ -88,7 +88,7 @@ function GameView({
     goToLocation,
     goBack,
     canGoBack,
-    goToRoot,
+    goHome,
     playSound,
   } = useGameContext()
   const [preloaded, setPreloaded] = React.useState(false)
@@ -127,16 +127,18 @@ function GameView({
             </button>
           )}
 
-          <button
-            onMouseEnter={() => playSound('mouseover')}
-            onClick={() => {
-              playSound('click')
-              goToRoot()
-            }}
-            className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
-          >
-            <HouseIcon />
-          </button>
+          {goHome && (
+            <button
+              onMouseEnter={() => playSound('mouseover')}
+              onClick={() => {
+                playSound('click')
+                goHome()
+              }}
+              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+            >
+              <HouseIcon />
+            </button>
+          )}
         </div>
       </div>
 

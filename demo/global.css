@@ -6,4 +6,8 @@
   .progress.rounded-none {
     --rounded-box: 0;
   }
+
+  .rvn-text {
+    @apply leading-none !important;
+  }
 }
