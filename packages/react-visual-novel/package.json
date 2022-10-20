@@ -1,6 +1,6 @@
 {
   "name": "react-visual-novel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React library for building web-based visual novels",
   "repository": "https://github.com/utility-first/react-visual-novel",
   "license": "MIT",
