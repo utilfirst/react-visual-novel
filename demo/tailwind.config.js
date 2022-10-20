@@ -4,7 +4,10 @@ const colors = require('tailwindcss/colors')
  * @type {import('tailwindcss').Config}
  */
 module.exports = {
-  content: ['./{game,pages}/**/*.{ts,tsx}'],
+  content: [
+    './{game,pages}/**/*.{ts,tsx}',
+    '../packages/react-visual-novel/{commands,components,contexts}/**/*.{ts,tsx}',
+  ],
   theme: {
     extend: {
       fontFamily: {

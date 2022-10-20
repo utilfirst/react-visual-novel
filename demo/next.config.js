@@ -3,6 +3,9 @@
  */
 module.exports = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.(mp3)$/,
