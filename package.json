@@ -55,7 +55,11 @@
           "preset": "angular"
         }
       ]
-    ]
+    ],
+    "author": {
+      "name": "auto",
+      "email": "ayan.yenb@gmail.com"
+    }
   },
   "pnpm": {
     "patchedDependencies": {
