@@ -49,7 +49,12 @@
   "auto": {
     "plugins": [
       "npm",
-      "conventional-commits"
+      [
+        "conventional-commits",
+        {
+          "preset": "angular"
+        }
+      ]
     ]
   },
   "pnpm": {
