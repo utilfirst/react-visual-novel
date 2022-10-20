@@ -1,8 +1,8 @@
-import {useResult} from '../../lib/hooks'
 import {PromisePool} from '@supercharge/promise-pool'
 import asyncPreloader from 'async-preloader'
 import React from 'react'
 import useEventCallback from 'use-event-callback'
+import {useResult} from './useResult'
 
 export function usePreloadAssets(
   assets: Record<string, string | {src: string}>,

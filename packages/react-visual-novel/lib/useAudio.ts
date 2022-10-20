@@ -1,4 +1,3 @@
-import {delay} from '../../utils'
 import {Howl} from 'howler'
 import {observable} from 'micro-observables'
 import moize from 'moize'
@@ -217,3 +216,7 @@ function makeChannel(): AudioChannel {
 }
 
 const CHANNEL_DEBOUNCE_INTERVAL_MS = 100
+
+function delay(durationMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, durationMs))
+}

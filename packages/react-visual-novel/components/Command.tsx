@@ -1,12 +1,3 @@
-import type {Statement, StatementBehavior} from '../contexts'
-import {
-  useBranchContext,
-  useGameContext,
-  useStatementContext,
-} from '../contexts'
-import {useWindowFocus} from '../lib/hooks'
-import type {AudioSource} from './internal'
-import {useAudio} from './internal'
 import {
   useIsMounted,
   useMountEffect,
@@ -18,6 +9,14 @@ import type {AnimationControls, Variant} from 'framer-motion'
 import {AnimatePresence, motion, useAnimation, usePresence} from 'framer-motion'
 import React from 'react'
 import useEventCallback from 'use-event-callback'
+import type {Statement, StatementBehavior} from '../contexts'
+import {
+  useBranchContext,
+  useGameContext,
+  useStatementContext,
+} from '../contexts'
+import type {AudioSource} from '../lib'
+import {useAudio, useWindowFocus} from '../lib'
 
 export type CommandViewColorScheme = 'default' | 'dark'
 

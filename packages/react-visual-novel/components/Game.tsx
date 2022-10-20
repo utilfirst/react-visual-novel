@@ -1,7 +1,3 @@
-import type {SoundName} from '../contexts'
-import {BranchProvider, GameProvider, useGameContext} from '../contexts'
-import type {Branches, BranchId} from '../types'
-import {MobileDeviceChrome, WithAssets} from './internal'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 import {useRect} from '@radix-ui/react-use-rect'
 import {
@@ -17,6 +13,11 @@ import {
   X as XIcon,
 } from 'phosphor-react'
 import React from 'react'
+import type {SoundName} from '../contexts'
+import {BranchProvider, GameProvider, useGameContext} from '../contexts'
+import type {Result} from '../lib'
+import {usePreloadAssets} from '../lib'
+import type {Branches, BranchId} from '../types'
 
 export interface GameProps {
   assets: Record<string, string | {src: string}>
@@ -25,6 +26,11 @@ export interface GameProps {
   onGoToRoot: () => void
   onLinkClick: (href: string, name: string, event: React.MouseEvent) => void
   onPlaySound: (name: SoundName) => void
+  children?: (
+    render: () => React.ReactNode,
+    preloadRes: Result<Error, undefined>,
+    preloadProgress: number,
+  ) => React.ReactNode
 }
 
 export function Game({
@@ -34,6 +40,7 @@ export function Game({
   onGoToRoot,
   onLinkClick,
   onPlaySound,
+  children,
 }: GameProps) {
   return (
     <GameProvider
@@ -46,7 +53,9 @@ export function Game({
         assets={assets}
         branches={branches}
         initialBranchId={initialBranchId}
-      />
+      >
+        {children}
+      </GameView>
     </GameProvider>
   )
 }
@@ -57,9 +66,19 @@ interface GameViewProps {
   assets: Record<string, string | {src: string}>
   branches: Branches
   initialBranchId: BranchId
+  children?: (
+    render: () => React.ReactNode,
+    preloadRes: Result<Error, undefined>,
+    preloadProgress: number,
+  ) => React.ReactNode
 }
 
-function GameView({assets, branches, initialBranchId}: GameViewProps) {
+function GameView({
+  assets,
+  branches,
+  initialBranchId,
+  children = (render) => render(),
+}: GameViewProps) {
   const {
     focusedLocation,
     muted,
@@ -72,12 +91,15 @@ function GameView({assets, branches, initialBranchId}: GameViewProps) {
     goToRoot,
     playSound,
   } = useGameContext()
-  const [loaded, setLoaded] = React.useState(false)
+  const [preloaded, setPreloaded] = React.useState(false)
+  const [preloadRes, preloadProgress] = usePreloadAssets(assets, {
+    onLoaded: () => setPreloaded(true),
+  })
   return (
-    <MobileDeviceChrome>
+    <>
       <div className="navbar absolute z-[120] p-4">
         <div className="navbar-start space-x-2">
-          {loaded && canGoBack() && (
+          {preloaded && canGoBack() && (
             <button
               onMouseEnter={() => playSound('mouseover')}
               onClick={() => {
@@ -92,7 +114,7 @@ function GameView({assets, branches, initialBranchId}: GameViewProps) {
         </div>
 
         <div className="navbar-end space-x-2">
-          {loaded && (
+          {preloaded && (
             <button
               onMouseEnter={() => playSound('mouseover')}
               onClick={() => {
@@ -119,7 +141,7 @@ function GameView({assets, branches, initialBranchId}: GameViewProps) {
       </div>
 
       <div className="absolute bottom-4 right-4 z-[120] space-x-2">
-        {loaded && (
+        {preloaded && (
           <>
             <button
               onMouseEnter={() => playSound('mouseover')}
@@ -150,19 +172,26 @@ function GameView({assets, branches, initialBranchId}: GameViewProps) {
         )}
       </div>
 
-      <WithAssets assets={assets} onLoaded={() => setLoaded(true)}>
-        <div className="flex h-full w-full overflow-hidden bg-base-100">
-          {Object.entries(branches).map(
-            ([branchId, BranchComp]) =>
-              branchId === focusedLocation.branchId && (
-                <BranchProvider key={branchId} branchId={branchId as BranchId}>
-                  <BranchComp />
-                </BranchProvider>
-              ),
-          )}
-        </div>
-      </WithAssets>
-    </MobileDeviceChrome>
+      {children(
+        () => (
+          <div className="flex h-full w-full overflow-hidden bg-base-100">
+            {Object.entries(branches).map(
+              ([branchId, BranchComp]) =>
+                branchId === focusedLocation.branchId && (
+                  <BranchProvider
+                    key={branchId}
+                    branchId={branchId as BranchId}
+                  >
+                    <BranchComp />
+                  </BranchProvider>
+                ),
+            )}
+          </div>
+        ),
+        preloadRes,
+        preloadProgress,
+      )}
+    </>
   )
 }
 
