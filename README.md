@@ -1,6 +1,7 @@
 # react-visual-novel
 
-[![npm version](https://img.shields.io/npm/v/react-visual-novel.svg)](https://www.npmjs.org/package/react-visual-novel)
+[![Latest release](https://img.shields.io/npm/v/react-visual-novel.svg)](https://www.npmjs.org/package/react-visual-novel)
+[![License](https://img.shields.io/npm/l/react-visual-novel.svg)](https://www.npmjs.org/package/react-visual-novel)
 
 Build visual novels using web technologies. Powered by [React](https://reactjs.org/), [Tailwind CSS](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/), and [howler.js](https://github.com/goldfire/howler.js).
 
