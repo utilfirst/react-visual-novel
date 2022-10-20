@@ -1,3 +1,19 @@
+# v0.2.0 (Thu Oct 20 2022)
+
+#### 🚀 Enhancement
+
+- feat: bundle basic styles ([@yenbekbay](https://github.com/yenbekbay))
+
+#### 🐛 Bug Fix
+
+- fix: simplify minimal example ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.1.2 (Thu Oct 20 2022)
 
 #### 🐛 Bug Fix

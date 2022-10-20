@@ -1,3 +1,23 @@
+# v0.2.0 (Thu Oct 20 2022)
+
+#### 🚀 Enhancement
+
+- `react-visual-novel`
+  - feat: bundle basic styles ([@yenbekbay](https://github.com/yenbekbay))
+
+#### 🐛 Bug Fix
+
+- chore(docs): add content to readme ([@yenbekbay](https://github.com/yenbekbay))
+- chore(release): change author used in automatic commits ([@yenbekbay](https://github.com/yenbekbay))
+- `react-visual-novel`
+  - fix: simplify minimal example ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.1.2 (Thu Oct 20 2022)
 
 #### 🐛 Bug Fix
