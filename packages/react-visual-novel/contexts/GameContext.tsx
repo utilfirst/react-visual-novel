@@ -94,25 +94,29 @@ export function GameProvider({
     Howler.mute(muted)
   }, [muted])
 
-  useUpdateEffect(() => {
-    setStoredFocusedLocationId(makeGameLocationId(focusedLocation))
-  }, [focusedLocation, setStoredFocusedLocationId])
+  useUpdateEffect(
+    () => {
+      setStoredFocusedLocationId(makeGameLocationId(focusedLocation))
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [focusedLocation],
+  )
 
-  useUpdateEffect(() => {
-    const storedFocusedLocation = parseGameLocation(storedFocusedLocationId)
-    if (
-      storedFocusedLocation &&
-      (storedFocusedLocation.branchId !== focusedLocation.branchId ||
-        storedFocusedLocation.statementIndex !== focusedLocation.statementIndex)
-    ) {
-      history.reset(storedFocusedLocation)
-    }
-  }, [
-    focusedLocation.branchId,
-    focusedLocation.statementIndex,
-    history,
-    storedFocusedLocationId,
-  ])
+  useUpdateEffect(
+    () => {
+      const storedFocusedLocation = parseGameLocation(storedFocusedLocationId)
+      if (
+        storedFocusedLocation &&
+        (storedFocusedLocation.branchId !== focusedLocation.branchId ||
+          storedFocusedLocation.statementIndex !==
+            focusedLocation.statementIndex)
+      ) {
+        history.reset(storedFocusedLocation)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [storedFocusedLocationId],
+  )
 
   const ctx = React.useMemo(
     (): GameContextValue => ({

@@ -175,25 +175,29 @@ export function Command({
       void handleHidden()
     })
   })
-  useUpdateEffect(() => {
-    if (visible) {
-      setTimeout(() => {
+  useUpdateEffect(
+    () => {
+      if (visible) {
         setTimeout(() => {
-          if (!visibleRef.current || !mountedRef.current) {
+          setTimeout(() => {
+            if (!visibleRef.current || !mountedRef.current) {
+              return
+            }
+            void handleVisible()
+          })
+        })
+      } else {
+        setTimeout(() => {
+          if (visibleRef.current || !mountedRef.current) {
             return
           }
-          void handleVisible()
+          void handleHidden()
         })
-      })
-    } else {
-      setTimeout(() => {
-        if (visibleRef.current || !mountedRef.current) {
-          return
-        }
-        void handleHidden()
-      })
-    }
-  }, [handleHidden, handleVisible, visible, visibleRef])
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [visible],
+  )
 
   return (
     <AnimatePresence>
