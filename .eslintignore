@@ -3,4 +3,3 @@
 /demo/.next/**
 /demo/public/**
 /packages/*/dist
-pnpm-lock.yaml

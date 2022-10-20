@@ -6,4 +6,4 @@
 
 ## License
 
-[MIT License](./LICENSE) © Ayan Yenbekbay
+[MIT License](./LICENSE) © Utility First

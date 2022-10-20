@@ -7,7 +7,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- initial commit ([e005fa8](https://github.com/yenbekbay/react-visual-novel/commit/e005fa8460c5f1844d83771de6aab4e51460b3da))
+- initial commit ([e005fa8](https://github.com/utility-first/react-visual-novel/commit/e005fa8460c5f1844d83771de6aab4e51460b3da))
 
 # v0.1.0 (Thu Oct 20 2022)
 

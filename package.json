@@ -4,9 +4,9 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/yenbekbay/react-visual-novel.git"
+    "url": "https://github.com/utility-first/react-visual-novel.git"
   },
-  "author": "Ayan Yenbekbay <ayan.yenb@gmail.com>",
+  "author": "Ayan Yenbekbay <ayan@utility-first.co>",
   "scripts": {
     "dev": "pnpm --recursive --parallel run dev",
     "preinstall": "npx only-allow pnpm",
