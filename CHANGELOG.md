@@ -1,3 +1,17 @@
+# v0.1.2 (Thu Oct 20 2022)
+
+#### 🐛 Bug Fix
+
+- chore(release): change author used in automatic commits ([@yenbekbay](https://github.com/yenbekbay))
+- `react-visual-novel`
+  - fix: fix infinite loops caused by bad effect dependencies ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.1.1 (Thu Oct 20 2022)
 
 #### 🐛 Bug Fix

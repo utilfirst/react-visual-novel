@@ -1,3 +1,15 @@
+# v0.1.2 (Thu Oct 20 2022)
+
+#### 🐛 Bug Fix
+
+- fix: fix infinite loops caused by bad effect dependencies ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.1.1 (Thu Oct 20 2022)
 
 #### 🐛 Bug Fix
