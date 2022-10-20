@@ -36,6 +36,7 @@
     "use-long-press": "2.0.2"
   },
   "devDependencies": {
+    "@tsconfig/strictest": "1.0.2",
     "@types/howler": "2.2.7",
     "@types/intrinsic-scale": "3.0.0",
     "@types/mdast": "3.0.10",
