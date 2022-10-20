@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/lerna",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "npmClient": "pnpm",
   "useWorkspaces": true,
   "command": {
