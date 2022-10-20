@@ -1,3 +1,7 @@
+import {useLocalStorageValue, useUpdateEffect} from '@react-hookz/web'
+import {Howler} from 'howler'
+import React from 'react'
+import {StringParam, useQueryParam, withDefault} from 'use-query-params'
 import type {BranchId} from '../types'
 import type {GameHistory, GameLocation} from './internal'
 import {
@@ -6,10 +10,6 @@ import {
   parseGameLocation,
 } from './internal'
 import {unmute} from './internal/vendor/unmute'
-import {useLocalStorageValue, useUpdateEffect} from '@react-hookz/web'
-import {Howler} from 'howler'
-import React from 'react'
-import {StringParam, useQueryParam, withDefault} from 'use-query-params'
 
 export type SoundName = 'click' | 'mouseover' | 'skip' | 'not_allowed'
 

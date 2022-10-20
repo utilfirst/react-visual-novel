@@ -1,8 +1,8 @@
-import '../__generated__/tailwind.css'
 import {NextAdapter} from 'next-query-params'
 import type {AppProps} from 'next/app'
 import Head from 'next/head'
 import {QueryParamProvider} from 'use-query-params'
+import '../__generated__/tailwind.css'
 
 export default function MyApp({Component, pageProps}: AppProps) {
   return (

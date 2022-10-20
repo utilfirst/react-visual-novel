@@ -5,6 +5,7 @@ module.exports = {
   arrowParens: 'always',
   bracketSameLine: false,
   bracketSpacing: false,
+  importOrder: ['^node:(.+)$', '<THIRD_PARTY_MODULES>', '^[./]'],
   importOrderCaseInsensitive: true,
   importOrderSortSpecifiers: true,
   jsxSingleQuote: false,

@@ -29,7 +29,8 @@ export function Show({
       audio={audio}
       hide={hide}
       next={next}
-      zIndex={zIndex}>
+      zIndex={zIndex}
+    >
       {(controls) => (
         <>
           {normalizedSrcs.map((src, idx) => (

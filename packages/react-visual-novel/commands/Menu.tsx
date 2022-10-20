@@ -25,7 +25,8 @@ export function Menu({
       audio={audio}
       hide={hide}
       next={next}
-      zIndex={zIndex}>
+      zIndex={zIndex}
+    >
       {(controls) => (
         <>
           {imageProps && <ImageView controls={controls} {...imageProps} />}

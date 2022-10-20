@@ -1,6 +1,6 @@
+import {motion} from 'framer-motion'
 import type {CommandProps} from '../components'
 import {Command} from '../components'
-import {motion} from 'framer-motion'
 
 export interface TitleProps extends Pick<CommandProps, 'hide'> {
   children: string

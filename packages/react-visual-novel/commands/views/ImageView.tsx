@@ -1,6 +1,6 @@
-import type {CommandViewAnimation} from '../../components'
 import type {AnimationControls} from 'framer-motion'
 import {motion} from 'framer-motion'
+import type {CommandViewAnimation} from '../../components'
 
 export interface ImageViewProps {
   uri: string

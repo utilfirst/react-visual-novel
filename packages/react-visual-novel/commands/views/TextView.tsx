@@ -1,3 +1,7 @@
+import type {AnimationControls} from 'framer-motion'
+import {motion} from 'framer-motion'
+import React from 'react'
+import {twMerge} from 'tailwind-merge'
 import type {
   CommandViewAnimation,
   CommandViewColorScheme,
@@ -6,10 +10,6 @@ import {useBranchContext, useGameContext} from '../../contexts'
 import type {CharGroup} from './char-group'
 import type {Frame} from './frame'
 import {styleForFrame} from './frame'
-import type {AnimationControls} from 'framer-motion'
-import {motion} from 'framer-motion'
-import React from 'react'
-import {twMerge} from 'tailwind-merge'
 
 export type TextPlacement = 'top' | 'middle' | 'bottom'
 

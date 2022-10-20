@@ -1,3 +1,7 @@
+import {motion} from 'framer-motion'
+import React from 'react'
+import dedent from 'string-dedent'
+import {twMerge} from 'tailwind-merge'
 import type {CommandProps} from '../components'
 import {Command} from '../components'
 import type {
@@ -7,10 +11,6 @@ import type {
   TextViewProps,
 } from './views'
 import {charGroupsForMarkdown, ImageView, MenuView, TextView} from './views'
-import {motion} from 'framer-motion'
-import React from 'react'
-import dedent from 'string-dedent'
-import {twMerge} from 'tailwind-merge'
 
 export interface SayProps
   extends Pick<CommandProps, 'audio' | 'hide' | 'next' | 'zIndex'>,

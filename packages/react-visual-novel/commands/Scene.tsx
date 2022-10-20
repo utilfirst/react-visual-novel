@@ -23,7 +23,8 @@ export function Scene({src: srcProp, audio, durationMs = 4000}: SceneProps) {
       name="Scene"
       behavior={['skippable_timed', {durationMs}]}
       audio={audio}
-      hide={(s) => s.command === 'Scene'}>
+      hide={(s) => s.command === 'Scene'}
+    >
       {(controls) => (
         <>
           {normalizedSrcs.map((src, idx) => (

@@ -13,7 +13,8 @@ export function Play({audio, hide}: PlayProps) {
       name="Play"
       behavior={['skippable_timed', {durationMs: 0}]}
       audio={audio}
-      hide={hide}>
+      hide={hide}
+    >
       {() => null}
     </Command>
   )
