@@ -1,3 +1,21 @@
+# v0.1.1 (Thu Oct 20 2022)
+
+#### 🐛 Bug Fix
+
+- chore(release): fix config for auto ([@yenbekbay](https://github.com/yenbekbay))
+- chore(tooling): remove unnecessary option in lerna config ([@yenbekbay](https://github.com/yenbekbay))
+- `react-visual-novel`
+  - chore: format with prettier ([@yenbekbay](https://github.com/yenbekbay))
+  - fix: add ability to have custom loading/error views ([@yenbekbay](https://github.com/yenbekbay))
+  - chore(tsconfig): use standard strict base ([@yenbekbay](https://github.com/yenbekbay))
+  - chore: transfer repo to utility-first organization ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
