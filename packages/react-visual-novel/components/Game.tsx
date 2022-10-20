@@ -1,16 +1,11 @@
-import * as PopoverPrimitive from '@radix-ui/react-popover'
-import {useRect} from '@radix-ui/react-use-rect'
 import {
   ArrowCounterClockwise as ArrowCounterClockwiseIcon,
   ArrowLeft as ArrowLeftIcon,
-  CaretRight as CaretRightIcon,
   House as HouseIcon,
   Pause as PauseIcon,
   Play as PlayIcon,
   SpeakerHigh as SpeakerHighIcon,
   SpeakerSlash as SpeakerSlashIcon,
-  Wrench as WrenchIcon,
-  X as XIcon,
 } from 'phosphor-react'
 import React from 'react'
 import type {SoundName} from '../contexts'
@@ -97,8 +92,8 @@ function GameView({
   })
   return (
     <>
-      <div className="navbar absolute z-[120] p-4">
-        <div className="navbar-start space-x-2">
+      <div className="absolute z-[120] flex w-full p-4">
+        <div className="flex flex-1 space-x-2">
           {preloaded && canGoBack() && (
             <button
               onMouseEnter={() => playSound('mouseover')}
@@ -106,14 +101,14 @@ function GameView({
                 playSound('click')
                 goBack()
               }}
-              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+              className="rvn-icon-button"
             >
               <ArrowLeftIcon />
             </button>
           )}
         </div>
 
-        <div className="navbar-end space-x-2">
+        <div className="flex flex-1 justify-end space-x-2">
           {preloaded && (
             <button
               onMouseEnter={() => playSound('mouseover')}
@@ -121,7 +116,7 @@ function GameView({
                 playSound('click')
                 goToLocation(initialBranchId, 0)
               }}
-              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+              className="rvn-icon-button"
             >
               <ArrowCounterClockwiseIcon />
             </button>
@@ -134,7 +129,7 @@ function GameView({
                 playSound('click')
                 goHome()
               }}
-              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+              className="rvn-icon-button"
             >
               <HouseIcon />
             </button>
@@ -151,7 +146,7 @@ function GameView({
                 playSound('click')
                 setMuted(!muted)
               }}
-              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+              className="rvn-icon-button"
             >
               {muted ? <SpeakerSlashIcon /> : <SpeakerHighIcon />}
             </button>
@@ -162,21 +157,17 @@ function GameView({
                 playSound('click')
                 setPaused(!paused)
               }}
-              className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
+              className="rvn-icon-button"
             >
               {paused ? <PlayIcon /> : <PauseIcon />}
             </button>
           </>
         )}
-
-        {process.env['NODE_ENV'] === 'development' && (
-          <DebugPopover branches={branches} />
-        )}
       </div>
 
       {children(
         () => (
-          <div className="flex h-full w-full overflow-hidden bg-base-100">
+          <div className="flex h-full w-full overflow-hidden">
             {Object.entries(branches).map(
               ([branchId, BranchComp]) =>
                 branchId === focusedLocation.branchId && (
@@ -194,76 +185,6 @@ function GameView({
         preloadProgress,
       )}
     </>
-  )
-}
-
-// MARK: DebugPopover
-
-interface DebugPopoverProps {
-  branches: Branches
-}
-
-function DebugPopover({branches}: DebugPopoverProps) {
-  const {goToLocation} = useGameContext()
-  const [button, setButton] = React.useState<HTMLButtonElement | null>(null)
-  const buttonRect = useRect(button)
-  return (
-    <PopoverPrimitive.Root>
-      <PopoverPrimitive.Trigger asChild>
-        <button
-          ref={setButton}
-          className="btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200"
-        >
-          <WrenchIcon />
-        </button>
-      </PopoverPrimitive.Trigger>
-
-      <PopoverPrimitive.Content
-        align="center"
-        side="top"
-        sideOffset={4}
-        className="no-animation flex flex-col overflow-hidden rounded-lg bg-base-100 p-2 shadow-md radix-side-top:animate-slide-up"
-        style={{
-          width: 'min(calc(100vw - 2rem), 30rem)',
-          ...(buttonRect && {
-            maxHeight: buttonRect.top - 4,
-          }),
-        }}
-      >
-        <div className="navbar">
-          <div className="navbar-start"></div>
-          <div className="navbar-end">
-            <PopoverPrimitive.Close className="btn-ghost btn-sm btn-circle btn">
-              <XIcon />
-            </PopoverPrimitive.Close>
-          </div>
-        </div>
-
-        <div className="space-y-4 overflow-y-auto">
-          <div>
-            <div className="prose p-2">
-              <span className="text-lg font-semibold">Go to branch</span>
-            </div>
-
-            {Object.keys(branches).map((branchId) => (
-              <button
-                key={branchId}
-                onClick={() => goToLocation(branchId as BranchId, 0)}
-                className="btn-ghost btn-block btn-sm btn justify-between normal-case"
-              >
-                <span className="flex w-full flex-row items-center justify-between space-x-1">
-                  <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left">
-                    {branchId}
-                  </span>
-
-                  <CaretRightIcon />
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </PopoverPrimitive.Content>
-    </PopoverPrimitive.Root>
   )
 }
 

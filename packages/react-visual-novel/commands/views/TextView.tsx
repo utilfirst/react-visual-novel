@@ -72,7 +72,7 @@ export function TextView({
             }}
             initial="initial"
             animate={controls}
-            className="rvn-tag mb-1 whitespace-pre-wrap rounded-md px-1 text-center font-script text-base"
+            className="rvn-tag mb-1 whitespace-pre-wrap"
             style={{
               ...(typeof tag === 'object' &&
                 tag.color && {
@@ -87,15 +87,9 @@ export function TextView({
         )}
 
         <div
-          className={twMerge(
-            'rvn-text whitespace-pre-wrap text-center font-script leading-tight',
-            scheme === 'dark' && 'rvn-text--dark',
-            {
-              md: 'text-base',
-              lg: 'text-xl',
-              xl: 'text-3xl',
-            }[size],
-          )}
+          data-size={size}
+          data-scheme={scheme}
+          className="rvn-text whitespace-pre-wrap"
           style={{
             ...style,
             ...(frame && styleForFrame({containerRect}, frame)),

@@ -76,10 +76,8 @@ export function MenuView({
             initial="initial"
             animate={controls}
             custom={0}
-            className={twMerge(
-              'rvn-text mb-2 whitespace-pre-wrap text-center font-script text-lg',
-              scheme === 'dark' && 'rvn-text--dark',
-            )}
+            data-scheme={scheme}
+            className="rvn-menu-label mb-2 whitespace-pre-wrap"
           >
             {label}
           </motion.span>
@@ -111,10 +109,8 @@ export function MenuView({
                   playSound('click')
                   c.onClick(ctx)
                 }}
-                className={twMerge(
-                  'rvn-surface btn-ghost btn border',
-                  scheme === 'dark' && 'rvn-surface--dark',
-                )}
+                data-scheme={scheme}
+                className="rvn-menu-item-surface"
                 style={styleForFrame({containerRect}, c.frame)}
               />
             ) : (
@@ -125,14 +121,9 @@ export function MenuView({
                   playSound('click')
                   c.onClick(ctx)
                 }}
-                className={twMerge(
-                  'rvn-button btn-ghost btn h-auto min-h-0 animate-bounce-gentle py-2 font-script shadow-md',
-                  scheme === 'dark' && 'rvn-button--dark',
-                  {
-                    md: 'btn-lg text-base',
-                    lg: 'btn-xl text-2xl',
-                  }[size],
-                )}
+                data-size={size}
+                data-scheme={scheme}
+                className="rvn-menu-item-button"
                 style={{animationDelay: `calc(0.05 * ${idx}s)`}}
               >
                 {c.label}

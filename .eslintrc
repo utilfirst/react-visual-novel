@@ -3,7 +3,7 @@
   "settings": {
     "import/resolver": {
       "typescript": {
-        "project": ["demo/tsconfig.json", "packages/*/tsconfig.json"]
+        "project": ["packages/*/tsconfig.json", "demo/tsconfig.json"]
       }
     },
     "next": {
@@ -11,19 +11,13 @@
     },
     "react": {
       "version": "18.2.0"
-    },
-    "tailwindcss": {
-      "callees": ["twMerge"],
-      "config": "demo/tailwind.config.js",
-      "whitelist": ["rvn\\-.*"]
     }
   },
-  "plugins": ["codegen", "eslint-comments", "promise", "tailwindcss"],
+  "plugins": ["codegen", "eslint-comments", "promise"],
   "extends": [
     "next/core-web-vitals",
     "plugin:eslint-comments/recommended",
-    "plugin:promise/recommended",
-    "plugin:tailwindcss/recommended"
+    "plugin:promise/recommended"
   ],
   "rules": {
     "arrow-body-style": "warn",
@@ -48,7 +42,7 @@
     {
       "files": ["**/*.{ts,tsx}"],
       "parserOptions": {
-        "project": ["demo/tsconfig.json", "packages/*/tsconfig.json"]
+        "project": ["packages/*/tsconfig.json", "demo/tsconfig.json"]
       },
       "plugins": ["@typescript-eslint"],
       "extends": ["plugin:@typescript-eslint/strict"],
@@ -88,6 +82,31 @@
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/unbound-method": "warn"
       }
+    },
+    {
+      "files": ["packages/react-visual-novel/**/*.{ts,tsx}"],
+      "settings": {
+        "tailwindcss": {
+          "callees": ["twMerge"],
+          "config": "packages/react-visual-novel/tailwind.config.js",
+          "cssFiles": ["packages/react-visual-novel/index.css"],
+          "whitelist": ["rvn\\-.*"]
+        }
+      },
+      "plugins": ["tailwindcss"],
+      "extends": ["plugin:tailwindcss/recommended"]
+    },
+    {
+      "files": ["demo/**/*.{ts,tsx}"],
+      "settings": {
+        "tailwindcss": {
+          "callees": ["twMerge"],
+          "config": "demo/tailwind.config.js",
+          "cssFiles": ["demo/index.css"]
+        }
+      },
+      "plugins": ["tailwindcss"],
+      "extends": ["plugin:tailwindcss/recommended"]
     }
   ]
 }

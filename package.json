@@ -13,7 +13,7 @@
     "lint": "eslint --ext .js,.ts,.tsx --cache .",
     "prepare": "is-ci || husky install",
     "release": "auto shipit",
-    "typecheck": "pnpm --recursive --parallel exec tsc --project . --noEmit"
+    "typecheck": "pnpm --recursive --parallel exec tsc --noEmit"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx,json,yml,yaml}": "prettier --write",

@@ -30,7 +30,7 @@ export function Title({children, durationMs = 4000, hide}: TitleProps) {
             }}
             initial="initial"
             animate={controls}
-            className="rvn-title text-center font-script text-5xl font-semibold"
+            className="rvn-title"
           >
             {children}
           </motion.span>

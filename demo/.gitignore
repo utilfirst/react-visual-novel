@@ -33,4 +33,4 @@ yarn-error.log*
 .vercel
 
 # tailwind
-/__generated__/tailwind.css
+/__generated__/index.css

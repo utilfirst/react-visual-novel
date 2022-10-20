@@ -1,0 +1,16 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.progress {
+  @apply w-full appearance-none h-2 rounded-none;
+}
+.progress::-moz-progress-bar {
+  @apply bg-gray-900;
+}
+.progress::-webkit-progress-bar {
+  @apply bg-gray-900/20 rounded-none;
+}
+.progress::-webkit-progress-value {
+  @apply bg-gray-900 rounded-none;
+}

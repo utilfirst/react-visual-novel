@@ -21,7 +21,7 @@ declare module 'react-visual-novel' {
 
 export default function MyGame() {
   return (
-    <div className="flex h-screen w-screen bg-base-100">
+    <div className="flex h-screen w-screen">
       <Game
         assets={assets}
         branches={branches}
@@ -40,8 +40,8 @@ export default function MyGame() {
         {(render, res, progress) => {
           if (res.status === 'loading') {
             return (
-              <div className="prose flex max-w-none flex-1 flex-col justify-center p-8">
-                <h1 className="text-center text-xl">Loading…</h1>
+              <div className="prose mx-auto flex flex-1 flex-col justify-center p-8">
+                <h1 className="text-center text-xl font-bold">Loading…</h1>
                 <progress
                   value={progress * 100}
                   max={100}
@@ -52,8 +52,8 @@ export default function MyGame() {
           }
           if (res.status === 'failure') {
             return (
-              <div className="prose flex max-w-none flex-1 flex-col justify-center p-8">
-                <h1 className="text-xl">Unable to preload assets</h1>
+              <div className="prose mx-auto flex flex-1 flex-col justify-center p-8">
+                <h1 className="text-xl font-bold">Unable to preload assets</h1>
                 <pre className="alert alert-error items-start whitespace-pre-line font-mono">
                   {res.error.message}
                 </pre>

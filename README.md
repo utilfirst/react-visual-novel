@@ -20,6 +20,7 @@ This is only a very basic usage example of react-visual-novel. To see everything
 import * as assets from 'assets'
 import {bgSolidJpg} from 'assets'
 import {Branch, Game, prepareBranches, Say, Scene} from 'react-visual-novel'
+import 'react-visual-novel/dist/index.css'
 
 function BranchIntro() {
   return (
@@ -39,7 +40,7 @@ declare module 'react-visual-novel' {
 
 export default function MyGame() {
   return (
-    <div className="flex h-screen w-screen">
+    <div style={{display: 'flex', width: '100vw', height: '100vh'}}>
       <Game assets={assets} branches={branches} initialBranchId="Intro" />
     </div>
   )

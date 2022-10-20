@@ -5,12 +5,11 @@
   "scripts": {
     "build": "run-s --silent build:*",
     "build:css": "pnpm run generate:css --minify",
-    "build:migration": "pnpm --dir ../../ migration up",
     "build:next": "next build",
     "dev": "run-p --silent dev:*",
     "dev:css": "pnpm run generate:css --watch",
     "dev:next": "next dev",
-    "generate:css": "tailwindcss -i ./global.css -o ./__generated__/tailwind.css",
+    "generate:css": "tailwindcss -i index.css -o __generated__/index.css",
     "start": "next start"
   },
   "dependencies": {
@@ -24,7 +23,6 @@
     "use-query-params": "2.1.1"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.7",
     "@tsconfig/strictest": "1.0.2",
     "@types/howler": "2.2.7",
@@ -35,8 +33,6 @@
     "next-transpile-modules": "9.1.0",
     "npm-run-all": "4.1.5",
     "postcss": "*",
-    "tailwindcss": "3.1.8",
-    "tailwindcss-radix": "2.6.1",
-    "tailwindcss-scrims": "1.0.0"
+    "tailwindcss": "3.1.8"
   }
 }

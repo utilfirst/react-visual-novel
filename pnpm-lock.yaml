@@ -15,7 +15,7 @@ importers:
       '@types/node': 16.11.12
       '@types/prettier': 2.7.1
       '@typescript-eslint/eslint-plugin': 5.40.1
-      '@typescript-eslint/parser': ^5.40.1
+      '@typescript-eslint/parser': 5.40.1
       auto: 10.37.6
       eslint: 8.25.0
       eslint-config-next: 12.3.1
@@ -55,7 +55,6 @@ importers:
 
   demo:
     specifiers:
-      '@tailwindcss/forms': 0.5.3
       '@tailwindcss/typography': 0.5.7
       '@tsconfig/strictest': 1.0.2
       '@types/howler': 2.2.7
@@ -74,8 +73,6 @@ importers:
       react-error-boundary: 3.1.4
       react-visual-novel: workspace:*
       tailwindcss: 3.1.8
-      tailwindcss-radix: 2.6.1
-      tailwindcss-scrims: 1.0.0
       use-query-params: 2.1.1
     dependencies:
       howler: 2.2.3
@@ -87,7 +84,6 @@ importers:
       react-visual-novel: link:../packages/react-visual-novel
       use-query-params: 2.1.1_biqbaboplfbrettd7655fr4n2y
     devDependencies:
-      '@tailwindcss/forms': 0.5.3_tailwindcss@3.1.8
       '@tailwindcss/typography': 0.5.7_tailwindcss@3.1.8
       '@tsconfig/strictest': 1.0.2
       '@types/howler': 2.2.7
@@ -99,8 +95,6 @@ importers:
       npm-run-all: 4.1.5
       postcss: 8.4.18
       tailwindcss: 3.1.8_postcss@8.4.18
-      tailwindcss-radix: 2.6.1
-      tailwindcss-scrims: 1.0.0
 
   packages/react-visual-novel:
     specifiers:
@@ -115,20 +109,26 @@ importers:
       '@types/react': 18.0.21
       '@types/react-is': 17.0.3
       async-preloader: 7.0.0
-      csstype: 3.1.1
+      autoprefixer: '*'
+      csstype: '*'
+      daisyui: 2.31.0
       framer-motion: 7.6.1
       howler: 2.2.3
       intrinsic-scale: 3.0.4
       mdast-util-from-markdown: 1.2.0
       micro-observables: 1.7.2
       moize: 6.1.3
+      npm-run-all: 4.1.5
       phosphor-react: 1.4.1
+      postcss: '*'
       react: 18.2.0
       react-dom: 18.2.0
       react-is: 18.2.0
       rimraf: 3.0.2
       string-dedent: 3.0.1
       tailwind-merge: 1.6.2
+      tailwindcss: 3.1.8
+      tailwindcss-scrims: 1.0.0
       tsup: 6.3.0
       use-event-callback: 0.1.0
       use-long-press: 2.0.2
@@ -157,12 +157,18 @@ importers:
       '@types/mdast': 3.0.10
       '@types/react': 18.0.21
       '@types/react-is': 17.0.3
+      autoprefixer: 10.4.12_postcss@8.4.18
       csstype: 3.1.1
+      daisyui: 2.31.0_xkowlklhtk6sfvtndbucb3hfiy
       howler: 2.2.3
+      npm-run-all: 4.1.5
+      postcss: 8.4.18
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       rimraf: 3.0.2
-      tsup: 6.3.0
+      tailwindcss: 3.1.8_postcss@8.4.18
+      tailwindcss-scrims: 1.0.0
+      tsup: 6.3.0_postcss@8.4.18
       use-query-params: 2.1.1_biqbaboplfbrettd7655fr4n2y
 
 packages:
@@ -2449,15 +2455,6 @@ packages:
     dependencies:
       tslib: 2.4.0
     dev: false
-
-  /@tailwindcss/forms/0.5.3_tailwindcss@3.1.8:
-    resolution: {integrity: sha512-y5mb86JUoiUgBjY/o6FJSFZSEttfb3Q5gllE4xoKjAAD+vBrnIhE4dViwUuow3va8mpH4s9jyUbUbrRGoRdc2Q==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
-    dependencies:
-      mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.1.8_postcss@8.4.18
-    dev: true
 
   /@tailwindcss/typography/0.5.7_tailwindcss@3.1.8:
     resolution: {integrity: sha512-JTTSTrgZfp6Ki4svhPA4mkd9nmQ/j9EfE7SbHJ1cLtthKkpW2OxsFXzSmxbhYbEkfNIyAyhle5p4SYyKRbz/jg==}
@@ -6634,11 +6631,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /mini-svg-data-uri/1.4.4:
-    resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
-    hasBin: true
-    dev: true
-
   /minimatch/3.0.5:
     resolution: {integrity: sha512-tUpxzX0VAzJHjLu0xUfFv1gwVp9ba3IOuRAVH2EGuRW8a5emA2FlACLqiT/lDVtS1W+TGNwqz3sWaNyLgDJWuw==}
     dependencies:
@@ -7643,22 +7635,6 @@ packages:
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.18
-    dev: true
-
-  /postcss-load-config/3.1.4:
-    resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
-    engines: {node: '>= 10'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.0.6
-      yaml: 1.10.2
     dev: true
 
   /postcss-load-config/3.1.4_postcss@8.4.18:
@@ -8716,10 +8692,6 @@ packages:
     resolution: {integrity: sha512-/JbgwDwsI8F4aryXAcQ6tVOZvI/YyZqPqdkG/Dj/8XZq8JDp64XxZCIDbyp7/iOpIfWFkF8swEwjXQEQkAvJNw==}
     dev: false
 
-  /tailwindcss-radix/2.6.1:
-    resolution: {integrity: sha512-ejh4BHkn/3g349l+JiEW6I4//uclU4nllEqnOK3/8zpORscIk9WbjLyYR2UzqwVRjjzgd72I/hMDJZm3+XO48w==}
-    dev: true
-
   /tailwindcss-scrims/1.0.0:
     resolution: {integrity: sha512-Hds+IzV5a3gTg4ySQByUY+Cl+DQYp0C/q9jbTkkdcFcBY6PBbczhlAqsh2Dko2IJz9d3la9WDWLgA3iSNhoSgQ==}
     dependencies:
@@ -8970,7 +8942,7 @@ packages:
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
 
-  /tsup/6.3.0:
+  /tsup/6.3.0_postcss@8.4.18:
     resolution: {integrity: sha512-IaNQO/o1rFgadLhNonVKNCT2cks+vvnWX3DnL8sB87lBDqRvJXHENr5lSPJlqwplUlDxSwZK8dSg87rgBu6Emw==}
     engines: {node: '>=14'}
     hasBin: true
@@ -8994,7 +8966,8 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 3.1.4
+      postcss: 8.4.18
+      postcss-load-config: 3.1.4_postcss@8.4.18
       resolve-from: 5.0.0
       rollup: 2.79.1
       source-map: 0.8.0-beta.0

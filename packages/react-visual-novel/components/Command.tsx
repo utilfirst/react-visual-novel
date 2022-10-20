@@ -345,7 +345,7 @@ const CommandView = React.forwardRef(function CommandView(
             exit={{opacity: 0}}
             value={countdownProgress}
             max={100}
-            className="progress absolute top-0 z-[100] w-full rounded-none"
+            className="progress absolute top-0 z-[100]"
           />
         )}
       </AnimatePresence>

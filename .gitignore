@@ -33,7 +33,7 @@ yarn-error.log*
 .vercel
 
 # tailwind
-/demo/__generated__/tailwind.css
+/demo/__generated__/index.css
 
 # package builds
 /packages/*/dist
