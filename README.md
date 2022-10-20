@@ -16,7 +16,7 @@ npm install react-visual-novel howler use-query-params
 
 This is only a very basic usage example of react-visual-novel. To see everything that is possible with the library, please refer to a [production demo](https://github.com/yenbekbay/archcode-heritage-novel).
 
-```typescriptreact
+```tsx
 import * as assets from 'assets'
 import {bgSolidJpg} from 'assets'
 import {Branch, Game, prepareBranches, Say, Scene} from 'react-visual-novel'
@@ -40,11 +40,7 @@ declare module 'react-visual-novel' {
 export default function MyGame() {
   return (
     <div className="flex h-screen w-screen">
-      <Game
-        assets={assets}
-        branches={branches}
-        initialBranchId="Intro"
-      />
+      <Game assets={assets} branches={branches} initialBranchId="Intro" />
     </div>
   )
 }
