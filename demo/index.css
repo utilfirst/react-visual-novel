@@ -2,45 +2,47 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-.rvn-text {
-  @apply font-script text-center;
-}
-.rvn-text[data-size='md'] {
-  @apply text-base leading-none;
-}
-.rvn-text[data-size='lg'] {
-  @apply text-xl leading-none;
-}
-.rvn-text[data-size='xl'] {
-  @apply text-3xl leading-none;
-}
+@layer components {
+  .rvn-text {
+    @apply font-script text-center;
+  }
+  .rvn-text[data-size='md'] {
+    @apply text-base leading-none;
+  }
+  .rvn-text[data-size='lg'] {
+    @apply text-xl leading-none;
+  }
+  .rvn-text[data-size='xl'] {
+    @apply text-3xl leading-none;
+  }
 
-.rvn-tag {
-  @apply font-script rounded-md px-1 text-center text-base;
-}
+  .rvn-tag {
+    @apply font-script rounded-md px-1 text-center text-base;
+  }
 
-.rvn-menu-label {
-  @apply font-script text-center text-lg;
-}
+  .rvn-menu-label {
+    @apply font-script text-center text-lg;
+  }
 
-.rvn-menu-item-surface {
-  @apply btn-ghost btn border;
-}
+  .rvn-menu-item-surface {
+    @apply btn-ghost btn border;
+  }
 
-.rvn-menu-item-button {
-  @apply font-script btn-ghost btn h-auto min-h-0 animate-bounce-gentle py-2 shadow-md;
-}
-.rvn-menu-item-button[data-size='md'] {
-  @apply btn-lg text-base;
-}
-.rvn-menu-item-button[data-size='lg'] {
-  @apply btn-xl text-2xl;
-}
+  .rvn-menu-item-button {
+    @apply font-script btn-ghost btn h-auto min-h-0 animate-bounce-gentle py-2 shadow-md;
+  }
+  .rvn-menu-item-button[data-size='md'] {
+    @apply btn-lg text-base;
+  }
+  .rvn-menu-item-button[data-size='lg'] {
+    @apply btn-xl text-2xl;
+  }
 
-.rvn-title {
-  @apply font-script font-semibold text-center text-5xl;
-}
+  .rvn-title {
+    @apply font-script font-semibold text-center text-5xl;
+  }
 
-.rvn-icon-button {
-  @apply btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200;
+  .rvn-icon-button {
+    @apply btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200;
+  }
 }
