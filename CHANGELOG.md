@@ -1,3 +1,15 @@
+# v0.2.2 (Fri Oct 21 2022)
+
+#### 🐛 Bug Fix
+
+- chore(demo): fix bad tailwind config ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.2.1 (Fri Oct 21 2022)
 
 #### 🐛 Bug Fix
