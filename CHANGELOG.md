@@ -1,3 +1,16 @@
+# v0.2.1 (Fri Oct 21 2022)
+
+#### 🐛 Bug Fix
+
+- `react-visual-novel`
+  - fix: remove need for importing stylesheet when using tailwind ([@yenbekbay](https://github.com/yenbekbay))
+
+#### Authors: 1
+
+- Ayan Yenbekbay ([@yenbekbay](https://github.com/yenbekbay))
+
+---
+
 # v0.2.0 (Thu Oct 20 2022)
 
 #### 🚀 Enhancement
