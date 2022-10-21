@@ -1,7 +1,6 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-@import 'react-visual-novel/index.css';
 
 .rvn-text {
   @apply font-script text-center;

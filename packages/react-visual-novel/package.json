@@ -11,8 +11,7 @@
   "types": "dist/index.d.ts",
   "style": "dist/index.css",
   "files": [
-    "dist",
-    "index.css"
+    "dist"
   ],
   "scripts": {
     "build": "rimraf dist && run-s --silent build:*",

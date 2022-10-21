@@ -8,6 +8,7 @@ import {
 import type {AnimationControls, Variant} from 'framer-motion'
 import {AnimatePresence, motion, useAnimation, usePresence} from 'framer-motion'
 import React from 'react'
+import {twMerge} from 'tailwind-merge'
 import useEventCallback from 'use-event-callback'
 import type {Statement, StatementBehavior} from '../contexts'
 import {
@@ -345,7 +346,12 @@ const CommandView = React.forwardRef(function CommandView(
             exit={{opacity: 0}}
             value={countdownProgress}
             max={100}
-            className="progress absolute top-0 z-[100]"
+            className={twMerge(
+              'absolute top-0 z-[100] h-2 w-full appearance-none rounded-none',
+              '[&::-moz-progress-bar]:bg-gray-900',
+              '[&::-webkit-progress-bar]:rounded-none [&::-webkit-progress-bar]:bg-gray-900/20',
+              '[&::-webkit-progress-value]:rounded-none [&::-webkit-progress-value]:bg-gray-900',
+            )}
           />
         )}
       </AnimatePresence>
