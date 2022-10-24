@@ -15,7 +15,7 @@ npm install react-visual-novel howler use-query-params
 
 ## Quickstart
 
-This is only a very basic usage example of react-visual-novel. To see everything that is possible with the library, please refer to a [production demo](https://github.com/yenbekbay/archcode-heritage-novel).
+This is only a very basic usage example of `react-visual-novel`. To see everything that is possible with the library, please refer to a [production demo](https://github.com/yenbekbay/archcode-heritage-novel).
 
 ```tsx
 import * as assets from 'assets'
