@@ -13,7 +13,9 @@
     "lint": "eslint --ext .js,.ts,.tsx --cache .",
     "prepare": "is-ci || husky install",
     "release": "auto shipit",
-    "typecheck": "pnpm --recursive --parallel exec tsc --noEmit"
+    "typecheck": "run-p --continue-on-error typecheck:*",
+    "typecheck:demo": "tsc -p demo",
+    "typecheck:react-visual-novel": "tsc -p packages/react-visual-novel"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx,json,yml,yaml}": "prettier --write",
@@ -38,6 +40,7 @@
     "is-ci": "3.0.1",
     "lerna": "6.0.1",
     "lint-staged": "13.0.3",
+    "npm-run-all": "4.1.5",
     "prettier": "2.7.1",
     "prettier-plugin-packagejson": "2.3.0",
     "typescript": "4.8.4"
