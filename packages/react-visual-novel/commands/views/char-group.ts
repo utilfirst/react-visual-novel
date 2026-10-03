@@ -35,8 +35,9 @@ export function charGroupsForMarkdown(value: string) {
   let startIndex = 0;
   for (const p of paragraphs) {
     if (groups.length > 0) {
-      groups.push({ type: "text", chars: ["\n", "\n"], startIndex });
-      startIndex += 1;
+      const chars = ["\n", "\n"];
+      groups.push({ type: "text", chars, startIndex });
+      startIndex += chars.length;
     }
 
     for (const node of p.children) {

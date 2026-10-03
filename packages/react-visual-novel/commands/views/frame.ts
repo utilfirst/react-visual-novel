@@ -36,22 +36,22 @@ export function styleForFrame(
     y: (ctx.containerRect.height - height) / 2,
   };
 
-  return {
+  const style: CSSProperties = {
     position: "absolute",
     left: frame.rect.x * backgroundXScale + backgroundOffset.x,
     top: frame.rect.y * backgroundYScale + backgroundOffset.y,
-    ...(frame.rect.width != null &&
-      frame.rect.width !== 0 && {
-        width: frame.rect.width * backgroundXScale,
-      }),
-    ...(frame.rect.height != null &&
-      frame.rect.height !== 0 && {
-        height: frame.rect.height * backgroundYScale,
-      }),
-    ...(frame.rect.transform != null &&
-      frame.rect.transform !== "" && {
-        transform: frame.rect.transform,
-        transformOrigin: "top",
-      }),
   };
+
+  if (frame.rect.width != null && frame.rect.width !== 0) {
+    style.width = frame.rect.width * backgroundXScale;
+  }
+  if (frame.rect.height != null && frame.rect.height !== 0) {
+    style.height = frame.rect.height * backgroundYScale;
+  }
+  if (frame.rect.transform != null && frame.rect.transform !== "") {
+    style.transform = frame.rect.transform;
+    style.transformOrigin = "top";
+  }
+
+  return style;
 }
