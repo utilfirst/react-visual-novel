@@ -65,23 +65,10 @@ export function Game(props: GameProps) {
   );
 }
 
-type GameViewProps = {
-  assets: Record<
-    string,
-    | string
-    | {
-        src: string;
-      }
-  >;
-  branches: Branches & Record<string, React.ComponentType>;
-  initialBranchId: BranchId;
-  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  children?: (
-    render: () => React.ReactNode,
-    preloadRes: Result<Error, undefined>,
-    preloadProgress: number,
-  ) => React.ReactNode;
-};
+type GameViewProps = Pick<
+  GameProps,
+  "assets" | "branches" | "initialBranchId" | "children"
+>;
 
 function GameView(props: GameViewProps) {
   const children = props.children ?? renderGame;
@@ -99,19 +86,15 @@ function GameView(props: GameViewProps) {
     playSound,
   } = useGameContext();
 
-  const [preloaded, setPreloaded] = React.useState(false);
+  const [preloadRes, preloadProgress] = usePreloadAssets(props.assets);
 
-  const [preloadRes, preloadProgress] = usePreloadAssets(props.assets, {
-    onLoaded: () => {
-      setPreloaded(true);
-    },
-  });
+  const isPreloaded = preloadRes.status === "success";
 
   return (
     <>
       <div className="absolute z-[120] flex w-full p-4">
         <div className="flex flex-1 gap-2">
-          {preloaded && canGoBack() && (
+          {isPreloaded && canGoBack() && (
             <button
               type="button"
               aria-label="Previous statement"
@@ -130,7 +113,7 @@ function GameView(props: GameViewProps) {
         </div>
 
         <div className="flex flex-1 justify-end gap-2">
-          {preloaded && (
+          {isPreloaded && (
             <button
               type="button"
               aria-label="Restart game"
@@ -167,7 +150,7 @@ function GameView(props: GameViewProps) {
       </div>
 
       <div className="absolute right-4 bottom-4 z-[120] flex gap-2">
-        {preloaded && (
+        {isPreloaded && (
           <>
             <button
               type="button"

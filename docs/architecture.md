@@ -28,7 +28,7 @@ Local storage retains pause and location history under the existing keys. The hi
 
 `BranchContext` registers statements, measures the branch container, resolves labels, and advances playback. `StatementContext` derives focus and visibility from the branch location and each command's hiding rule. `Command` connects statement registration to animation, timing, and audio playback.
 
-Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. The audio owner notifies pending playback operations when their playing state changes. Asset preloading uses a local worker queue and reports progress and failure through the game render callback. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
+Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. The audio owner notifies pending playback operations when their playing state changes. Asset preloading uses a local worker queue and reports progress and failure through the game render callback. Each preload operation owns its scheduled start, queue, and result updates. Replacing assets or unmounting cancels the scheduled start and retires the operation. In-flight requests can finish, but retired operations cannot claim more assets, update progress, or notify the host. Player controls derive readiness from the preload result. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
 
 ## Trust and failure
 

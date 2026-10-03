@@ -22,6 +22,11 @@ export function usePreloadAssets(
   });
 
   React.useEffect(() => {
+    const controller = new AbortController();
+
+    setRes({ status: "loading" });
+    setProgress(0);
+
     const load = async () => {
       try {
         const srcs = Object.values(assets).map((a) =>
@@ -29,39 +34,62 @@ export function usePreloadAssets(
         );
 
         if (srcs.length > 0) {
-          await preloadAssets(srcs, { concurrency, onProgress: setProgress });
+          await preloadAssets({
+            srcs,
+            concurrency,
+            signal: controller.signal,
+            onProgress: (nextProgress) => {
+              if (!controller.signal.aborted) {
+                setProgress(nextProgress);
+              }
+            },
+          });
+        }
+        if (controller.signal.aborted) {
+          return;
         }
 
+        setProgress(1);
         setRes({ status: "success", data: undefined });
         handleLoaded();
       } catch (error) {
-        setRes({
-          status: "failure",
-          error: error instanceof Error ? error : new Error(String(error)),
-        });
+        if (!controller.signal.aborted) {
+          setRes({
+            status: "failure",
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
       }
     };
 
-    scheduleIdleCallback(() => {
-      // The load operation converts its rejection into the result state.
+    const cancelLoad = scheduleIdleCallback(() => {
+      // NOTE: Asset failures are returned to the host. Report failures in
+      // the result callback at the boundary that starts detached work.
       void load().catch((error: unknown) => {
         console.error("Unable to report asset preloading result", error);
       });
     });
+
+    return () => {
+      // NOTE: The loader cannot cancel an in-flight asset request. Abort
+      // stops the remaining queue and prevents stale state and callbacks.
+      controller.abort();
+      cancelLoad();
+    };
   }, [assets, concurrency, handleLoaded, setRes]);
   return [res, progress] as const;
 }
 
-async function preloadAssets(
-  srcs: string[],
-  {
-    concurrency = srcs.length,
-    onProgress,
-  }: {
-    concurrency?: number;
-    onProgress?: (progress: number) => void;
-  } = {},
-) {
+type PreloadAssetsOptions = {
+  srcs: string[];
+  concurrency?: number;
+  onProgress: (progress: number) => void;
+  signal: AbortSignal;
+};
+
+async function preloadAssets(options: PreloadAssetsOptions) {
+  const { srcs } = options;
+  const concurrency = options.concurrency ?? srcs.length;
   if (typeof concurrency !== "number" || !(concurrency >= 1)) {
     throw new RangeError("Preload concurrency must be at least one");
   }
@@ -71,7 +99,7 @@ async function preloadAssets(
   const errors: Error[] = [];
 
   const loadNext = async () => {
-    while (nextIndex < srcs.length) {
+    while (!options.signal.aborted && nextIndex < srcs.length) {
       const index = nextIndex;
 
       nextIndex += 1;
@@ -84,7 +112,7 @@ async function preloadAssets(
       try {
         await asyncPreloader.loadItem({ src });
         loadedCount += 1;
-        onProgress?.(loadedCount / srcs.length);
+        options.onProgress(loadedCount / srcs.length);
       } catch (error) {
         const failure = new Error(
           error instanceof Error ? error.message : String(error),
@@ -110,23 +138,18 @@ async function preloadAssets(
   }
 }
 
-function scheduleIdleCallback(callback: IdleRequestCallback) {
+function scheduleIdleCallback(callback: () => void) {
   if (typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(callback);
-  } else {
-    requestIdleCallbackShim(callback);
+    const handle = window.requestIdleCallback(callback);
+
+    return () => {
+      window.cancelIdleCallback(handle);
+    };
   }
-}
 
-function requestIdleCallbackShim(cb: IdleRequestCallback) {
-  const start = Date.now();
+  const handle = setTimeout(callback, 1);
 
-  return setTimeout(() => {
-    cb({
-      didTimeout: false,
-      timeRemaining() {
-        return Math.max(0, 50 - (Date.now() - start));
-      },
-    });
-  }, 1);
+  return () => {
+    clearTimeout(handle);
+  };
 }
