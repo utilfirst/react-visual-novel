@@ -1,7 +1,43 @@
 import { Howl } from "howler";
+import { useEffect, useMemo } from "react";
 
 export function useAudio(src: AudioSource | null) {
-  return src === null ? null : getAudio(src);
+  const uri = src?.uri;
+  const channel = src?.channel;
+  const loop = src?.loop;
+  const overlap = src?.overlap;
+
+  const fadeOutDuration =
+    src?.onStop?.[0] === "fadeOut" ? src.onStop[1] : undefined;
+
+  const tailUri = src?.onStop?.[0] === "play" ? src.onStop[1] : undefined;
+
+  const player = useMemo((): AudioPlayer | null => {
+    if (uri === undefined) {
+      return null;
+    }
+
+    const source: AudioSource = { uri, channel, loop, overlap };
+    if (fadeOutDuration !== undefined) {
+      source.onStop = ["fadeOut", fadeOutDuration];
+    } else if (tailUri !== undefined) {
+      source.onStop = ["play", tailUri];
+    }
+
+    return makeAudioHandle(source);
+  }, [uri, channel, loop, overlap, fadeOutDuration, tailUri]);
+
+  useEffect(() => {
+    if (player === null) {
+      return undefined;
+    }
+
+    // NOTE: Render creates only a source handle. Committed commands retain
+    // the shared player, and pending operations retain it through cleanup.
+    return getAudio(player.src).retain();
+  }, [player]);
+
+  return player;
 }
 
 export type AudioSource = {
@@ -22,42 +58,126 @@ type AudioPlayingState = {
   isPlaying: boolean;
 };
 
-const audioPlayers = new Map<string, AudioPlayer>();
-const audioSources = new WeakMap<AudioSource, AudioPlayer>();
+type AudioResource = {
+  player: AudioPlayer;
+  dispose: () => void;
+};
 
-export function getAudio(source: AudioSource): AudioPlayer {
-  const existingSource = audioSources.get(source);
-  if (existingSource !== undefined) {
-    return existingSource;
-  }
+type CachedAudio = {
+  player: AudioPlayer;
+  retain: () => () => void;
+};
 
+const audioPlayers = new Map<string, CachedAudio>();
+
+function makeAudioHandle(source: AudioSource): AudioPlayer {
+  const key = getAudioKey(source);
+
+  return {
+    src: source,
+    play: async () => {
+      const cached = getAudio(source);
+      const release = cached.retain();
+      try {
+        await cached.player.play();
+      } finally {
+        release();
+      }
+    },
+    stop: async () => {
+      const cached = audioPlayers.get(key);
+      if (cached === undefined) {
+        return;
+      }
+
+      const release = cached.retain();
+      try {
+        await cached.player.stop();
+      } finally {
+        release();
+      }
+    },
+  };
+}
+
+function getAudioKey(source: AudioSource) {
   // NOTE: Source fields contain primitives and one tuple. Sorting fields keeps
   // equivalent configurations cached regardless of property insertion order.
-  const key = JSON.stringify(
+  return JSON.stringify(
     Object.entries(source).toSorted(([left], [right]) =>
       left.localeCompare(right),
     ),
   );
-
-  const player = audioPlayers.get(key) ?? _getAudio(source);
-  audioPlayers.set(key, player);
-  audioSources.set(source, player);
-  return player;
 }
 
-function _getAudio(_src: AudioSource): AudioPlayer {
+function getAudio(source: AudioSource): CachedAudio {
+  const key = getAudioKey(source);
+  const existing = audioPlayers.get(key);
+  if (existing !== undefined) {
+    return existing;
+  }
+
+  let references = 0;
+
+  const resource = makeAudio(source, runOperation);
+
+  const cached: CachedAudio = {
+    player: resource.player,
+    retain: () => {
+      references += 1;
+
+      return () => {
+        references -= 1;
+        disposeIfUnused();
+      };
+    },
+  };
+
+  audioPlayers.set(key, cached);
+  return cached;
+
+  // NOTE: Channel interruption calls a player's stop directly. Track those
+  // operations too, so releasing a command cannot unload an unfinished fade.
+  async function runOperation(operation: () => Promise<void>) {
+    const release = cached.retain();
+    try {
+      await operation();
+    } finally {
+      release();
+    }
+  }
+
+  function disposeIfUnused() {
+    if (references !== 0) {
+      return;
+    }
+
+    audioPlayers.delete(key);
+    resource.dispose();
+  }
+}
+
+function makeAudio(
+  src: AudioSource,
+  retainOperation: (operation: () => Promise<void>) => Promise<void>,
+): AudioResource {
   let isPlaying = false;
   const playingListeners = new Set<(playing: boolean) => void>();
+  let loadError: Error | null = null;
+  const loadErrorListeners = new Set<(error: Error) => void>();
 
   let playP = Promise.resolve();
   let stopP = Promise.resolve();
 
-  const src = _src;
   const onStop = src.onStop ?? ["fadeOut", 2000];
 
   const sound = new Howl({
     src: src.uri,
     loop: src.loop,
+    preload: false,
+    onloaderror: (_id, cause) => {
+      failLoading(cause);
+    },
     onplayerror: () => {
       sound.once("unlock", () => {
         // `sound.playing()` returns false when sound is blocked
@@ -69,115 +189,179 @@ function _getAudio(_src: AudioSource): AudioPlayer {
     },
   });
 
-  const tail = onStop[0] === "play" ? new Howl({ src: onStop[1] }) : null;
+  const tail =
+    onStop[0] === "play"
+      ? new Howl({
+          src: onStop[1],
+          preload: false,
+          onloaderror: (_id, cause) => {
+            failLoading(cause);
+          },
+        })
+      : null;
 
   const audio: AudioPlayer = {
     src,
-    play: () => {
-      if (isPlaying) {
-        return playP;
-      }
-
-      setPlaying({ isPlaying: true });
-      playP = new Promise<void>((resolve) => {
-        const onEnd = () => {
-          setPlaying({ isPlaying: false });
-        };
-
-        if (!src.loop) {
-          sound.once("end", onEnd);
+    play: () =>
+      runOperation(() => {
+        if (isPlaying) {
+          return playP;
         }
 
-        // NOTE: Stopping a loop must settle its pending play operation too.
-        const unsub = subscribeToPlaying((playing) => {
-          if (!playing) {
-            resolve();
-            unsub();
-            sound.off("end", onEnd);
+        setPlaying({ isPlaying: true });
+        playP = new Promise<void>((resolve) => {
+          const onEnd = () => {
+            setPlaying({ isPlaying: false });
+          };
+
+          if (!src.loop) {
+            sound.once("end", onEnd);
           }
+
+          // NOTE: Stopping a loop must settle its pending play operation too.
+          const unsub = subscribeToPlaying((playing) => {
+            if (!playing) {
+              resolve();
+              unsub();
+              sound.off("end", onEnd);
+            }
+          });
+
+          if (sound.state() === "unloaded") {
+            sound.load();
+          }
+
+          sound.volume(1);
+          sound.seek(0);
+          sound.play();
         });
+        return playP;
+      }),
+    stop: () =>
+      runOperation(async () => {
+        if (!isPlaying) {
+          return stopP;
+        }
 
-        sound.volume(1);
-        sound.seek(0);
-        sound.play();
-      });
-      return playP;
-    },
-    stop: async () => {
-      if (!isPlaying) {
-        return stopP;
-      }
-
-      setPlaying({ isPlaying: false });
-      stopP = new Promise<void>((resolve) => {
-        switch (onStop[0]) {
-          case "fadeOut": {
-            const onFade = () => {
-              if (sound.volume() === 0) {
-                resolve();
-                unsub();
-                sound.stop();
-              }
-            };
-
-            sound.once("fade", onFade);
-
-            const unsub = subscribeToPlaying((playing) => {
-              if (playing) {
-                resolve();
-                unsub();
-                sound.stop();
-                sound.off("fade", onFade);
-              }
-            });
-
-            sound.fade(1, 0, onStop[1]);
-            break;
-          }
-          case "play": {
-            sound.stop();
-            if (tail) {
-              const onEnd = () => {
-                resolve();
-                unsub();
+        setPlaying({ isPlaying: false });
+        stopP = new Promise<void>((resolve) => {
+          switch (onStop[0]) {
+            case "fadeOut": {
+              const onFade = () => {
+                if (sound.volume() === 0) {
+                  resolve();
+                  unsub();
+                  sound.stop();
+                }
               };
 
-              tail.once("end", onEnd);
+              sound.once("fade", onFade);
 
               const unsub = subscribeToPlaying((playing) => {
                 if (playing) {
                   resolve();
                   unsub();
-                  tail.stop();
-                  tail.off("end", onEnd);
+                  sound.stop();
+                  sound.off("fade", onFade);
                 }
               });
 
-              tail.seek(0);
-              tail.play();
-            } else {
-              resolve();
+              sound.fade(1, 0, onStop[1]);
+              break;
             }
+            case "play": {
+              sound.stop();
+              if (tail) {
+                const onEnd = () => {
+                  resolve();
+                  unsub();
+                };
 
-            break;
+                tail.once("end", onEnd);
+
+                const unsub = subscribeToPlaying((playing) => {
+                  if (playing) {
+                    resolve();
+                    unsub();
+                    tail.stop();
+                    tail.off("end", onEnd);
+                  }
+                });
+
+                if (tail.state() === "unloaded") {
+                  tail.load();
+                }
+
+                tail.seek(0);
+                tail.play();
+              } else {
+                resolve();
+              }
+
+              break;
+            }
           }
-        }
-      });
-      return stopP;
+        });
+        return stopP;
+      }),
+  };
+
+  const channel =
+    src.channel !== undefined && src.channel !== ""
+      ? getChannel(src.channel)
+      : null;
+
+  return {
+    player:
+      channel === null
+        ? audio
+        : {
+            src,
+            play: () => channel.channel.play(audio),
+            stop: () => channel.channel.stop(audio),
+          },
+    dispose: () => {
+      sound.unload();
+      tail?.unload();
+      channel?.release();
     },
   };
 
-  if (src.channel !== undefined && src.channel !== "") {
-    const channel = getChannel(src.channel);
+  // NOTE: Failed loads cannot emit end or fade. Reject pending operations so
+  // their leases release and command callbacks report the failure.
+  function runOperation(operation: () => Promise<void>) {
+    return retainOperation(async () => {
+      if (loadError !== null) {
+        throw loadError;
+      }
 
-    return {
-      src,
-      play: () => channel.play(audio),
-      stop: () => channel.stop(audio),
-    };
+      let rejectFailure: ((error: Error) => void) | undefined;
+
+      const failure = new Promise<void>((_resolve, reject) => {
+        rejectFailure = reject;
+        loadErrorListeners.add(reject);
+      });
+
+      try {
+        await Promise.race([operation(), failure]);
+      } finally {
+        if (rejectFailure !== undefined) {
+          loadErrorListeners.delete(rejectFailure);
+        }
+      }
+    });
   }
 
-  return audio;
+  function failLoading(cause: unknown) {
+    const error = new Error("Unable to load audio", { cause });
+    loadError = error;
+
+    for (const listener of Array.from(loadErrorListeners)) {
+      listener(error);
+    }
+
+    setPlaying({ isPlaying: false });
+  }
 
   function setPlaying(state: AudioPlayingState) {
     if (isPlaying === state.isPlaying) {
@@ -213,17 +397,27 @@ type AudioChannel = {
   stop: (audio: AudioPlayer) => Promise<void>;
 };
 
-const channels = new Map<string, AudioChannel>();
+type CachedChannel = {
+  channel: AudioChannel;
+  players: number;
+};
+
+const channels = new Map<string, CachedChannel>();
 
 function getChannel(key: string) {
-  const existingChannel = channels.get(key);
-  if (existingChannel !== undefined) {
-    return existingChannel;
-  }
+  const cached = channels.get(key) ?? { channel: makeChannel(), players: 0 };
+  cached.players += 1;
+  channels.set(key, cached);
 
-  const channel = makeChannel();
-  channels.set(key, channel);
-  return channel;
+  return {
+    channel: cached.channel,
+    release: () => {
+      cached.players -= 1;
+      if (cached.players === 0) {
+        channels.delete(key);
+      }
+    },
+  };
 }
 
 function makeChannel(): AudioChannel {
