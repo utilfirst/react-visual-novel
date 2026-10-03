@@ -1,16 +1,16 @@
 import React from "react";
 
 export function useWindowFocus() {
-  const [focused, setFocused] = React.useState(hasFocus);
+  const [isFocused, setIsFocused] = React.useState(hasFocus);
   React.useEffect(() => {
-    setFocused(hasFocus());
+    setIsFocused(hasFocus());
 
     function onFocus() {
-      setFocused(true);
+      setIsFocused(true);
     }
 
     function onBlur() {
-      setFocused(false);
+      setIsFocused(false);
     }
 
     window.addEventListener("focus", onFocus);
@@ -21,7 +21,7 @@ export function useWindowFocus() {
       window.removeEventListener("blur", onBlur);
     };
   }, []);
-  return focused;
+  return isFocused;
 }
 
 function hasFocus() {

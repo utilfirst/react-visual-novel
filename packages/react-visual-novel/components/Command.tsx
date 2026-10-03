@@ -67,7 +67,7 @@ export function Command(props: CommandProps) {
   const next = props.next ?? 1;
   const zIndex = props.zIndex ?? "auto";
 
-  const { register, visible } = useStatementContext();
+  const { register, visible: isVisible } = useStatementContext();
 
   const viewRef = React.useRef<CommandViewInstance>(null);
   React.useEffect(
@@ -107,9 +107,9 @@ export function Command(props: CommandProps) {
       : null,
   );
 
-  const visibleRef = useSyncedRef(visible);
+  const isVisibleRef = useSyncedRef(isVisible);
 
-  const mountedRef = React.useRef(false);
+  const isMountedRef = React.useRef(false);
   const audioOperationRef = React.useRef<CommandAudioOperation | null>(null);
 
   const handleVisible = useEventCallback(async () => {
@@ -138,8 +138,8 @@ export function Command(props: CommandProps) {
         await operation.entrance.play();
 
         if (
-          !visibleRef.current ||
-          !mountedRef.current ||
+          !isVisibleRef.current ||
+          !isMountedRef.current ||
           operation.controller.signal.aborted
         ) {
           return;
@@ -175,7 +175,7 @@ export function Command(props: CommandProps) {
         await operation.main.stop();
 
         if (
-          (mountedRef.current && visibleRef.current) ||
+          (isMountedRef.current && isVisibleRef.current) ||
           operation.controller.signal.aborted
         ) {
           return;
@@ -190,7 +190,7 @@ export function Command(props: CommandProps) {
     const operation = audioOperationRef.current;
     if (
       operation?.state !== "visible" ||
-      !visibleRef.current ||
+      !isVisibleRef.current ||
       operation.main === whileVisibleAudio
     ) {
       return;
@@ -206,13 +206,13 @@ export function Command(props: CommandProps) {
       void previousMain?.stop().catch(reportAudioError);
       void operation.main?.play().catch(reportAudioError);
     }
-  }, [whileVisibleAudio, visibleRef]);
+  }, [whileVisibleAudio, isVisibleRef]);
 
   React.useEffect(() => {
-    mountedRef.current = true;
+    isMountedRef.current = true;
     setTimeout(() => {
       setTimeout(() => {
-        if (!visibleRef.current || !mountedRef.current) {
+        if (!isVisibleRef.current || !isMountedRef.current) {
           return;
         }
 
@@ -221,22 +221,22 @@ export function Command(props: CommandProps) {
     }, 0);
 
     return () => {
-      mountedRef.current = false;
+      isMountedRef.current = false;
       setTimeout(() => {
-        if (mountedRef.current) {
+        if (isMountedRef.current) {
           return;
         }
 
         void handleHidden().catch(reportAudioError);
       }, 0);
     };
-  }, [handleVisible, handleHidden, visibleRef]);
+  }, [handleVisible, handleHidden, isVisibleRef]);
 
   useUpdateEffect(() => {
-    if (visible) {
+    if (isVisible) {
       setTimeout(() => {
         setTimeout(() => {
-          if (!visibleRef.current || !mountedRef.current) {
+          if (!isVisibleRef.current || !isMountedRef.current) {
             return;
           }
 
@@ -245,18 +245,18 @@ export function Command(props: CommandProps) {
       }, 0);
     } else {
       setTimeout(() => {
-        if (visibleRef.current || !mountedRef.current) {
+        if (isVisibleRef.current || !isMountedRef.current) {
           return;
         }
 
         void handleHidden().catch(reportAudioError);
       }, 0);
     }
-  }, [visible, visibleRef, mountedRef, handleVisible, handleHidden]);
+  }, [isVisible, isVisibleRef, isMountedRef, handleVisible, handleHidden]);
 
   return (
     <AnimatePresence>
-      {visible && (
+      {isVisible && (
         <CommandView ref={viewRef} behavior={behavior} zIndex={zIndex}>
           {props.children}
         </CommandView>
@@ -283,9 +283,9 @@ const CommandView = React.forwardRef(function CommandView(
 ) {
   const { behavior } = props;
 
-  const { paused: gamePaused } = useGameContext();
+  const { paused: isGamePaused } = useGameContext();
   const { goToNextStatement } = useBranchContext();
-  const { statementIndex, focused } = useStatementContext();
+  const { statementIndex, focused: isFocused } = useStatementContext();
   const [isPresent, safeToRemove] = usePresence();
 
   const isMountedRef = React.useRef(false);
@@ -297,15 +297,15 @@ const CommandView = React.forwardRef(function CommandView(
     };
   }, []);
 
-  const windowFocused = useWindowFocus();
+  const isWindowFocused = useWindowFocus();
 
-  const enteredRef = React.useRef(false);
+  const isEnteredRef = React.useRef(false);
 
-  const [entered, setEntered] = React.useState(false);
+  const [isEntered, setIsEntered] = React.useState(false);
 
-  const setCommandEntered = React.useCallback((newEntered: boolean) => {
-    enteredRef.current = newEntered;
-    setEntered(newEntered);
+  const setCommandEntered = React.useCallback((isNextEntered: boolean) => {
+    isEnteredRef.current = isNextEntered;
+    setIsEntered(isNextEntered);
   }, []);
 
   const controls = useAnimation();
@@ -316,10 +316,10 @@ const CommandView = React.forwardRef(function CommandView(
     ReturnType<typeof setInterval> | undefined
   >(undefined);
 
-  const countdownPausedRef = React.useRef(false);
+  const isCountdownPausedRef = React.useRef(false);
 
-  const gamePausedRef = useSyncedRef(gamePaused);
-  const windowFocusedRef = useSyncedRef(windowFocused);
+  const isGamePausedRef = useSyncedRef(isGamePaused);
+  const isWindowFocusedRef = useSyncedRef(isWindowFocused);
 
   const countdownDuration =
     behavior[0] === "skippable_timed" ? behavior[1].durationMs : null;
@@ -332,7 +332,7 @@ const CommandView = React.forwardRef(function CommandView(
     forwardedRef,
     (): CommandViewInstance => ({
       enter: () => {
-        if (enteredRef.current) {
+        if (isEnteredRef.current) {
           return false;
         }
 
@@ -342,17 +342,17 @@ const CommandView = React.forwardRef(function CommandView(
         return true;
       },
       pause: () => {
-        countdownPausedRef.current = true;
+        isCountdownPausedRef.current = true;
       },
       resume: () => {
-        countdownPausedRef.current = false;
+        isCountdownPausedRef.current = false;
       },
     }),
     [controls, setCommandEntered],
   );
 
   React.useEffect(() => {
-    let active = true;
+    let isActive = true;
     let entranceFrame: number | undefined;
     let deferredFrame: number | undefined;
     if (isPresent) {
@@ -362,7 +362,7 @@ const CommandView = React.forwardRef(function CommandView(
           void controls
             .start("entrance")
             .then(() => {
-              if (active) {
+              if (isActive) {
                 setCommandEntered(true);
               }
 
@@ -375,7 +375,7 @@ const CommandView = React.forwardRef(function CommandView(
       void controls
         .start("exit")
         .then(() => {
-          if (active) {
+          if (isActive) {
             completeExit();
           }
 
@@ -385,7 +385,7 @@ const CommandView = React.forwardRef(function CommandView(
     }
 
     return () => {
-      active = false;
+      isActive = false;
       if (entranceFrame !== undefined) {
         cancelAnimationFrame(entranceFrame);
       }
@@ -398,13 +398,13 @@ const CommandView = React.forwardRef(function CommandView(
   }, [isPresent, controls, completeExit, setCommandEntered]);
 
   React.useEffect(() => {
-    if (countdownDuration !== null && entered && focused) {
+    if (countdownDuration !== null && isEntered && isFocused) {
       setCountdownProgress(0);
       countdownTimerRef.current = setInterval(() => {
         if (
-          countdownPausedRef.current ||
-          gamePausedRef.current ||
-          !windowFocusedRef.current
+          isCountdownPausedRef.current ||
+          isGamePausedRef.current ||
+          !isWindowFocusedRef.current
         ) {
           return;
         }
@@ -423,11 +423,11 @@ const CommandView = React.forwardRef(function CommandView(
       countdownTimerRef.current = undefined;
     };
   }, [
-    entered,
-    focused,
+    isEntered,
+    isFocused,
     countdownDuration,
-    gamePausedRef,
-    windowFocusedRef,
+    isGamePausedRef,
+    isWindowFocusedRef,
     isMountedRef,
   ]);
 
@@ -437,11 +437,11 @@ const CommandView = React.forwardRef(function CommandView(
         clearInterval(countdownTimerRef.current);
         countdownTimerRef.current = undefined;
       }
-      if (focused) {
+      if (isFocused) {
         goToNextStatement();
       }
     }
-  }, [countdownProgress, focused, goToNextStatement]);
+  }, [countdownProgress, isFocused, goToNextStatement]);
 
   return (
     <div
@@ -451,7 +451,7 @@ const CommandView = React.forwardRef(function CommandView(
       }}
     >
       <AnimatePresence>
-        {behavior[0] === "skippable_timed" && focused && (
+        {behavior[0] === "skippable_timed" && isFocused && (
           <motion.progress
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
