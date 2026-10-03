@@ -1,15 +1,17 @@
 import type { GameHistory, GameLocation } from "#contexts/internal/index.ts";
 import {
+  decodeGameLocations,
   makeGameHistory,
   makeGameLocationId,
   parseGameLocation,
 } from "#contexts/internal/index.ts";
 import { unmute } from "#contexts/internal/vendor/unmute.js";
+import { useEventCallback } from "#lib/use-event-callback.ts";
+import { usePersistentState } from "#lib/use-persistent-state.ts";
+import { useUpdateEffect } from "#lib/use-update-effect.ts";
 import type { BranchId } from "#types.ts";
-import { useLocalStorageValue, useUpdateEffect } from "@react-hookz/web";
 import { Howler } from "howler";
 import React from "react";
-import useEventCallback from "use-event-callback";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 export type SoundName = "click" | "mouseover" | "skip" | "not_allowed";
@@ -69,15 +71,17 @@ export function GameProvider(props: GameProviderProps) {
 
   const [muted, setMuted] = React.useState(false);
 
-  const [paused, setPaused] = useLocalStorageValue(
-    "@GameContext/paused",
-    false,
-  );
+  const [paused, setPaused] = usePersistentState({
+    key: "@GameContext/paused",
+    initialValue: false,
+    decode: decodePaused,
+  });
 
-  const [locations, setLocations] = useLocalStorageValue<GameLocation[]>(
-    "@GameContext/locations",
-    [focusedLocation],
-  );
+  const [locations, setLocations] = usePersistentState({
+    key: "@GameContext/locations",
+    initialValue: [focusedLocation],
+    decode: decodeGameLocations,
+  });
 
   const historyRef = React.useRef<GameHistory | null>(null);
   historyRef.current ??= makeGameHistory({
@@ -205,4 +209,8 @@ export function useGameContext() {
   }
 
   return ctx;
+}
+
+function decodePaused(value: unknown): boolean | null {
+  return typeof value === "boolean" ? value : null;
 }

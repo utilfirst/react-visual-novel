@@ -1,6 +1,5 @@
 import { StatementProvider } from "#contexts/index.ts";
 import React from "react";
-import { isFragment } from "react-is";
 
 export type BranchProps = {
   children?: React.ReactElement[] | React.ReactElement;
@@ -80,7 +79,7 @@ function flattenChildren(options: FlattenChildrenOptions): React.ReactNode[] {
     (children: React.ReactNode[], node) => {
       if (
         React.isValidElement<{ children?: React.ReactNode }>(node) &&
-        isFragment(node)
+        node.type === React.Fragment
       ) {
         children.push(
           ...flattenChildren({

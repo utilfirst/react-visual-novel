@@ -1,7 +1,6 @@
-import { PromisePool } from "@supercharge/promise-pool";
+import { useEventCallback } from "#lib/use-event-callback.ts";
 import asyncPreloader from "async-preloader";
 import React from "react";
-import useEventCallback from "use-event-callback";
 import { useResult } from "./use-result.ts";
 
 export function usePreloadAssets(
@@ -63,17 +62,49 @@ async function preloadAssets(
     onProgress?: (progress: number) => void;
   } = {},
 ) {
+  if (typeof concurrency !== "number" || !(concurrency >= 1)) {
+    throw new RangeError("Preload concurrency must be at least one");
+  }
+
+  let nextIndex = 0;
   let loadedCount = 0;
+  const errors: Error[] = [];
 
-  const { errors } = await PromisePool.withConcurrency(concurrency)
-    .for(srcs)
-    .process(async (src) => {
-      await asyncPreloader.loadItem({ src });
-      loadedCount += 1;
-      onProgress?.(loadedCount / srcs.length);
-    });
+  const loadNext = async () => {
+    while (nextIndex < srcs.length) {
+      const index = nextIndex;
 
-  // PromisePool collects item failures instead of rejecting its operation.
+      nextIndex += 1;
+
+      const src = srcs[index];
+      if (src === undefined) {
+        continue;
+      }
+
+      try {
+        await asyncPreloader.loadItem({ src });
+        loadedCount += 1;
+        onProgress?.(loadedCount / srcs.length);
+      } catch (error) {
+        const failure = new Error(
+          error instanceof Error ? error.message : String(error),
+          { cause: error },
+        );
+
+        errors.push(Object.assign(failure, { item: src, raw: error }));
+      }
+    }
+  };
+
+  // NOTE: Workers claim each item before awaiting it. A failed asset does not
+  // stop the queue, and the result waits for every worker before reporting it.
+  await Promise.all(
+    Array.from(
+      { length: Math.min(Math.ceil(concurrency), srcs.length) },
+      loadNext,
+    ),
+  );
+
   if (errors.length > 0) {
     throw new AggregateError(errors, "Unable to preload assets");
   }

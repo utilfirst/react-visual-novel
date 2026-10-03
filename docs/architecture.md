@@ -22,17 +22,17 @@ The release workflow packages a checked version tag and passes its tarball to a 
 
 ## Playback state
 
-`GameContext` owns location, audio mute, pause, navigation, and host callbacks. The `location` query parameter reflects the selected branch and statement. Local storage retains pause and location history under the existing keys. The history owner provides back navigation and resets.
+`GameContext` owns location, audio mute, pause, navigation, and host callbacks. The `location` query parameter reflects the selected branch and statement. Local storage retains pause and location history under the existing keys. The history owner provides back navigation and resets. Local hooks own persistence synchronization, committed callbacks, resize observation, and long-press timing.
 
 `BranchContext` registers statements, measures the branch container, resolves labels, and advances playback. `StatementContext` derives focus and visibility from the branch location and each command's hiding rule. `Command` connects statement registration to animation, timing, and audio playback.
 
-Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. Asset preloading reports progress and failure through the game render callback. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
+Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. The audio owner notifies pending playback operations when their playing state changes. Asset preloading uses a local worker queue and reports progress and failure through the game render callback. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
 
 ## Trust and failure
 
 Host assets, React children, and callbacks enter through public component contracts. Query parameters and browser storage are persisted inputs whose identifiers and keys must survive maintenance changes. Markdown text is rendered as React content rather than raw HTML. Unsupported syntax is reported by the parser owner.
 
-The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. Asset failures are presented through the preload result. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
+The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. Persisted pause and history values are decoded before use. Unavailable browser storage falls back to in-memory state. Asset failures are presented through the preload result. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
 
 ## Implementation owners
 

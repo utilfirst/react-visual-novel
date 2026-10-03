@@ -1,5 +1,3 @@
-import type { Property } from "csstype";
-import { cover } from "intrinsic-scale";
 import type { CSSProperties } from "react";
 
 export type Frame = {
@@ -9,7 +7,7 @@ export type Frame = {
     x: number;
     width?: number | null;
     height?: number | null;
-    transform?: Property.Transform | null;
+    transform?: CSSProperties["transform"] | null;
   };
 };
 
@@ -17,19 +15,25 @@ export function styleForFrame(
   ctx: { containerRect: DOMRectReadOnly },
   frame: Frame,
 ): CSSProperties {
-  const backgroundResizeInfo = cover(
-    ctx.containerRect.width,
-    ctx.containerRect.height,
-    frame.viewport[0],
-    frame.viewport[1],
-  );
+  const viewportRatio = frame.viewport[0] / frame.viewport[1];
+  const containerRatio = ctx.containerRect.width / ctx.containerRect.height;
 
-  const backgroundXScale = backgroundResizeInfo.width / frame.viewport[0];
-  const backgroundYScale = backgroundResizeInfo.height / frame.viewport[1];
+  const width =
+    viewportRatio < containerRatio
+      ? ctx.containerRect.width
+      : ctx.containerRect.height * viewportRatio;
+
+  const height =
+    viewportRatio < containerRatio
+      ? ctx.containerRect.width / viewportRatio
+      : ctx.containerRect.height;
+
+  const backgroundXScale = width / frame.viewport[0];
+  const backgroundYScale = height / frame.viewport[1];
 
   const backgroundOffset = {
-    x: backgroundResizeInfo.x,
-    y: backgroundResizeInfo.y,
+    x: (ctx.containerRect.width - width) / 2,
+    y: (ctx.containerRect.height - height) / 2,
   };
 
   return {

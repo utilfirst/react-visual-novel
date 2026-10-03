@@ -1,9 +1,9 @@
+import { useEventCallback } from "#lib/use-event-callback.ts";
+import { useLongPress } from "#lib/use-long-press.ts";
+import { useMeasure } from "#lib/use-measure.ts";
 import type { BranchId } from "#types.ts";
-import { useMeasure } from "@react-hookz/web";
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import useEventCallback from "use-event-callback";
-import { useLongPress } from "use-long-press";
 import { useGameContext } from "./GameContext.tsx";
 
 export type StatementBehavior =
@@ -143,17 +143,15 @@ export function BranchProvider(props: BranchProviderProps) {
     }
   });
 
-  const bindLongPress = useLongPress(
-    () => {
+  const longPressHandlers = useLongPress({
+    onStart: () => {
       statementByIndex.get(focusedStatementIndex)?.pause();
       ignoreClickRef.current = true;
     },
-    {
-      onFinish: () => {
-        statementByIndex.get(focusedStatementIndex)?.resume();
-      },
+    onFinish: () => {
+      statementByIndex.get(focusedStatementIndex)?.resume();
     },
-  );
+  });
 
   return (
     // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- This ancestor delegates stage clicks. The advance button supplies keyboard activation, and choices stop propagation.
@@ -177,7 +175,7 @@ export function BranchProvider(props: BranchProviderProps) {
         advanceStatement();
       }}
       className="relative flex-1 select-none"
-      {...bindLongPress()}
+      {...longPressHandlers}
     >
       <button
         type="button"

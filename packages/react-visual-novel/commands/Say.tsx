@@ -15,7 +15,6 @@ import { Command } from "#components/index.ts";
 import type { StatementBehavior } from "#contexts/index.ts";
 import { motion } from "framer-motion";
 import React from "react";
-import dedent from "string-dedent";
 import { twMerge } from "tailwind-merge";
 
 export type SayProps = Pick<
@@ -46,13 +45,7 @@ export function Say(props: SayProps) {
     ...textProps
   } = props;
 
-  let text: string;
-  try {
-    text = dedent(children);
-  } catch {
-    text = children;
-  }
-
+  const text = dedentDialogue(children);
   const groups = React.useMemo(() => charGroupsForMarkdown(text), [text]);
   const length = groups.flatMap((g) => g.chars).length;
   const imageProps = typeof image === "string" ? { uri: image } : image;
@@ -133,4 +126,53 @@ export function Say(props: SayProps) {
       )}
     </Command>
   );
+}
+
+function dedentDialogue(text: string): string {
+  const segments = text.split(/(\n|\r\n?|\u2028|\u2029)/u);
+  if (
+    segments.length === 1 ||
+    segments[0] !== "" ||
+    /\S/u.test(segments.at(-1) ?? "")
+  ) {
+    return text;
+  }
+
+  // NOTE: Only multiline strings with empty opening and closing lines are
+  // dedented. Preserve interior line endings and a shared whitespace prefix.
+  let indentation: string | undefined;
+  for (let index = 2; index < segments.length - 1; index += 2) {
+    const line = segments[index] ?? "";
+    const leading = /^\s*/u.exec(line)?.[0] ?? "";
+    if (leading.length === line.length) {
+      segments[index] = "";
+      continue;
+    }
+
+    if (indentation === undefined) {
+      indentation = leading;
+    } else {
+      let length = 0;
+      while (
+        length < indentation.length &&
+        leading[length] === indentation[length]
+      ) {
+        length += 1;
+      }
+
+      indentation = indentation.slice(0, length);
+    }
+  }
+
+  segments[1] = "";
+  segments[segments.length - 2] = "";
+  segments[segments.length - 1] = "";
+
+  const indentationLength = indentation?.length ?? 0;
+
+  return segments
+    .map((segment, index) =>
+      index % 2 === 0 ? segment.slice(indentationLength) : segment,
+    )
+    .join("");
 }

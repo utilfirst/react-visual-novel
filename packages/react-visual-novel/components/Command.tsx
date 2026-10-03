@@ -6,13 +6,9 @@ import {
 } from "#contexts/index.ts";
 import type { AudioSource } from "#lib/index.ts";
 import { useAudio, useWindowFocus } from "#lib/index.ts";
-import {
-  useIsMounted,
-  useMountEffect,
-  useSyncedRef,
-  useUnmountEffect,
-  useUpdateEffect,
-} from "@react-hookz/web";
+import { useEventCallback } from "#lib/use-event-callback.ts";
+import { useSyncedRef } from "#lib/use-synced-ref.ts";
+import { useUpdateEffect } from "#lib/use-update-effect.ts";
 import type { AnimationControls, Variant } from "framer-motion";
 import {
   AnimatePresence,
@@ -22,7 +18,6 @@ import {
 } from "framer-motion";
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import useEventCallback from "use-event-callback";
 
 export type CommandViewColorScheme = "default" | "dark";
 
@@ -167,11 +162,7 @@ export function Command(props: CommandProps) {
     await onExitAudio?.play();
   });
 
-  useMountEffect(() => {
-    if (mountedRef.current) {
-      return;
-    }
-
+  React.useEffect(() => {
     mountedRef.current = true;
     setTimeout(() => {
       setTimeout(() => {
@@ -182,22 +173,18 @@ export function Command(props: CommandProps) {
         void handleVisible().catch(reportAudioError);
       }, 0);
     }, 0);
-  });
 
-  useUnmountEffect(() => {
-    if (!mountedRef.current) {
-      return;
-    }
+    return () => {
+      mountedRef.current = false;
+      setTimeout(() => {
+        if (mountedRef.current) {
+          return;
+        }
 
-    mountedRef.current = false;
-    setTimeout(() => {
-      if (mountedRef.current) {
-        return;
-      }
-
-      void handleHidden().catch(reportAudioError);
-    }, 0);
-  });
+        void handleHidden().catch(reportAudioError);
+      }, 0);
+    };
+  }, [handleVisible, handleHidden, visibleRef]);
 
   useUpdateEffect(() => {
     if (visible) {
@@ -254,7 +241,16 @@ const CommandView = React.forwardRef(function CommandView(
   const { goToNextStatement } = useBranchContext();
   const { statementIndex, focused } = useStatementContext();
   const [isPresent, safeToRemove] = usePresence();
-  const isMounted = useIsMounted();
+
+  const isMountedRef = React.useRef(false);
+  React.useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const windowFocused = useWindowFocus();
 
   const enteredRef = React.useRef(false);
@@ -364,7 +360,7 @@ const CommandView = React.forwardRef(function CommandView(
           return;
         }
 
-        if (isMounted()) {
+        if (isMountedRef.current) {
           setCountdownProgress((prev) => prev + 1);
         } else if (countdownTimerRef.current) {
           clearInterval(countdownTimerRef.current);
@@ -383,7 +379,7 @@ const CommandView = React.forwardRef(function CommandView(
     countdownDuration,
     gamePausedRef,
     windowFocusedRef,
-    isMounted,
+    isMountedRef,
   ]);
 
   React.useEffect(() => {

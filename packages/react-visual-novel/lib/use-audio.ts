@@ -1,6 +1,4 @@
 import { Howl } from "howler";
-import { observable } from "micro-observables";
-import moize from "moize";
 import React from "react";
 
 export function useAudio(src: AudioSource | null) {
@@ -26,14 +24,36 @@ export type AudioPlayer = {
   stop: () => Promise<void>;
 };
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment -- TypeScript 6 accepts the installed Moize declarations, while tsgolint reports an error type here. Preserve the compiler-checked callable signature.
-export const getAudio: (source: AudioSource) => AudioPlayer = moize(_getAudio, {
-  isDeepEqual: true,
-  maxSize: Infinity,
-});
+type AudioPlayingState = {
+  isPlaying: boolean;
+};
+
+const audioPlayers = new Map<string, AudioPlayer>();
+const audioSources = new WeakMap<AudioSource, AudioPlayer>();
+
+export function getAudio(source: AudioSource): AudioPlayer {
+  const existingSource = audioSources.get(source);
+  if (existingSource !== undefined) {
+    return existingSource;
+  }
+
+  // NOTE: Source fields contain primitives and one tuple. Sorting fields keeps
+  // equivalent configurations cached regardless of property insertion order.
+  const key = JSON.stringify(
+    Object.entries(source).toSorted(([left], [right]) =>
+      left.localeCompare(right),
+    ),
+  );
+
+  const player = audioPlayers.get(key) ?? _getAudio(source);
+  audioPlayers.set(key, player);
+  audioSources.set(source, player);
+  return player;
+}
 
 function _getAudio(_src: AudioSource): AudioPlayer {
-  const playing$ = observable(false);
+  let isPlaying = false;
+  const playingListeners = new Set<(playing: boolean) => void>();
 
   let playP = Promise.resolve();
   let stopP = Promise.resolve();
@@ -47,7 +67,7 @@ function _getAudio(_src: AudioSource): AudioPlayer {
     onplayerror: () => {
       sound.once("unlock", () => {
         // `sound.playing()` returns false when sound is blocked
-        if (playing$.get() && !sound.playing()) {
+        if (isPlaying && !sound.playing()) {
           sound.seek(0);
           sound.play();
         }
@@ -60,22 +80,22 @@ function _getAudio(_src: AudioSource): AudioPlayer {
   const audio: AudioPlayer = {
     src,
     play: () => {
-      if (playing$.get()) {
+      if (isPlaying) {
         return playP;
       }
 
-      playing$.set(true);
+      setPlaying({ isPlaying: true });
       playP = new Promise<void>((resolve) => {
         if (!src.loop) {
           const onEnd = () => {
-            playing$.set(false);
+            setPlaying({ isPlaying: false });
             resolve();
             unsub();
           };
 
           sound.once("end", onEnd);
 
-          const unsub = playing$.subscribe((playing) => {
+          const unsub = subscribeToPlaying((playing) => {
             if (!playing) {
               resolve();
               unsub();
@@ -91,11 +111,11 @@ function _getAudio(_src: AudioSource): AudioPlayer {
       return playP;
     },
     stop: async () => {
-      if (!playing$.get()) {
+      if (!isPlaying) {
         return stopP;
       }
 
-      playing$.set(false);
+      setPlaying({ isPlaying: false });
       stopP = new Promise<void>((resolve) => {
         switch (onStop[0]) {
           case "fadeOut": {
@@ -109,7 +129,7 @@ function _getAudio(_src: AudioSource): AudioPlayer {
 
             sound.once("fade", onFade);
 
-            const unsub = playing$.subscribe((playing) => {
+            const unsub = subscribeToPlaying((playing) => {
               if (playing) {
                 resolve();
                 unsub();
@@ -131,7 +151,7 @@ function _getAudio(_src: AudioSource): AudioPlayer {
 
               tail.once("end", onEnd);
 
-              const unsub = playing$.subscribe((playing) => {
+              const unsub = subscribeToPlaying((playing) => {
                 if (playing) {
                   resolve();
                   unsub();
@@ -165,6 +185,29 @@ function _getAudio(_src: AudioSource): AudioPlayer {
   }
 
   return audio;
+
+  function setPlaying(state: AudioPlayingState) {
+    if (isPlaying === state.isPlaying) {
+      return;
+    }
+
+    isPlaying = state.isPlaying;
+
+    // NOTE: A notification may unsubscribe another listener. Notify the
+    // listeners present at the transition, matching interruption ordering.
+    const listeners = Array.from(playingListeners);
+    for (const listener of listeners) {
+      listener(state.isPlaying);
+    }
+  }
+
+  function subscribeToPlaying(listener: (playing: boolean) => void) {
+    playingListeners.add(listener);
+
+    return () => {
+      playingListeners.delete(listener);
+    };
+  }
 }
 
 type AudioPlayerMetadata = {
