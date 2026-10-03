@@ -8,14 +8,14 @@ import type { Result } from "#lib/index.ts";
 import { usePreloadAssets } from "#lib/index.ts";
 import type { Branches, BranchId } from "#types.ts";
 import {
-  ArrowCounterClockwise as ArrowCounterClockwiseIcon,
-  ArrowLeft as ArrowLeftIcon,
-  House as HouseIcon,
-  Pause as PauseIcon,
-  Play as PlayIcon,
-  SpeakerHigh as SpeakerHighIcon,
-  SpeakerSlash as SpeakerSlashIcon,
-} from "phosphor-react";
+  ArrowCounterClockwiseIcon,
+  ArrowLeftIcon,
+  HouseIcon,
+  PauseIcon,
+  PlayIcon,
+  SpeakerHighIcon,
+  SpeakerSlashIcon,
+} from "@phosphor-icons/react";
 import React from "react";
 
 export type GameProps = {
@@ -160,7 +160,7 @@ function GameView(props: GameViewProps) {
         </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 z-[120] flex gap-2">
+      <div className="absolute right-4 bottom-4 z-[120] flex gap-2">
         {preloaded && (
           <>
             <button

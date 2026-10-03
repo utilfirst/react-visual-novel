@@ -13,6 +13,7 @@ const config: Config & PluginOptions = {
     "prettier-plugin-tailwindcss",
   ],
   tailwindFunctions: ["twMerge"],
+  tailwindStylesheet: "./demo/index.css",
 };
 
 export default config;

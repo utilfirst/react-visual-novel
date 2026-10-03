@@ -8,7 +8,7 @@
     ],
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo"
   },
-  "exclude": ["node_modules", "public", "__generated__"],
+  "exclude": ["node_modules", "public"],
   "extends": "../tsconfig.json",
   "include": [
     "**/*.ts",

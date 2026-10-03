@@ -199,7 +199,7 @@ export function BranchProvider(props: BranchProviderProps) {
         }}
         className={twMerge(
           "absolute left-0 z-[110] h-full w-16 cursor-pointer appearance-none border-0 bg-transparent from-current to-transparent p-0",
-          canGoBack() && "hover:bg-gradient-to-r",
+          canGoBack() && "hover:bg-linear-to-r",
         )}
         style={{ color: "rgba(0, 0, 0, .35)" }}
       />

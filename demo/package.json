@@ -7,28 +7,25 @@
     "#*": "./*"
   },
   "scripts": {
-    "build": "pnpm run generate && next build --webpack",
-    "dev": "pnpm run generate && pnpm run '/^dev:[^:]+$/'",
-    "dev:css": "pnpm run generate:css --watch",
-    "dev:next": "next dev --webpack",
+    "build": "pnpm run generate && next build",
+    "dev": "pnpm run generate && next dev",
     "generate": "pnpm run --sequential '/^generate:[^:]+$/'",
-    "generate:css": "tailwindcss -c tailwind.config.ts -i index.css -o __generated__/index.css --minify",
     "generate:next": "next typegen",
     "start": "next start"
   },
   "dependencies": {
     "howler": "2.2.3",
-    "next": "16.3.6",
-    "next-query-params": "5.1.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-visual-novel": "workspace:*",
     "use-query-params": "2.1.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
     "@types/howler": "2.2.13",
-    "@types/react": "18.3.31",
-    "@types/react-dom": "18.3.7",
-    "tailwindcss": "3.4.19"
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.3"
   }
 }

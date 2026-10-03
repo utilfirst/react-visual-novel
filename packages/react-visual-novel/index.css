@@ -1,3 +1,10 @@
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@layer theme, base, components, utilities;
+
+/* NOTE: Publish utilities and their theme without resetting host styles. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
 @import "./scrims.css";
+
+@source "./commands";
+@source "./components";
+@source "./contexts";

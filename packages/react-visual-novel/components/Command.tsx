@@ -9,7 +9,7 @@ import { useAudio, useWindowFocus } from "#lib/index.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useSyncedRef } from "#lib/use-synced-ref.ts";
 import { useUpdateEffect } from "#lib/use-update-effect.ts";
-import type { AnimationControls, Variant } from "framer-motion";
+import type { Variant } from "framer-motion";
 import {
   AnimatePresence,
   motion,
@@ -35,7 +35,7 @@ export type CommandAudioConfig = {
 
 export type CommandProps = {
   name: string;
-  children: (controls: AnimationControls) => React.ReactNode;
+  children: (controls: ReturnType<typeof useAnimation>) => React.ReactNode;
   behavior?: StatementBehavior;
   audio?: CommandAudioConfig;
   hide?: number | ((statement: Statement) => boolean);
@@ -220,7 +220,7 @@ export function Command(props: CommandProps) {
 }
 
 type CommandViewProps = {
-  children: (controls: AnimationControls) => React.ReactNode;
+  children: (controls: ReturnType<typeof useAnimation>) => React.ReactNode;
   behavior: StatementBehavior;
   zIndex: "auto" | number;
 };
@@ -266,7 +266,10 @@ const CommandView = React.forwardRef(function CommandView(
 
   const [countdownProgress, setCountdownProgress] = React.useState(0);
 
-  const countdownTimerRef = React.useRef<ReturnType<typeof setInterval>>();
+  const countdownTimerRef = React.useRef<
+    ReturnType<typeof setInterval> | undefined
+  >(undefined);
+
   const countdownPausedRef = React.useRef(false);
 
   const gamePausedRef = useSyncedRef(gamePaused);

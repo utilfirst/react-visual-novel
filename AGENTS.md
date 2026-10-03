@@ -17,7 +17,7 @@ This workspace publishes a browser React visual novel library and contains a Nex
 ## Stack
 
 - Browser-only React library with ESM output and separately generated Tailwind CSS.
-- Next.js Pages Router demo with webpack asset modules for MP3 imports.
+- Next.js App Router demo with client-only game loading, PostCSS styling, and public audio URLs.
 - Read `mise.toml`, workspace manifests, and lockfiles for toolchain and dependency versions.
 
 ## Structure
@@ -30,8 +30,8 @@ This workspace publishes a browser React visual novel library and contains a Nex
 | `docs/ui-design.md` | UI design | Shared command presentation or player interactions | Shared command presentation or player interactions |
 
 - Read `packages/react-visual-novel/index.ts`, `types.ts`, and `package.json` before changing the public package surface.
-- Read `packages/react-visual-novel/tsdown.config.ts` and both Tailwind configs before changing build output or stylesheet discovery.
-- Read `demo/next.config.ts` before changing imported media or the demo bundler.
+- Read `packages/react-visual-novel/tsdown.config.ts`, both `index.css` files, and `demo/postcss.config.mjs` before changing build output or stylesheet discovery.
+- Read `demo/next.config.ts` and `demo/assets/` before changing media URLs or the demo bundler.
 - Read `.github/workflows/release.yml` before changing release delivery.
 - Treat barrel files as maintained source. Add exports explicitly when adding a module.
 

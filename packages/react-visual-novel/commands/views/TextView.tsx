@@ -3,7 +3,7 @@ import type {
   CommandViewColorScheme,
 } from "#components/index.ts";
 import { useBranchContext, useGameContext } from "#contexts/index.ts";
-import type { AnimationControls } from "framer-motion";
+import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -15,7 +15,7 @@ export type TextPlacement = "top" | "middle" | "bottom";
 
 export type TextViewProps = {
   groups: CharGroup[];
-  controls: AnimationControls;
+  controls: ReturnType<typeof useAnimation>;
   tag?:
     | string
     | {

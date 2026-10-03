@@ -7,7 +7,6 @@ export default defineConfig({
     ".local/**",
     ".pnpm-store/**",
     ".tmp/**",
-    "demo/__generated__/**",
     "demo/.next/**",
     "demo/node_modules/**",
     "demo/next-env.d.ts",

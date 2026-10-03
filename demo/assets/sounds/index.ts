@@ -1,4 +1,3 @@
-import clickMp3 from "./click.mp3";
-import mouseoverMp3 from "./mouseover.mp3";
-
-export { clickMp3, mouseoverMp3 };
+// NOTE: Public audio URLs work with the default Next.js bundler.
+export const clickMp3 = "/sounds/click.mp3";
+export const mouseoverMp3 = "/sounds/mouseover.mp3";

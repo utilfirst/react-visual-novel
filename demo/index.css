@@ -1,7 +1,28 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss" source(none);
 @import "../packages/react-visual-novel/scrims.css";
+
+@source "./app";
+@source "./game";
+@source "./node_modules/react-visual-novel/dist/index.js";
+
+@theme {
+  --color-surface: #ffffff;
+  --color-surface-hover: #f2f2f2;
+  --color-error: #de1c8d;
+  --color-error-content: #ffffff;
+  --font-script: "Comic Sans MS";
+  --animate-bounce-gentle: bounce-gentle 1s infinite ease-in-out;
+
+  @keyframes bounce-gentle {
+    0%,
+    100% {
+      transform: translateY(-5%);
+    }
+    50% {
+      transform: translateY(0);
+    }
+  }
+}
 
 @layer base {
   :root {
@@ -39,7 +60,7 @@
   .rvn-menu-item-surface,
   .rvn-menu-item-button,
   .rvn-icon-button {
-    @apply inline-flex h-12 min-h-12 shrink-0 cursor-pointer select-none flex-wrap items-center justify-center rounded-sm border border-transparent bg-transparent px-4 text-center text-sm/[1] font-semibold uppercase no-underline transition duration-200 ease-in-out;
+    @apply inline-flex h-12 min-h-12 shrink-0 cursor-pointer flex-wrap items-center justify-center rounded-xs border border-transparent bg-transparent px-4 text-center text-sm/[1] font-semibold uppercase no-underline transition duration-200 ease-in-out select-none;
     color: currentColor;
   }
 
@@ -83,15 +104,15 @@
   }
 
   .rvn-preload-progress {
-    @apply relative h-2 w-full appearance-none overflow-hidden rounded bg-black/20;
+    @apply relative h-2 w-full appearance-none overflow-hidden rounded-sm bg-black/20;
   }
   .rvn-preload-progress::-webkit-progress-bar {
-    @apply rounded bg-black/20;
+    @apply rounded-sm bg-black/20;
   }
   .rvn-preload-progress::-webkit-progress-value {
-    @apply rounded bg-black;
+    @apply rounded-sm bg-black;
   }
   .rvn-preload-progress::-moz-progress-bar {
-    @apply rounded bg-black;
+    @apply rounded-sm bg-black;
   }
 }

@@ -12,11 +12,11 @@ This document owns the library and demonstration boundaries and their state rela
 
 `packages/react-visual-novel` is the published browser package. Its ESM entry exports commands, components, contexts, types, and asset preloading. Type declarations accompany the entry. `Branches` is an augmentation point for host-defined branch identifiers. Existing `dist/index.css` and `dist/index.js` imports remain supported through the package exports.
 
-Tsdown bundles library source and leaves dependencies and peers external. Tailwind generates the library utility stylesheet separately. The library and demo import shared scrim CSS. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its local theme. The host application owns its component styling and query parameter provider.
+Tsdown bundles library source and leaves dependencies and peers external. Tailwind CSS 4 generates the library utility stylesheet separately, including utility theme variables without Preflight. The ESM bundle declares its client boundary and supports React 18 and 19. The library and demo import shared scrim CSS. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its local theme. The host application owns its component styling and query parameter provider.
 
-The demo consumes the workspace package through the same package entry used by installed consumers. It uses the Next.js Pages Router, client-only game loading, and webpack asset modules for imported MP3 URLs. Its commands select webpack to preserve that media contract.
+The demo consumes the workspace package through the same package entry used by installed consumers. It uses the Next.js App Router and default Turbopack bundler. A server layout imports the demo stylesheet, and a client boundary loads the browser-only game with server rendering disabled. The query adapter writes native browser history so playback locations update without route fetches. Audio files are served from `demo/public/sounds/` through the asset module’s URL exports.
 
-`mise.toml` owns runtime pins and `mise.lock` owns their platform resolutions. Root scripts prepare library output, demo CSS, and Next declarations before checks and development. Generated output is disposable and excluded from source ownership.
+`mise.toml` owns runtime pins and `mise.lock` owns their platform resolutions. Root scripts prepare library output and Next declarations before checks and development. Next compiles demo CSS through PostCSS during development and builds. Generated output is disposable and excluded from source ownership.
 
 The release workflow packages a checked version tag and passes its tarball to a separate npm publishing job. Trusted publisher and GitHub environment configuration must be verified before release delivery. The workflow owns exact runner permissions and commands.
 
@@ -43,8 +43,8 @@ The library requires browser APIs and host-supplied peers. The demo loads the ga
 | Location, focus, visibility, and history | `packages/react-visual-novel/contexts/` |
 | Audio and asset loading | `packages/react-visual-novel/lib/` |
 | Command presentation and Markdown | `packages/react-visual-novel/commands/` |
-| Bundle and CSS generation | `packages/react-visual-novel/tsdown.config.ts`, both Tailwind configs, workspace manifests |
-| Demo routes and imported media | `demo/pages/`, `demo/next.config.ts` |
+| Bundle and CSS generation | `packages/react-visual-novel/tsdown.config.ts`, library and demo `index.css`, `demo/postcss.config.mjs`, workspace manifests |
+| Demo routes and imported media | `demo/app/`, `demo/game/GamePlayer.tsx`, `demo/game/QueryParamAdapter.tsx`, `demo/assets/`, `demo/public/`, `demo/next.config.ts` |
 | Lint and formatting | `oxlint.config.ts`, `prettier.config.ts`, workspace TypeScript configs |
 | Release delivery | `.github/workflows/release.yml` |
 

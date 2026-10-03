@@ -12,7 +12,6 @@
     ".local/**": true,
     ".pnpm-store/**": true,
     ".tmp/**": true,
-    "demo/__generated__/**": true,
     "demo/.next/**": true,
     "demo/node_modules/**": true,
     "demo/next-env.d.ts": true,

@@ -9,7 +9,10 @@ type LongPressOptions = {
 export function useLongPress(options: LongPressOptions) {
   const onStart = useEventCallback(options.onStart);
 
-  const timerRef = React.useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+
   const isPressedRef = React.useRef(false);
   const isLongPressRef = React.useRef(false);
 

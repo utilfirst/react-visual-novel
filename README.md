@@ -8,7 +8,7 @@ The workspace contains the published library in `packages/react-visual-novel` an
 
 ## Installation
 
-Use React 18 and install the audio and query parameter peers:
+Use React 18 or 19 and install the audio and query parameter peers:
 
 ```shell
 npm install react-visual-novel howler use-query-params
@@ -16,7 +16,7 @@ npm install react-visual-novel howler use-query-params
 
 ## Quickstart
 
-Wrap the game with the host application's `QueryParamProvider`, then compose branches and commands. The workspace demo shows the Next.js Pages Router adapter in `demo/pages/_app.tsx`.
+Wrap the game with the host application's `QueryParamProvider`, then compose branches and commands. The workspace demo shows App Router integration in `demo/game/GamePlayer.tsx` and `demo/game/QueryParamAdapter.tsx`. For Next.js App Router, keep the browser-only game behind a Client Component with `dynamic(..., { ssr: false })`.
 
 ```tsx
 import * as assets from "./assets/index.ts";
@@ -48,6 +48,8 @@ export default function MyGame() {
   );
 }
 ```
+
+The generated stylesheet uses Tailwind CSS 4 and requires Safari 16.4+, Chrome 111+, and Firefox 128+. It supplies utilities and shared scrims without a global reset. Host applications supply the `rvn-*` component treatments shown in `demo/index.css`.
 
 ## Start
 

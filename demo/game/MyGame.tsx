@@ -49,7 +49,7 @@ export default function MyGame() {
           if (res.status === "loading") {
             return (
               <div className="flex h-full w-full flex-col justify-center gap-4 p-8">
-                <h1 className="text-balance text-center text-xl/7 font-bold">
+                <h1 className="text-center text-xl/7 font-bold text-balance">
                   Loading…
                 </h1>
 
@@ -64,11 +64,11 @@ export default function MyGame() {
           if (res.status === "failure") {
             return (
               <div className="flex h-full w-full flex-col justify-center gap-4 p-8">
-                <h1 className="text-balance text-xl/7 font-bold">
+                <h1 className="text-xl/7 font-bold text-balance">
                   Unable to preload assets
                 </h1>
 
-                <pre className="w-full whitespace-pre-line rounded bg-error p-4 font-mono text-sm/6 text-error-content">
+                <pre className="w-full rounded-sm bg-error p-4 font-mono text-sm/6 whitespace-pre-line text-error-content">
                   {res.error.message}
                 </pre>
               </div>

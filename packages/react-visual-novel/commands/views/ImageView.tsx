@@ -1,5 +1,5 @@
 import type { CommandViewAnimation } from "#components/index.ts";
-import type { AnimationControls } from "framer-motion";
+import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";
 
@@ -8,7 +8,7 @@ export type ImageViewProps = {
   align?: "top" | "bottom";
   style?: CSSProperties;
   animation?: CommandViewAnimation;
-  controls: AnimationControls;
+  controls: ReturnType<typeof useAnimation>;
 };
 
 export function ImageView(props: ImageViewProps) {

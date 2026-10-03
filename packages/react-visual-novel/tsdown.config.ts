@@ -2,6 +2,7 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: ["index.ts"],
+  banner: '"use client";',
   platform: "browser",
   format: "esm",
   target: "es2022",

@@ -20,7 +20,7 @@ The player places navigation and playback controls above command content. Click-
 
 ## Style ownership
 
-The library's Tailwind utilities and `rvn-*` class names are the host styling contract. Shared scrim CSS supplies dialogue shading. Player controls use SVG icons with accessible names on their buttons. The demo defines its component treatments, script font, gentle bounce animation, monochrome control palette, loading progress, and error treatment in its stylesheet and Tailwind theme. Keep the Tailwind 3 class contract with those source owners when changing presentation.
+The library's Tailwind utilities and `rvn-*` class names are the host styling contract. Shared scrim CSS supplies dialogue shading. Player controls use SVG icons with accessible names on their buttons. The demo defines its component treatments, script font, gentle bounce animation, monochrome control palette, loading progress, and error treatment in `demo/index.css`, including its Tailwind CSS 4 theme. The library stylesheet omits Preflight so host reset styles remain host-owned. Preserve the component treatments when updating utilities.
 
 ## Maintenance
 

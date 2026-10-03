@@ -41,32 +41,33 @@
     "dev": "pnpm run '/^dev:[^:]+$/'",
     "dev:css": "pnpm run generate-css --watch",
     "dev:ts": "tsdown --watch --no-clean",
-    "generate-css": "tailwindcss -c tailwind.config.ts -i index.css -o dist/index.css",
+    "generate-css": "tailwindcss -i index.css -o dist/index.css",
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
     "async-preloader": "7.0.0",
-    "framer-motion": "7.6.1",
+    "framer-motion": "13.4.4",
     "mdast-util-from-markdown": "1.2.0",
-    "phosphor-react": "1.4.1",
-    "tailwind-merge": "1.6.2"
+    "tailwind-merge": "3.7.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
     "@types/howler": "2.2.13",
     "@types/mdast": "3.0.15",
-    "@types/react": "18.3.31",
-    "@types/react-dom": "18.3.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "howler": "2.2.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "tailwindcss": "3.4.19",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
     "tsdown": "0.23.0",
     "use-query-params": "2.1.1"
   },
   "peerDependencies": {
     "howler": "^2.2.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
     "use-query-params": "^2.1.0"
   }
 }
