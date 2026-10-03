@@ -55,14 +55,10 @@ export type GameContextValue = {
 
 const GameContext = createContext<GameContextValue | null>(null);
 
-export type GameProviderProps = {
+export type GameProviderProps = GameOptions & {
   children: ReactNode;
   initialBranchId: BranchId;
   branchIds?: readonly string[];
-  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  onLinkClick?: (href: string, name: string, event: MouseEvent) => void;
-  onPlaySound?: (name: SoundName) => void;
-  onGoHome?: () => void;
 };
 
 export function GameProvider(props: GameProviderProps) {

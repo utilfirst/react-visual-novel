@@ -1,9 +1,3 @@
-import { useState } from "react";
-
-export function useResult<E, D>(initial?: Result<E, D>) {
-  return useState<Result<E, D>>(initial ?? { status: "loading" });
-}
-
 export type Result<E, D> =
   | {
       status: "loading";

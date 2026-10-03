@@ -1,4 +1,4 @@
-import type { SoundName } from "#contexts/index.ts";
+import type { GameOptions } from "#contexts/index.ts";
 import {
   BranchProvider,
   GameProvider,
@@ -16,10 +16,10 @@ import {
   SpeakerHighIcon,
   SpeakerSlashIcon,
 } from "@phosphor-icons/react";
-import type { ComponentType, MouseEvent, ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { useMemo } from "react";
 
-export type GameProps = {
+export type GameProps = GameOptions & {
   assets: Record<
     string,
     | string
@@ -29,10 +29,6 @@ export type GameProps = {
   >;
   branches: Branches & Record<string, ComponentType>;
   initialBranchId: BranchId;
-  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  onLinkClick?: (href: string, name: string, event: MouseEvent) => void;
-  onPlaySound?: (name: SoundName) => void;
-  onGoHome?: () => void;
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   children?: (
     render: () => ReactNode,

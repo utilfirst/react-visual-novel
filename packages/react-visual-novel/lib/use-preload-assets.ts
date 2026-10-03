@@ -1,7 +1,7 @@
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import asyncPreloader from "async-preloader";
 import { useEffect, useState } from "react";
-import { useResult } from "./use-result.ts";
+import type { Result } from "./result.ts";
 
 export function usePreloadAssets(
   assets: Record<string, string | { src: string }>,
@@ -13,7 +13,10 @@ export function usePreloadAssets(
     onLoaded?: () => void;
   } = {},
 ) {
-  const [res, setRes] = useResult<Error, undefined>();
+  const [res, setRes] = useState<Result<Error, undefined>>({
+    status: "loading",
+  });
+
   const [progress, setProgress] = useState(0);
 
   const handleLoaded = useEventCallback(() => {
