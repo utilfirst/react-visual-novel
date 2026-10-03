@@ -41,9 +41,15 @@ export type GameProps = {
 };
 
 export function Game(props: GameProps) {
+  const branchIds = React.useMemo(
+    () => Object.keys(props.branches),
+    [props.branches],
+  );
+
   return (
     <GameProvider
       initialBranchId={props.initialBranchId}
+      branchIds={branchIds}
       onLinkClick={props.onLinkClick}
       onPlaySound={props.onPlaySound}
       onGoHome={props.onGoHome}

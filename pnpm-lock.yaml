@@ -71,9 +71,6 @@ importers:
       react-visual-novel:
         specifier: workspace:*
         version: link:../packages/react-visual-novel
-      use-query-params:
-        specifier: 2.1.1
-        version: 2.1.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@tailwindcss/postcss':
         specifier: 4.3.3
@@ -139,9 +136,6 @@ importers:
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(publint@0.3.24)(typescript@6.0.3)
-      use-query-params:
-        specifier: 2.1.1
-        version: 2.1.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
 packages:
 
@@ -1909,9 +1903,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-query-params@2.0.4:
-    resolution: {integrity: sha512-y9WzzDj3BsGgKLCh0ugiinufS//YqOfao/yVJjkXA4VLuyNCfHOLU/cbulGPxs3aeCqhvROw7qPL04JSZnCo0w==}
-
   sh-syntax@0.7.0:
     resolution: {integrity: sha512-sgMyAxpHiGgAaNg+gD3ad41vha24CzIjjghD4mdiON1lUafZPLJNYknyjcXmU4geilPstd69zCKkpccY0YvajA==}
     engines: {node: '>=16.0.0'}
@@ -2047,12 +2038,6 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
-
-  use-query-params@2.1.1:
-    resolution: {integrity: sha512-6trNvHhbb9PjtNxIFA0l31A09WmafRrmcGtSPnqwKgoI7i+m741Oh3gjz9SkJFhE5FFruBWtXx7QyfmjGcI0jA==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
 
   uvu@0.5.6:
     resolution: {integrity: sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==}
@@ -3485,8 +3470,6 @@ snapshots:
 
   semver@7.8.5: {}
 
-  serialize-query-params@2.0.4: {}
-
   sh-syntax@0.7.0: {}
 
   sharp@0.35.4(@types/node@24.13.3):
@@ -3619,12 +3602,6 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
-
-  use-query-params@2.1.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
-    dependencies:
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      serialize-query-params: 2.0.4
 
   uvu@0.5.6:
     dependencies:

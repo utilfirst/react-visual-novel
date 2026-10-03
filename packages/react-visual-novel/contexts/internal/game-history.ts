@@ -13,7 +13,10 @@ export function makeGameHistory({
   onChange,
 }: {
   locations: GameLocation[];
-  onChange?: (newLocations: GameLocation[]) => void;
+  onChange?: (
+    newLocations: GameLocation[],
+    operation: "push" | "reset" | "back",
+  ) => void;
 }): GameHistory {
   let items = locations;
 
@@ -28,16 +31,16 @@ export function makeGameHistory({
     },
     push: (location) => {
       items = [...items, location];
-      onChange?.(items);
+      onChange?.(items, "push");
     },
     reset: (location) => {
       items = [location];
-      onChange?.(items);
+      onChange?.(items, "reset");
     },
     goBack: () => {
       if (items.length > 1) {
         items = items.slice(0, -1);
-        onChange?.(items);
+        onChange?.(items, "back");
         return true;
       }
 

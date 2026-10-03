@@ -1,3 +1,4 @@
+import { GameHistoryContext } from "#contexts/internal/index.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useLongPress } from "#lib/use-long-press.ts";
 import { useMeasure } from "#lib/use-measure.ts";
@@ -51,6 +52,11 @@ export function BranchProvider(props: BranchProviderProps) {
   const { focusedLocation, goToLocation, goBack, canGoBack, playSound } =
     useGameContext();
 
+  const gameHistory = React.useContext(GameHistoryContext);
+  if (gameHistory === null) {
+    throw new Error("`BranchProvider` requires a GameProvider history");
+  }
+
   const focusedStatementIndex =
     focusedLocation.branchId === branchId ? focusedLocation.statementIndex : 0;
 
@@ -58,6 +64,25 @@ export function BranchProvider(props: BranchProviderProps) {
   const statementByLabel = React.useRef(new Map<string, Statement>()).current;
 
   const [containerRect, containerRef] = useMeasure<HTMLDivElement>();
+
+  React.useEffect(() => {
+    // NOTE: Child command effects register before this parent effect. Reset
+    // invalid destinations instead of retaining them in the back stack.
+    const firstStatementIndex = statementByIndex.keys().next().value;
+    if (
+      firstStatementIndex !== undefined &&
+      !statementByIndex.has(focusedStatementIndex)
+    ) {
+      const location = { branchId, statementIndex: firstStatementIndex };
+      gameHistory.reset(location);
+    }
+  }, [
+    branchId,
+    containerRect,
+    focusedStatementIndex,
+    gameHistory,
+    statementByIndex,
+  ]);
 
   const goToNextStatement = useEventCallback((plusIndex?: number) => {
     const focusedStatement = statementByIndex.get(focusedStatementIndex);

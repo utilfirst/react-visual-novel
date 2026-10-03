@@ -10,17 +10,28 @@ export function makeGameLocationId(location: GameLocation) {
 }
 
 export function parseGameLocation(locationId: string): GameLocation | null {
-  const [_branchId, __statementIndex] = locationId.split("-");
-  if (_branchId === undefined || _branchId === "") {
+  // NOTE: Branch names can contain hyphens. Only the final separator owns
+  // the statement index. Legacy branch-only URLs still select statement zero.
+  const separatorIndex = locationId.lastIndexOf("-");
+
+  const branchName =
+    separatorIndex === -1 ? locationId : locationId.slice(0, separatorIndex);
+
+  const indexText =
+    separatorIndex === -1 ? "0" : locationId.slice(separatorIndex + 1);
+
+  const statementIndex = Number(indexText);
+  if (
+    branchName === "" ||
+    !/^\d+$/u.test(indexText) ||
+    !Number.isSafeInteger(statementIndex)
+  ) {
     return null;
   }
 
   // SAFETY: Serialized IDs contain a nonempty branch name. The host's declaration-merging registry has no runtime representation, so rendering resolves the branch.
   // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Preserve the host-defined branch type at the persisted identifier boundary.
-  const branchId = _branchId as BranchId;
-
-  const _statementIndex = Number(__statementIndex);
-  const statementIndex = Number.isNaN(_statementIndex) ? 0 : _statementIndex;
+  const branchId = branchName as BranchId;
   return { branchId, statementIndex };
 }
 
@@ -40,7 +51,8 @@ export function decodeGameLocations(value: unknown): GameLocation[] | null {
       location.branchId === "" ||
       !("statementIndex" in location) ||
       typeof location.statementIndex !== "number" ||
-      !Number.isFinite(location.statementIndex)
+      !Number.isSafeInteger(location.statementIndex) ||
+      location.statementIndex < 0
     ) {
       return null;
     }

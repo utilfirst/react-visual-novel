@@ -1,18 +1,19 @@
 import type { GameHistory, GameLocation } from "#contexts/internal/index.ts";
 import {
   decodeGameLocations,
+  GameHistoryContext,
   makeGameHistory,
   makeGameLocationId,
   parseGameLocation,
+  useGameLocationId,
+  writeGameLocationId,
 } from "#contexts/internal/index.ts";
 import { unmute } from "#contexts/internal/vendor/unmute.js";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { usePersistentState } from "#lib/use-persistent-state.ts";
-import { useUpdateEffect } from "#lib/use-update-effect.ts";
 import type { BranchId } from "#types.ts";
 import { Howler } from "howler";
 import React from "react";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 export type SoundName = "click" | "mouseover" | "skip" | "not_allowed";
 
@@ -48,6 +49,7 @@ const GameContext = React.createContext<GameContextValue | null>(null);
 export type GameProviderProps = {
   children: React.ReactNode;
   initialBranchId: BranchId;
+  branchIds?: readonly string[];
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void;
   onPlaySound?: (name: SoundName) => void;
@@ -60,13 +62,22 @@ export function GameProvider(props: GameProviderProps) {
     statementIndex: 0,
   };
 
-  const [storedFocusedLocationId, setStoredFocusedLocationId] = useQueryParam(
-    "location",
-    withDefault(StringParam, makeGameLocationId(initialLocation)),
-  );
+  if (
+    props.branchIds !== undefined &&
+    !props.branchIds.includes(props.initialBranchId)
+  ) {
+    throw new Error(`Unknown initial branch: ${String(props.initialBranchId)}`);
+  }
 
-  const [focusedLocation, setFocusedLocation] = React.useState(
-    () => parseGameLocation(storedFocusedLocationId) ?? initialLocation,
+  const [storedFocusedLocationId, setStoredFocusedLocationId] =
+    useGameLocationId(makeGameLocationId(initialLocation));
+
+  const [focusedLocation, setFocusedLocation] = React.useState(() =>
+    resolveGameLocation({
+      location: parseGameLocation(storedFocusedLocationId),
+      initialLocation,
+      branchIds: props.branchIds,
+    }),
   );
 
   const [muted, setMuted] = React.useState(false);
@@ -80,13 +91,29 @@ export function GameProvider(props: GameProviderProps) {
   const [locations, setLocations] = usePersistentState({
     key: "@GameContext/locations",
     initialValue: [focusedLocation],
-    decode: decodeGameLocations,
+    decode: (value) => {
+      const decodedLocations = decodeGameLocations(value)?.filter(
+        (location) =>
+          props.branchIds === undefined ||
+          props.branchIds.includes(location.branchId),
+      );
+
+      return decodedLocations !== undefined && decodedLocations.length > 0
+        ? decodedLocations
+        : null;
+    },
   });
 
   const historyRef = React.useRef<GameHistory | null>(null);
+
+  const lastLocation = locations.at(-1);
   historyRef.current ??= makeGameHistory({
-    locations,
-    onChange: (newLocations) => {
+    locations:
+      lastLocation !== undefined &&
+      makeGameLocationId(lastLocation) === makeGameLocationId(focusedLocation)
+        ? locations
+        : [focusedLocation],
+    onChange: (newLocations, operation) => {
       setLocations(newLocations);
 
       const location = newLocations.at(-1);
@@ -95,6 +122,13 @@ export function GameProvider(props: GameProviderProps) {
       }
 
       setFocusedLocation(location);
+
+      // NOTE: Write at the navigation owner. An effect tied to render state
+      // can overwrite a newer browser navigation or statement-bound recovery.
+      setStoredFocusedLocationId({
+        locationId: makeGameLocationId(location),
+        replace: operation === "reset",
+      });
     },
   });
 
@@ -116,28 +150,34 @@ export function GameProvider(props: GameProviderProps) {
     Howler.mute(muted);
   }, [muted]);
 
-  const writeQueryLocation = useEventCallback(() => {
-    setStoredFocusedLocationId(makeGameLocationId(focusedLocation));
-  });
-
-  useUpdateEffect(() => {
-    writeQueryLocation();
-  }, [focusedLocation, writeQueryLocation]);
-
   const restoreQueryLocation = useEventCallback(() => {
-    const storedFocusedLocation = parseGameLocation(storedFocusedLocationId);
+    const parsedLocation = parseGameLocation(storedFocusedLocationId);
+
+    const location = resolveGameLocation({
+      location: parsedLocation,
+      initialLocation,
+      branchIds: props.branchIds,
+    });
+
+    // NOTE: Repair malformed URLs in place so browser back does not retain
+    // a destination that the game cannot render.
     if (
-      storedFocusedLocation &&
-      (storedFocusedLocation.branchId !== focusedLocation.branchId ||
-        storedFocusedLocation.statementIndex !== focusedLocation.statementIndex)
+      parsedLocation === null ||
+      makeGameLocationId(location) !== makeGameLocationId(parsedLocation)
     ) {
-      history.reset(storedFocusedLocation);
+      writeGameLocationId({
+        locationId: makeGameLocationId(location),
+        replace: true,
+      });
+    }
+    if (makeGameLocationId(location) !== makeGameLocationId(focusedLocation)) {
+      history.reset(location);
     }
   });
 
-  useUpdateEffect(() => {
+  React.useEffect(() => {
     restoreQueryLocation();
-  }, [storedFocusedLocationId, restoreQueryLocation]);
+  }, [storedFocusedLocationId, props.branchIds, restoreQueryLocation]);
 
   const playSound = useEventCallback((name: SoundName) => {
     if (!muted) {
@@ -192,7 +232,11 @@ export function GameProvider(props: GameProviderProps) {
   );
 
   return (
-    <GameContext.Provider value={ctx}>{props.children}</GameContext.Provider>
+    <GameContext.Provider value={ctx}>
+      <GameHistoryContext.Provider value={history}>
+        {props.children}
+      </GameHistoryContext.Provider>
+    </GameContext.Provider>
   );
 }
 
@@ -209,6 +253,29 @@ export function useGameContext() {
 
 function decodePaused(value: unknown): boolean | null {
   return typeof value === "boolean" ? value : null;
+}
+
+type ResolveGameLocationOptions = {
+  location: GameLocation | null;
+  initialLocation: GameLocation;
+  branchIds?: readonly string[];
+};
+
+function resolveGameLocation(
+  options: ResolveGameLocationOptions,
+): GameLocation {
+  const location = options.location;
+  if (
+    location === null ||
+    !Number.isSafeInteger(location.statementIndex) ||
+    location.statementIndex < 0 ||
+    (options.branchIds !== undefined &&
+      !options.branchIds.includes(location.branchId))
+  ) {
+    return options.initialLocation;
+  }
+
+  return location;
 }
 
 // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional link callback contract.

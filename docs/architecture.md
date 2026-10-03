@@ -12,9 +12,9 @@ This document owns the library and demonstration boundaries and their state rela
 
 `packages/react-visual-novel` is the published browser package. Its ESM entry exports commands, components, contexts, types, and asset preloading. Type declarations accompany the entry. `Branches` is an augmentation point for host-defined branch identifiers. Existing `dist/index.css` and `dist/index.js` imports remain supported through the package exports.
 
-Tsdown bundles library source and leaves dependencies and peers external. Tailwind CSS 4 generates the library utility stylesheet separately, including utility theme variables without Preflight. The ESM bundle declares its client boundary and supports React 18 and 19. The library and demo import shared scrim CSS. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its local theme. The host application owns its component styling and query parameter provider.
+Tsdown bundles library source and leaves dependencies and peers external. Tailwind CSS 4 generates the library utility stylesheet separately, including utility theme variables without Preflight. The ESM bundle declares its client boundary and supports React 18 and 19. The library and demo import shared scrim CSS. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its local theme. The host application owns its component styling.
 
-The demo consumes the workspace package through the same package entry used by installed consumers. It uses the Next.js App Router and default Turbopack bundler. A server layout imports the demo stylesheet, and a client boundary loads the browser-only game with server rendering disabled. The query adapter writes native browser history so playback locations update without route fetches. Audio files are served from `demo/public/sounds/` through the asset module’s URL exports.
+The demo consumes the workspace package through the same package entry used by installed consumers. It uses the Next.js App Router and default Turbopack bundler. A server layout imports the demo stylesheet, and a client boundary loads the browser-only game with server rendering disabled. The library writes native browser history so playback locations update without route fetches. Audio files are served from `demo/public/sounds/` through the asset module’s URL exports.
 
 `mise.toml` owns runtime pins and `mise.lock` owns their platform resolutions. Root scripts prepare library output and Next declarations before checks and development. Next compiles demo CSS through PostCSS during development and builds. Generated output is disposable and excluded from source ownership.
 
@@ -22,7 +22,9 @@ The release workflow packages a checked version tag and passes its tarball to a 
 
 ## Playback state
 
-`GameContext` owns location, audio mute, pause, navigation, and host callbacks. The `location` query parameter reflects the selected branch and statement. Local storage retains pause and location history under the existing keys. The history owner provides back navigation and resets. Local hooks own persistence synchronization, committed callbacks, resize observation, and long-press timing.
+`GameContext` owns location, audio mute, pause, navigation, and host callbacks. The `location` query parameter reflects the selected branch and statement. The internal URL store observes native history writes and `popstate`, preserving other query parameters and fragments. Game writes pass fresh history state so router wrappers synchronize the URL and copy their own state. Its shared subscription wraps history methods while games are mounted and restores methods still owned by that subscription after the final game unmounts. Host wrappers remain in the call chain.
+
+Local storage retains pause and location history under the existing keys. The history owner provides back navigation and resets. History mutations write the URL directly so a delayed render effect cannot overwrite a newer navigation. Recovery replaces the current URL and resets history. An internal history context lets branch registration correct an out-of-range statement without adding a public navigation method. Local hooks own persistence synchronization, committed callbacks, resize observation, and long-press timing.
 
 `BranchContext` registers statements, measures the branch container, resolves labels, and advances playback. `StatementContext` derives focus and visibility from the branch location and each command's hiding rule. `Command` connects statement registration to animation, timing, and audio playback.
 
@@ -32,7 +34,7 @@ Audio players are cached by source configuration. Named audio channels coordinat
 
 Host assets, React children, and callbacks enter through public component contracts. Query parameters and browser storage are persisted inputs whose identifiers and keys must survive maintenance changes. Markdown text is rendered as React content rather than raw HTML. Unsupported syntax is reported by the parser owner.
 
-The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. Persisted pause and history values are decoded before use. Unavailable browser storage falls back to in-memory state. Asset failures are presented through the preload result. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
+The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. Persisted pause and history values are decoded before use. Location indices must be nonnegative safe integers. `Game` supplies its branch identifiers to `GameProvider` for runtime branch validation. Standalone provider consumers can supply the optional branch registry. Branch registration resolves statement bounds after mounting. Invalid input falls back to a valid destination, and an unknown initial branch is an authoring error. Unavailable browser storage falls back to in-memory state. Asset failures are presented through the preload result. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
 
 ## Implementation owners
 
@@ -44,7 +46,7 @@ The library requires browser APIs and host-supplied peers. The demo loads the ga
 | Audio and asset loading | `packages/react-visual-novel/lib/` |
 | Command presentation and Markdown | `packages/react-visual-novel/commands/` |
 | Bundle and CSS generation | `packages/react-visual-novel/tsdown.config.ts`, library and demo `index.css`, `demo/postcss.config.mjs`, workspace manifests |
-| Demo routes and imported media | `demo/app/`, `demo/game/GamePlayer.tsx`, `demo/game/QueryParamAdapter.tsx`, `demo/assets/`, `demo/public/`, `demo/next.config.ts` |
+| Demo routes and imported media | `demo/app/`, `demo/game/GamePlayer.tsx`, `demo/assets/`, `demo/public/`, `demo/next.config.ts` |
 | Lint and formatting | `oxlint.config.ts`, `prettier.config.ts`, workspace TypeScript configs |
 | Release delivery | `.github/workflows/release.yml` |
 
