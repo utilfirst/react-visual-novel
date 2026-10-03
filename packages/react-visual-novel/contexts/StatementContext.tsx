@@ -35,18 +35,22 @@ export function StatementProvider(props: StatementProviderProps) {
 
   const [statement, setStatement] = React.useState<Statement | null>(null);
 
+  const registerStatement = branchCtx.registerStatement;
+
   const register = React.useCallback(
-    (_stmt: Omit<Statement, "index" | "label">) => {
-      const stmt = {
-        ..._stmt,
+    (definition: Omit<Statement, "index" | "label">) => {
+      const registeredStatement: Statement = {
+        ...definition,
         index: statementIndex,
         label: statementLabel,
       };
 
-      setStatement(stmt);
-      return branchCtx.registerStatement(stmt);
+      const cleanup = registerStatement(registeredStatement);
+
+      setStatement(registeredStatement);
+      return cleanup;
     },
-    [branchCtx, statementIndex, statementLabel],
+    [registerStatement, statementIndex, statementLabel],
   );
 
   const ctx = React.useMemo((): StatementContextValue => {

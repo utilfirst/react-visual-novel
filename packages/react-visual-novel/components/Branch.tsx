@@ -40,43 +40,46 @@ export function Label(props: LabelProps) {
 }
 
 function unwrapStatements(children: React.ReactNode): React.ReactElement[] {
-  return flattenChildren({ children })
-    .filter((child) => React.isValidElement(child))
-    .flatMap((child) => {
-      if (React.isValidElement<LabelProps>(child) && child.type === Label) {
-        const subchildren = unwrapStatements(child.props.children);
-
-        return [
-          <Label key={child.props.label} label={child.props.label}>
-            {subchildren[0]}
-          </Label>,
-          ...subchildren.slice(1).map((element) =>
-            // oxlint-disable-next-line react/no-clone-element -- Labels must prefix child keys to preserve statement identity across nested branches.
-            React.cloneElement(element, {
-              key: `${child.props.label}.${element.key}`,
-            }),
-          ),
-        ];
+  return flattenChildren({ children }).flatMap((child) => {
+    if (React.isValidElement<LabelProps>(child) && child.type === Label) {
+      const subchildren = unwrapStatements(child.props.children);
+      if (subchildren.length === 0) {
+        // NOTE: An empty label registers no command and must not consume
+        // an index in the contiguous statement sequence.
+        return [];
       }
 
-      return [child];
-    });
+      return [
+        <Label key={child.props.label} label={child.props.label}>
+          {subchildren[0]}
+        </Label>,
+        ...subchildren.slice(1).map((element) =>
+          // oxlint-disable-next-line react/no-clone-element -- Labels must prefix child keys to preserve statement identity across nested branches.
+          React.cloneElement(element, {
+            key: `${child.props.label}.${element.key}`,
+          }),
+        ),
+      ];
+    }
+
+    return [child];
+  });
 }
 
 type FlattenChildrenOptions = {
   children: React.ReactNode;
-  depth?: number;
   keys?: (string | number)[];
 };
 
 // NOTE: Flatten nested fragments while retaining React-assigned keys.
-function flattenChildren(options: FlattenChildrenOptions): React.ReactNode[] {
-  const depth = options.depth ?? 0;
+function flattenChildren(
+  options: FlattenChildrenOptions,
+): React.ReactElement[] {
   const keys = options.keys ?? [];
 
   // oxlint-disable-next-line react/no-react-children -- The Branch API consumes a React child tree and must preserve React's key assignment.
   return React.Children.toArray(options.children).reduce(
-    (children: React.ReactNode[], node) => {
+    (children: React.ReactElement[], node) => {
       if (
         React.isValidElement<{ children?: React.ReactNode }>(node) &&
         node.type === React.Fragment
@@ -84,7 +87,6 @@ function flattenChildren(options: FlattenChildrenOptions): React.ReactNode[] {
         children.push(
           ...flattenChildren({
             children: node.props.children,
-            depth: depth + 1,
             // NOTE: Children.toArray assigns a key to every element.
             keys: keys.concat(String(node.key)),
           }),
@@ -96,8 +98,6 @@ function flattenChildren(options: FlattenChildrenOptions): React.ReactNode[] {
             key: keys.concat(String(node.key)).join("."),
           }),
         );
-      } else if (typeof node === "string" || typeof node === "number") {
-        children.push(node);
       }
 
       return children;

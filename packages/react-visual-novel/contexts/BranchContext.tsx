@@ -65,6 +65,38 @@ export function BranchProvider(props: BranchProviderProps) {
 
   const [containerRect, containerRef] = useMeasure<HTMLDivElement>();
 
+  const registerStatement = React.useCallback(
+    (statement: Statement) => {
+      if (
+        statement.label !== null &&
+        statement.label !== "" &&
+        statementByLabel.has(statement.label)
+      ) {
+        throw new Error(`Duplicate statement label: ${statement.label}`);
+      }
+
+      statementByIndex.set(statement.index, statement);
+      if (statement.label !== null && statement.label !== "") {
+        statementByLabel.set(statement.label, statement);
+      }
+
+      return () => {
+        // NOTE: A replaced registration can finish cleanup after its
+        // successor registers. Release only this statement's entries.
+        if (statementByIndex.get(statement.index) === statement) {
+          statementByIndex.delete(statement.index);
+        }
+        if (
+          statement.label !== null &&
+          statementByLabel.get(statement.label) === statement
+        ) {
+          statementByLabel.delete(statement.label);
+        }
+      };
+    },
+    [statementByIndex, statementByLabel],
+  );
+
   React.useEffect(() => {
     // NOTE: Child command effects register before this parent effect. Reset
     // invalid destinations instead of retaining them in the back stack.
@@ -110,25 +142,7 @@ export function BranchProvider(props: BranchProviderProps) {
         ? {
             branchId,
             containerRect,
-            registerStatement: (statement) => {
-              statementByIndex.set(statement.index, statement);
-              if (statement.label !== null && statement.label !== "") {
-                if (statementByLabel.has(statement.label)) {
-                  throw new Error(
-                    `Duplicate statement label: ${statement.label}`,
-                  );
-                }
-
-                statementByLabel.set(statement.label, statement);
-              }
-
-              return () => {
-                statementByIndex.delete(statement.index);
-                if (statement.label !== null && statement.label !== "") {
-                  statementByLabel.delete(statement.label);
-                }
-              };
-            },
+            registerStatement,
             getStatement: (statementIndex) =>
               statementByIndex.get(statementIndex),
             getStatementCount: () => statementByIndex.size,
@@ -150,6 +164,7 @@ export function BranchProvider(props: BranchProviderProps) {
       focusedStatementIndex,
       goToLocation,
       goToNextStatement,
+      registerStatement,
       statementByIndex,
       statementByLabel,
     ],
