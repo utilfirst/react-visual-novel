@@ -1,7 +1,7 @@
-import type { ImageViewProps } from "#commands/views/index.ts";
-import { ImageView } from "#commands/views/index.ts";
-import type { CommandProps } from "#components/index.ts";
-import { Command } from "#components/index.ts";
+import type { ImageViewProps } from "#commands/views/ImageView.tsx";
+import { ImageView } from "#commands/views/ImageView.tsx";
+import type { CommandProps } from "#components/Command.tsx";
+import { Command } from "#components/Command.tsx";
 
 export type ShowSource = Omit<ImageViewProps, "controls">;
 

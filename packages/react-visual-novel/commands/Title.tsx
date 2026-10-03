@@ -1,5 +1,5 @@
-import type { CommandProps } from "#components/index.ts";
-import { Command } from "#components/index.ts";
+import type { CommandProps } from "#components/Command.tsx";
+import { Command } from "#components/Command.tsx";
 import { motion } from "framer-motion";
 
 export type TitleProps = Pick<CommandProps, "hide"> & {

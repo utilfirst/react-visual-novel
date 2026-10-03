@@ -1,14 +1,17 @@
-import type { GameHistory, GameLocation } from "#contexts/internal/index.ts";
+import { GameHistoryContext } from "#contexts/internal/game-history-context.ts";
+import type { GameHistory } from "#contexts/internal/game-history.ts";
+import { makeGameHistory } from "#contexts/internal/game-history.ts";
+import type { GameLocation } from "#contexts/internal/game-location.ts";
 import {
   decodeGameLocations,
-  GameHistoryContext,
-  makeGameHistory,
   makeGameLocationId,
   parseGameLocation,
+} from "#contexts/internal/game-location.ts";
+import {
   readGameLocationId,
   useGameLocationId,
   writeGameLocationId,
-} from "#contexts/internal/index.ts";
+} from "#contexts/internal/game-url.ts";
 import { unmute } from "#contexts/internal/vendor/unmute.js";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import {

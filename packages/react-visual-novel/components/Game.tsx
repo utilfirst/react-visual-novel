@@ -1,11 +1,8 @@
-import type { GameOptions } from "#contexts/index.ts";
-import {
-  BranchProvider,
-  GameProvider,
-  useGameContext,
-} from "#contexts/index.ts";
-import type { Result } from "#lib/index.ts";
-import { usePreloadAssets } from "#lib/index.ts";
+import { BranchProvider } from "#contexts/BranchContext.tsx";
+import type { GameOptions } from "#contexts/GameContext.tsx";
+import { GameProvider, useGameContext } from "#contexts/GameContext.tsx";
+import type { Result } from "#lib/result.ts";
+import { usePreloadAssets } from "#lib/use-preload-assets.ts";
 import type { Branches, BranchId } from "#types.ts";
 import {
   ArrowCounterClockwiseIcon,

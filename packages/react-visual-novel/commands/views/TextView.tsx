@@ -1,8 +1,9 @@
 import type {
   CommandViewAnimation,
   CommandViewColorScheme,
-} from "#components/index.ts";
-import { useBranchContext, useGameContext } from "#contexts/index.ts";
+} from "#components/Command.tsx";
+import { useBranchContext } from "#contexts/BranchContext.tsx";
+import { useGameContext } from "#contexts/GameContext.tsx";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";

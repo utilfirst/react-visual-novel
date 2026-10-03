@@ -1,13 +1,12 @@
-import type { Statement, StatementBehavior } from "#contexts/index.ts";
-import {
-  useBranchContext,
-  useGameContext,
-  useStatementContext,
-} from "#contexts/index.ts";
-import type { AudioPlayer, AudioSource } from "#lib/index.ts";
-import { useAudio, useWindowFocus } from "#lib/index.ts";
+import type { Statement, StatementBehavior } from "#contexts/BranchContext.tsx";
+import { useBranchContext } from "#contexts/BranchContext.tsx";
+import { useGameContext } from "#contexts/GameContext.tsx";
+import { useStatementContext } from "#contexts/StatementContext.tsx";
+import type { AudioPlayer, AudioSource } from "#lib/use-audio.ts";
+import { useAudio } from "#lib/use-audio.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useSyncedRef } from "#lib/use-synced-ref.ts";
+import { useWindowFocus } from "#lib/use-window-focus.ts";
 import type { Variant } from "framer-motion";
 import {
   AnimatePresence,

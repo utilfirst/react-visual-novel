@@ -1,9 +1,9 @@
-import { ImageView } from "#commands/views/index.ts";
+import { ImageView } from "#commands/views/ImageView.tsx";
 import type {
   CommandAudioConfig,
   CommandViewAnimation,
-} from "#components/index.ts";
-import { Command } from "#components/index.ts";
+} from "#components/Command.tsx";
+import { Command } from "#components/Command.tsx";
 import type { CSSProperties } from "react";
 
 export type SceneSource = {

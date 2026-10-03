@@ -1,4 +1,4 @@
-import { GameHistoryContext } from "#contexts/internal/index.ts";
+import { GameHistoryContext } from "#contexts/internal/game-history-context.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useLongPress } from "#lib/use-long-press.ts";
 import { useMeasure } from "#lib/use-measure.ts";

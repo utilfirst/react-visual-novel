@@ -1,18 +1,13 @@
-import type {
-  Choice,
-  ImageViewProps,
-  MenuViewProps,
-  TextViewProps,
-} from "#commands/views/index.ts";
-import {
-  charGroupsForMarkdown,
-  ImageView,
-  MenuView,
-  TextView,
-} from "#commands/views/index.ts";
-import type { CommandProps } from "#components/index.ts";
-import { Command } from "#components/index.ts";
-import type { StatementBehavior } from "#contexts/index.ts";
+import { charGroupsForMarkdown } from "#commands/views/char-group.ts";
+import type { ImageViewProps } from "#commands/views/ImageView.tsx";
+import { ImageView } from "#commands/views/ImageView.tsx";
+import type { Choice, MenuViewProps } from "#commands/views/MenuView.tsx";
+import { MenuView } from "#commands/views/MenuView.tsx";
+import type { TextViewProps } from "#commands/views/TextView.tsx";
+import { TextView } from "#commands/views/TextView.tsx";
+import type { CommandProps } from "#components/Command.tsx";
+import { Command } from "#components/Command.tsx";
+import type { StatementBehavior } from "#contexts/BranchContext.tsx";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";

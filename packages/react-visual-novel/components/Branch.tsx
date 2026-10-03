@@ -1,4 +1,4 @@
-import { StatementProvider } from "#contexts/index.ts";
+import { StatementProvider } from "#contexts/StatementContext.tsx";
 import type { ReactElement, ReactNode } from "react";
 import {
   Children,

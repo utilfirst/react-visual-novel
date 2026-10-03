@@ -1,4 +1,4 @@
-import type { CommandViewAnimation } from "#components/index.ts";
+import type { CommandViewAnimation } from "#components/Command.tsx";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";

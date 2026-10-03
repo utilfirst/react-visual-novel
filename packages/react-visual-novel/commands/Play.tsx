@@ -1,6 +1,6 @@
-import type { CommandAudioConfig } from "#components/index.ts";
-import { Command } from "#components/index.ts";
-import type { Statement } from "#contexts/index.ts";
+import type { CommandAudioConfig } from "#components/Command.tsx";
+import { Command } from "#components/Command.tsx";
+import type { Statement } from "#contexts/BranchContext.tsx";
 
 export type PlayProps = {
   audio?: CommandAudioConfig;
