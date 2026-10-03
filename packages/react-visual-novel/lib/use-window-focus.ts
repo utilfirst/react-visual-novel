@@ -1,9 +1,5 @@
 import React from "react";
 
-function hasFocus() {
-  return typeof document !== "undefined" && document.hasFocus();
-}
-
 export function useWindowFocus() {
   const [focused, setFocused] = React.useState(hasFocus);
   React.useEffect(() => {
@@ -26,4 +22,8 @@ export function useWindowFocus() {
     };
   }, []);
   return focused;
+}
+
+function hasFocus() {
+  return typeof document !== "undefined" && document.hasFocus();
 }
