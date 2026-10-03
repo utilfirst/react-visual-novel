@@ -407,7 +407,11 @@ const CommandView = forwardRef(function CommandView(
         }
 
         if (isMountedRef.current) {
-          setCountdownProgress((prev) => prev + 1);
+          // NOTE: Zero-duration commands have no countdown to display. Complete
+          // them on the first tick that passes the shared pause and focus gates.
+          setCountdownProgress((prev) =>
+            countdownDuration === 0 ? 100 : prev + 1,
+          );
         } else if (countdownTimerRef.current) {
           clearInterval(countdownTimerRef.current);
           countdownTimerRef.current = undefined;

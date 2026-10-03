@@ -15,7 +15,7 @@ Branches contain commands for scenes, images, dialogue, titles, audio, and choic
 
 ## Playback
 
-The player preloads supplied assets and exposes loading progress and failure to its render callback. Commands expose timed, manually skippable, and non-skippable behavior. Updating a visible command's main audio source replaces that sound. Updated entrance and exit sources apply at the next corresponding visibility transition. Player controls mute audio, pause timed progression, revisit history, restart the initial branch, and invoke an optional home action. Link and sound callbacks let the host application supply their effects.
+The player preloads supplied assets and exposes loading progress and failure to its render callback. Commands expose timed, manually skippable, and non-skippable behavior. Zero-duration commands advance without a progress countdown and respect pause and focus. Updating a visible command's main audio source replaces that sound. Updated entrance and exit sources apply at the next corresponding visibility transition. Player controls mute audio, pause timed progression, revisit history, restart the initial branch, and invoke an optional home action. Link and sound callbacks let the host application supply their effects.
 
 Playback locations support shareable URLs and browser back/forward navigation without a host query provider. Malformed locations and unknown branches fall back to the initial branch. A statement index outside the selected branch resets to its first registered statement. History resets discard invalid destinations.
 
