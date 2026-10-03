@@ -175,11 +175,7 @@ export function GameProvider(props: GameProviderProps) {
       },
       canGoBack: history.canGoBack,
       goHome: props.onGoHome,
-      handleLinkClick:
-        props.onLinkClick ??
-        ((href) => {
-          window.open(href, "_blank");
-        }),
+      handleLinkClick: props.onLinkClick ?? openGameLink,
       playSound,
     }),
     [
@@ -213,4 +209,10 @@ export function useGameContext() {
 
 function decodePaused(value: unknown): boolean | null {
   return typeof value === "boolean" ? value : null;
+}
+
+// oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional link callback contract.
+function openGameLink(href: string, _name: string, event: React.MouseEvent) {
+  event.preventDefault();
+  window.open(href, "_blank", "noopener,noreferrer");
 }
