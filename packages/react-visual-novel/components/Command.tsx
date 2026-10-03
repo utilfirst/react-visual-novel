@@ -4,7 +4,7 @@ import {
   useGameContext,
   useStatementContext,
 } from "#contexts/index.ts";
-import type { AudioSource } from "#lib/index.ts";
+import type { AudioPlayer, AudioSource } from "#lib/index.ts";
 import { useAudio, useWindowFocus } from "#lib/index.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useSyncedRef } from "#lib/use-synced-ref.ts";
@@ -44,6 +44,21 @@ export type CommandProps = {
 };
 
 const defaultBehavior: StatementBehavior = ["skippable_static"];
+
+type CommandAudioOperation = {
+  controller: AbortController;
+  main: AudioPlayer | null;
+} & (
+  | {
+      state: "visible";
+      entrance: AudioPlayer | null;
+      isMainReady: boolean;
+    }
+  | {
+      state: "hidden";
+      exit: AudioPlayer | null;
+    }
+);
 
 export function Command(props: CommandProps) {
   const { audio: audioSrc } = props;
@@ -95,71 +110,103 @@ export function Command(props: CommandProps) {
   const visibleRef = useSyncedRef(visible);
 
   const mountedRef = React.useRef(false);
-  const handledStateRef = React.useRef<"visible" | "hidden">("hidden");
-  const playControllerRef = React.useRef<AbortController | null>(null);
+  const audioOperationRef = React.useRef<CommandAudioOperation | null>(null);
 
   const handleVisible = useEventCallback(async () => {
-    if (handledStateRef.current === "visible") {
+    const previous = audioOperationRef.current;
+    if (previous?.state === "visible") {
       return;
     }
 
-    handledStateRef.current = "visible";
+    const operation: CommandAudioOperation = {
+      state: "visible",
+      controller: new AbortController(),
+      main: whileVisibleAudio,
+      entrance: onEntranceAudio,
+      isMainReady: false,
+    };
 
-    const controller = new AbortController();
+    previous?.controller.abort();
+    audioOperationRef.current = operation;
 
-    playControllerRef.current?.abort();
-    playControllerRef.current = controller;
-
-    void onExitAudio?.stop().catch(reportAudioError);
-    if (onEntranceAudio) {
-      if (whileVisibleAudio?.src.overlap) {
-        void onEntranceAudio.play().catch(reportAudioError);
+    const previousExit = previous?.exit ?? onExitAudio;
+    void previousExit?.stop().catch(reportAudioError);
+    if (operation.entrance) {
+      if (operation.main?.src.overlap) {
+        void operation.entrance.play().catch(reportAudioError);
       } else {
-        await onEntranceAudio.play();
+        await operation.entrance.play();
 
         if (
           !visibleRef.current ||
           !mountedRef.current ||
-          controller.signal.aborted
+          operation.controller.signal.aborted
         ) {
           return;
         }
       }
     }
 
-    void whileVisibleAudio?.play().catch(reportAudioError);
+    operation.isMainReady = true;
+    void operation.main?.play().catch(reportAudioError);
   });
 
   const handleHidden = useEventCallback(async () => {
-    if (handledStateRef.current === "hidden") {
+    const previous = audioOperationRef.current;
+    if (previous === null || previous.state === "hidden") {
       return;
     }
 
-    handledStateRef.current = "hidden";
+    const operation: CommandAudioOperation = {
+      state: "hidden",
+      controller: new AbortController(),
+      main: previous.main,
+      exit: onExitAudio,
+    };
 
-    const controller = new AbortController();
+    previous.controller.abort();
+    audioOperationRef.current = operation;
 
-    playControllerRef.current?.abort();
-    playControllerRef.current = controller;
-
-    void onEntranceAudio?.stop().catch(reportAudioError);
-    if (whileVisibleAudio) {
-      if (whileVisibleAudio.src.overlap === true) {
-        void whileVisibleAudio.stop().catch(reportAudioError);
+    void previous.entrance?.stop().catch(reportAudioError);
+    if (operation.main) {
+      if (operation.main.src.overlap === true) {
+        void operation.main.stop().catch(reportAudioError);
       } else {
-        await whileVisibleAudio.stop();
+        await operation.main.stop();
 
         if (
           (mountedRef.current && visibleRef.current) ||
-          controller.signal.aborted
+          operation.controller.signal.aborted
         ) {
           return;
         }
       }
     }
 
-    await onExitAudio?.play();
+    await operation.exit?.play();
   });
+
+  React.useEffect(() => {
+    const operation = audioOperationRef.current;
+    if (
+      operation?.state !== "visible" ||
+      !visibleRef.current ||
+      operation.main === whileVisibleAudio
+    ) {
+      return;
+    }
+
+    const previousMain = operation.main;
+
+    operation.main = whileVisibleAudio;
+
+    // NOTE: Main sources follow committed props. A pending entrance keeps
+    // its original sound and starts the latest main source when it finishes.
+    if (operation.isMainReady) {
+      void previousMain?.stop().catch(reportAudioError);
+      void operation.main?.play().catch(reportAudioError);
+    }
+  }, [whileVisibleAudio, visibleRef]);
 
   React.useEffect(() => {
     mountedRef.current = true;

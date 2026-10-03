@@ -1,13 +1,7 @@
 import { Howl } from "howler";
-import React from "react";
 
 export function useAudio(src: AudioSource | null) {
-  const audioRef = React.useRef<AudioPlayer | null | undefined>(undefined);
-  if (audioRef.current === undefined) {
-    audioRef.current = src === null ? null : getAudio(src);
-  }
-
-  return audioRef.current;
+  return src === null ? null : getAudio(src);
 }
 
 export type AudioSource = {
