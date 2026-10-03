@@ -45,8 +45,6 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
-    "@radix-ui/react-popover": "1.0.2",
-    "@radix-ui/react-use-rect": "1.0.0",
     "@react-hookz/web": "16.0.0",
     "@supercharge/promise-pool": "2.3.2",
     "async-preloader": "7.0.0",
@@ -71,7 +69,6 @@
     "@types/react-is": "18.3.1",
     "csstype": "3.2.3",
     "howler": "2.2.3",
-    "postcss": "8.5.28",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tailwindcss": "3.4.19",
