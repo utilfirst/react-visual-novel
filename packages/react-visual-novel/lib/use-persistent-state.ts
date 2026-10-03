@@ -12,44 +12,22 @@ type PersistentStateOptions<T> = {
 const storageEvent = "rvn:storage";
 
 export function usePersistentState<T>(options: PersistentStateOptions<T>) {
-  const readValue = useEventCallback((stored: string | null): T => {
-    if (stored === null) {
-      return options.initialValue;
-    }
+  const [value, setValue] = React.useState(() => readPersistentState(options));
 
-    try {
-      return options.decode(JSON.parse(stored)) ?? options.initialValue;
-    } catch {
-      return options.initialValue;
-    }
-  });
-
-  const [value, setValue] = React.useState(() => {
-    try {
-      return readValue(window.localStorage.getItem(options.key));
-    } catch {
-      return options.initialValue;
-    }
-  });
+  const readValue = useEventCallback((stored: string | null): T =>
+    decodePersistentState({ ...options, stored }),
+  );
 
   const readStorage = useEventCallback(() => {
     try {
       setValue(readValue(window.localStorage.getItem(options.key)));
     } catch {
-      // NOTE: Games remain usable when browser storage is unavailable.
+      // NOTE: A denied storage refresh must preserve in-memory state.
     }
   });
 
   const writeValue = useEventCallback((nextValue: T) => {
-    try {
-      window.localStorage.setItem(options.key, JSON.stringify(nextValue));
-      window.dispatchEvent(
-        new CustomEvent(storageEvent, { detail: options.key }),
-      );
-    } catch {
-      // NOTE: Persisting is optional when the browser denies storage access.
-    }
-
+    writePersistentState({ key: options.key, value: nextValue });
     setValue(nextValue);
   });
 
@@ -78,4 +56,50 @@ export function usePersistentState<T>(options: PersistentStateOptions<T>) {
     };
   }, [options.key, readValue, readStorage]);
   return [value, writeValue] as const;
+}
+
+export function readPersistentState<T>(options: PersistentStateOptions<T>): T {
+  try {
+    return decodePersistentState({
+      ...options,
+      stored: window.localStorage.getItem(options.key),
+    });
+  } catch {
+    // NOTE: Games remain usable when browser storage is unavailable.
+    return options.initialValue;
+  }
+}
+
+type PersistentStateWriteOptions<T> = {
+  key: string;
+  value: T;
+};
+
+export function writePersistentState<T>(
+  options: PersistentStateWriteOptions<T>,
+) {
+  try {
+    window.localStorage.setItem(options.key, JSON.stringify(options.value));
+    window.dispatchEvent(
+      new CustomEvent(storageEvent, { detail: options.key }),
+    );
+  } catch {
+    // NOTE: Persisting is optional when the browser denies storage access.
+  }
+}
+
+type PersistentStateDecodeOptions<T> = PersistentStateOptions<T> & {
+  stored: string | null;
+};
+
+function decodePersistentState<T>(options: PersistentStateDecodeOptions<T>): T {
+  if (options.stored === null) {
+    return options.initialValue;
+  }
+
+  try {
+    return options.decode(JSON.parse(options.stored)) ?? options.initialValue;
+  } catch {
+    return options.initialValue;
+  }
 }

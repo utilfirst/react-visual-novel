@@ -11,7 +11,11 @@ import {
 } from "#contexts/internal/index.ts";
 import { unmute } from "#contexts/internal/vendor/unmute.js";
 import { useEventCallback } from "#lib/use-event-callback.ts";
-import { usePersistentState } from "#lib/use-persistent-state.ts";
+import {
+  readPersistentState,
+  usePersistentState,
+  writePersistentState,
+} from "#lib/use-persistent-state.ts";
 import type { BranchId } from "#types.ts";
 import { Howler } from "howler";
 import React from "react";
@@ -89,49 +93,55 @@ export function GameProvider(props: GameProviderProps) {
     decode: decodePaused,
   });
 
-  const [locations, setLocations] = usePersistentState({
-    key: "@GameContext/locations",
-    initialValue: [focusedLocation],
-    decode: (value) => {
-      const decodedLocations = decodeGameLocations(value)?.filter(
-        (location) =>
-          props.branchIds === undefined ||
-          props.branchIds.includes(location.branchId),
-      );
-
-      return decodedLocations !== undefined && decodedLocations.length > 0
-        ? decodedLocations
-        : null;
-    },
-  });
-
   const historyRef = React.useRef<GameHistory | null>(null);
+  if (historyRef.current === null) {
+    // NOTE: History owns its mounted state. Storage is an initial snapshot
+    // and a persistence target, not a second reactive history owner.
+    const locations = readPersistentState({
+      key: "@GameContext/locations",
+      initialValue: [focusedLocation],
+      decode: (value) => {
+        const decodedLocations = decodeGameLocations(value)?.filter(
+          (location) =>
+            props.branchIds === undefined ||
+            props.branchIds.includes(location.branchId),
+        );
 
-  const lastLocation = locations.at(-1);
-  historyRef.current ??= makeGameHistory({
-    locations:
-      lastLocation !== undefined &&
-      makeGameLocationId(lastLocation) === makeGameLocationId(focusedLocation)
-        ? locations
-        : [focusedLocation],
-    onChange: (newLocations, operation) => {
-      setLocations(newLocations);
+        return decodedLocations !== undefined && decodedLocations.length > 0
+          ? decodedLocations
+          : null;
+      },
+    });
 
-      const location = newLocations.at(-1);
-      if (location === undefined) {
-        throw new Error("Game history has no location");
-      }
+    const lastLocation = locations.at(-1);
+    historyRef.current = makeGameHistory({
+      locations:
+        lastLocation !== undefined &&
+        makeGameLocationId(lastLocation) === makeGameLocationId(focusedLocation)
+          ? locations
+          : [focusedLocation],
+      onChange: (newLocations, operation) => {
+        writePersistentState({
+          key: "@GameContext/locations",
+          value: newLocations,
+        });
 
-      setFocusedLocation(location);
+        const location = newLocations.at(-1);
+        if (location === undefined) {
+          throw new Error("Game history has no location");
+        }
 
-      // NOTE: Write at the navigation owner. An effect tied to render state
-      // can overwrite a newer browser navigation or statement-bound recovery.
-      setStoredFocusedLocationId({
-        locationId: makeGameLocationId(location),
-        replace: operation === "reset",
-      });
-    },
-  });
+        setFocusedLocation(location);
+
+        // NOTE: Write at the navigation owner. An effect tied to render state
+        // can overwrite a newer browser navigation or statement-bound recovery.
+        setStoredFocusedLocationId({
+          locationId: makeGameLocationId(location),
+          replace: operation === "reset",
+        });
+      },
+    });
+  }
 
   const history = historyRef.current;
 
