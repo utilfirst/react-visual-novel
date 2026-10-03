@@ -1,3 +1,3 @@
-extends browserslist-config-baseline/with-downstream
+baseline widely available with downstream
 not firefox < 128
 not and_ff < 128
