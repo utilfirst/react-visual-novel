@@ -16,6 +16,7 @@
     "fix:prettier": "pnpm run lint:prettier --write",
     "generate": "pnpm --filter react-visual-novel run build && pnpm --filter react-visual-novel-demo run generate",
     "lint": "pnpm run generate && pnpm run '/^lint:[^:]+$/'",
+    "lint:declarations": "tsc --ignoreConfig --noEmit --strict --module NodeNext --target ES2022 --pretty false packages/react-visual-novel/dist/index.d.ts",
     "lint:oxlint": "oxlint .",
     "lint:prettier": "prettier --check .",
     "lint:publint": "pnpm --filter react-visual-novel exec publint",

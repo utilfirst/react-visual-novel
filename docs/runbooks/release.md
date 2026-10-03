@@ -20,7 +20,7 @@ Check that every intended source change is committed and that unrelated work is 
 
 1. Update the library version and any affected living usage contracts. Commit the version change separately from implementation changes.
 2. Set `RELEASE_TAG` to the exact proposed tag and run `pnpm run release-check-tag`. Stop if it does not match the library manifest.
-3. Run `pnpm run lint`, then `pnpm --filter react-visual-novel-demo run build`. The lint command generates library output and Next declarations before checking source, formatting, and package metadata.
+3. Run `pnpm run lint`, then `pnpm --filter react-visual-novel-demo run build`. The lint command generates library output and Next declarations before checking source, generated declarations, formatting, and package metadata.
 4. Run `pnpm --filter react-visual-novel pack --pack-destination "$PWD/.tmp/release"`. The package's `prepack` script regenerates library output. Classify the local tarball as scratch and keep it under root `.tmp/`.
 5. Inspect the tarball inventory and manifest. Verify the declared JavaScript, declarations, and stylesheet are present. Exclude archives, scratch, local state, and secret files.
 
