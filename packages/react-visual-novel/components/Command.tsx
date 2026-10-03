@@ -150,8 +150,7 @@ export function Command(props: CommandProps) {
         await whileVisibleAudio.stop();
 
         if (
-          visibleRef.current ||
-          mountedRef.current ||
+          (mountedRef.current && visibleRef.current) ||
           controller.signal.aborted
         ) {
           return;

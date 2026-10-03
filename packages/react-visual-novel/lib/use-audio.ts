@@ -86,23 +86,22 @@ function _getAudio(_src: AudioSource): AudioPlayer {
 
       setPlaying({ isPlaying: true });
       playP = new Promise<void>((resolve) => {
+        const onEnd = () => {
+          setPlaying({ isPlaying: false });
+        };
+
         if (!src.loop) {
-          const onEnd = () => {
-            setPlaying({ isPlaying: false });
+          sound.once("end", onEnd);
+        }
+
+        // NOTE: Stopping a loop must settle its pending play operation too.
+        const unsub = subscribeToPlaying((playing) => {
+          if (!playing) {
             resolve();
             unsub();
-          };
-
-          sound.once("end", onEnd);
-
-          const unsub = subscribeToPlaying((playing) => {
-            if (!playing) {
-              resolve();
-              unsub();
-              sound.off("end", onEnd);
-            }
-          });
-        }
+            sound.off("end", onEnd);
+          }
+        });
 
         sound.volume(1);
         sound.seek(0);
@@ -212,6 +211,7 @@ function _getAudio(_src: AudioSource): AudioPlayer {
 
 type AudioPlayerMetadata = {
   playedAt: number;
+  playId: symbol;
 };
 
 type AudioChannel = {
@@ -237,32 +237,47 @@ function makeChannel(): AudioChannel {
 
   return {
     play: async (audio: AudioPlayer) => {
-      if (playlist.has(audio)) {
-        playlist.set(audio, { playedAt: Date.now() });
+      const currentMetadata = playlist.get(audio);
+      if (currentMetadata !== undefined) {
+        playlist.set(audio, { ...currentMetadata, playedAt: Date.now() });
         return;
       }
 
       const prevAudios = [...playlist.keys()];
 
-      playlist.set(audio, { playedAt: Date.now() });
-      await Promise.all(
-        prevAudios.map(async (a) => {
-          playlist.delete(a);
-          if (a.src.overlap) {
-            void a.stop().catch((error: unknown) => {
-              console.error("Unable to stop overlapping audio", error);
-            });
-          } else {
-            await a.stop();
-          }
-        }),
-      );
+      const metadata: AudioPlayerMetadata = {
+        playedAt: Date.now(),
+        playId: Symbol("audio play"),
+      };
 
-      if (!playlist.has(audio)) {
-        return;
+      playlist.set(audio, metadata);
+
+      try {
+        await Promise.all(
+          prevAudios.map(async (a) => {
+            playlist.delete(a);
+            if (a.src.overlap) {
+              void a.stop().catch((error: unknown) => {
+                console.error("Unable to stop overlapping audio", error);
+              });
+            } else {
+              await a.stop();
+            }
+          }),
+        );
+
+        if (playlist.get(audio)?.playId !== metadata.playId) {
+          return;
+        }
+
+        await audio.play();
+      } finally {
+        // NOTE: An interrupted play can finish after the same player restarts.
+        // Only its own operation may release the channel's current entry.
+        if (playlist.get(audio)?.playId === metadata.playId) {
+          playlist.delete(audio);
+        }
       }
-
-      return audio.play();
     },
     stop: async (audio: AudioPlayer) => {
       if (!playlist.has(audio)) {
