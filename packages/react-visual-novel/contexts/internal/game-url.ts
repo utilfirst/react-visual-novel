@@ -35,7 +35,7 @@ export function writeGameLocationId(options: GameLocationWriteOptions) {
   }
 }
 
-function readGameLocationId(): string | null {
+export function readGameLocationId(): string | null {
   return new URLSearchParams(window.location.search).get("location");
 }
 

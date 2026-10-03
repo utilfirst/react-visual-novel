@@ -5,6 +5,7 @@ import {
   makeGameHistory,
   makeGameLocationId,
   parseGameLocation,
+  readGameLocationId,
   useGameLocationId,
   writeGameLocationId,
 } from "#contexts/internal/index.ts";
@@ -151,7 +152,12 @@ export function GameProvider(props: GameProviderProps) {
   }, [muted]);
 
   const restoreQueryLocation = useEventCallback(() => {
-    const parsedLocation = parseGameLocation(storedFocusedLocationId);
+    // NOTE: A child can repair bounds before this effect runs. Read the URL
+    // at execution time and compare against the synchronous history owner.
+    // Render snapshots can lag behind a newer navigation.
+    const parsedLocation = parseGameLocation(
+      readGameLocationId() ?? makeGameLocationId(initialLocation),
+    );
 
     const location = resolveGameLocation({
       location: parsedLocation,
@@ -170,7 +176,7 @@ export function GameProvider(props: GameProviderProps) {
         replace: true,
       });
     }
-    if (makeGameLocationId(location) !== makeGameLocationId(focusedLocation)) {
+    if (makeGameLocationId(location) !== makeGameLocationId(history.peek())) {
       history.reset(location);
     }
   });
