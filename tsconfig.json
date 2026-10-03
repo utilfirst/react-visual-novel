@@ -31,6 +31,6 @@
     "verbatimModuleSyntax": true,
     "types": ["node"]
   },
-  "exclude": [".tmp", "node_modules"],
-  "include": ["*.config.ts", "scripts/**/*.ts"]
+  "exclude": [".tmp", "demo", "node_modules", "packages"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"]
 }
