@@ -209,14 +209,16 @@ export function GameProvider(props: GameProviderProps) {
       paused,
       setPaused,
       goToBranch: (branchId) => {
-        if (branchId !== focusedLocation.branchId) {
+        if (branchId !== history.peek().branchId) {
           history.push({ branchId, statementIndex: 0 });
         }
       },
       goToLocation: (branchId, statementIndex) => {
+        // NOTE: Earlier calls can move history before React renders again.
+        const currentLocation = history.peek();
         if (
-          branchId !== focusedLocation.branchId ||
-          statementIndex !== focusedLocation.statementIndex
+          branchId !== currentLocation.branchId ||
+          statementIndex !== currentLocation.statementIndex
         ) {
           history.push({ branchId, statementIndex });
         }
