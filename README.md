@@ -65,7 +65,7 @@ Runtime pins live in `mise.toml`. Read [Product](docs/product.md) for capabiliti
 
 ## Release
 
-The release workflow checks and packages version tags matching the library manifest, then publishes the checked tarball through npm trusted publishing. Update the library manifest version before creating its `v<version>` tag. Before pushing a release tag, configure the package's npm trusted publisher for this repository, workflow `release.yml`, and GitHub environment `release`. Provider configuration and tag pushes require separate approval. [npm's trusted publishing guide](https://docs.npmjs.com/trusted-publishers/) owns the setup requirements.
+The release workflow checks and packages version tags matching the library manifest, then publishes the checked tarball through npm trusted publishing. Read the [release runbook](docs/runbooks/release.md) before preparing a version, pushing a release tag, or publishing a package.
 
 ## License
 

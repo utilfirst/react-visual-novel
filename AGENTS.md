@@ -28,6 +28,7 @@ This workspace publishes a browser React visual novel library and contains a Nex
 | `docs/product.md` | Product | Visual novel capabilities or public usage | Accepted visual novel capabilities or public usage |
 | `docs/architecture.md` | Architecture | Package boundaries, context state, public exports, or build topology | Package boundaries, context state, public exports, or build topology |
 | `docs/ui-design.md` | UI design | Shared command presentation or player interactions | Shared command presentation or player interactions |
+| `docs/runbooks/release.md` | Runbook | Release preparation, tag pushes, or package publication | Release targets, approval boundaries, execution, or verification |
 
 - Read `packages/react-visual-novel/index.ts`, `types.ts`, and `package.json` before changing the public package surface.
 - Read `packages/react-visual-novel/tsdown.config.ts`, both `index.css` files, and `demo/postcss.config.mjs` before changing build output or stylesheet discovery.
@@ -38,7 +39,7 @@ This workspace publishes a browser React visual novel library and contains a Nex
 ## Commands
 
 - `pnpm run dev`: prepare outputs, then watch the library and demo
-- `pnpm run generate`: build the library and generate demo CSS and Next declarations
+- `pnpm run generate`: build the library JavaScript, declarations, and CSS, then generate Next declarations
 - `pnpm run lint`: generate prerequisites, then check source, types, formatting, and package metadata
 - `pnpm run fix`: apply the linter and formatter in sequence
 - `pnpm run build`: build the library and demo

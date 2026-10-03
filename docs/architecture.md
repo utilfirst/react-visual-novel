@@ -18,7 +18,7 @@ The demo consumes the workspace package through the same package entry used by i
 
 `mise.toml` owns runtime pins and `mise.lock` owns their platform resolutions. Root scripts prepare library output and Next declarations before checks and development. Next compiles demo CSS through PostCSS during development and builds. Generated output is disposable and excluded from source ownership.
 
-The release workflow packages a checked version tag and passes its tarball to a separate npm publishing job. Trusted publisher and GitHub environment configuration must be verified before release delivery. The workflow owns exact runner permissions and commands.
+The release workflow packages a checked version tag and passes its tarball to a separate npm publishing job. Trusted publisher and GitHub environment configuration must be verified before release delivery. The workflow owns exact runner permissions and commands. The [release runbook](runbooks/release.md) owns preparation, approval boundaries, failure recovery, and final package verification.
 
 ## Playback state
 
@@ -48,8 +48,8 @@ The library requires browser APIs and host-supplied peers. The demo loads the ga
 | Bundle and CSS generation | `packages/react-visual-novel/tsdown.config.ts`, library and demo `index.css`, `demo/postcss.config.mjs`, workspace manifests |
 | Demo routes and imported media | `demo/app/`, `demo/game/GamePlayer.tsx`, `demo/assets/`, `demo/public/`, `demo/next.config.ts` |
 | Lint and formatting | `oxlint.config.ts`, `prettier.config.ts`, workspace TypeScript configs |
-| Release delivery | `.github/workflows/release.yml` |
+| Release delivery | `.github/workflows/release.yml`, `docs/runbooks/release.md` |
 
 ## Work routing
 
-Read this document before changing package boundaries, public exports, state ownership, persisted navigation, or generation dependencies. Update it with the corresponding source change. Keep exact implementation decisions with the owners above and release execution with the release workflow.
+Read this document before changing package boundaries, public exports, state ownership, persisted navigation, or generation dependencies. Update it with the corresponding source change. Keep exact implementation decisions with the owners above and release execution with the release runbook and workflow.
