@@ -6,5 +6,4 @@ export { usePersistentState } from "./use-persistent-state.ts";
 export * from "./use-preload-assets.ts";
 export * from "./use-result.ts";
 export { useSyncedRef } from "./use-synced-ref.ts";
-export { useUpdateEffect } from "./use-update-effect.ts";
 export * from "./use-window-focus.ts";

@@ -8,7 +8,6 @@ import type { AudioPlayer, AudioSource } from "#lib/index.ts";
 import { useAudio, useWindowFocus } from "#lib/index.ts";
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useSyncedRef } from "#lib/use-synced-ref.ts";
-import { useUpdateEffect } from "#lib/use-update-effect.ts";
 import type { Variant } from "framer-motion";
 import {
   AnimatePresence,
@@ -17,7 +16,6 @@ import {
   usePresence,
 } from "framer-motion";
 import React from "react";
-import { twMerge } from "tailwind-merge";
 
 export type CommandViewColorScheme = "default" | "dark";
 
@@ -210,15 +208,6 @@ export function Command(props: CommandProps) {
 
   React.useEffect(() => {
     isMountedRef.current = true;
-    setTimeout(() => {
-      setTimeout(() => {
-        if (!isVisibleRef.current || !isMountedRef.current) {
-          return;
-        }
-
-        void handleVisible().catch(reportAudioError);
-      }, 0);
-    }, 0);
 
     return () => {
       isMountedRef.current = false;
@@ -230,28 +219,35 @@ export function Command(props: CommandProps) {
         void handleHidden().catch(reportAudioError);
       }, 0);
     };
-  }, [handleVisible, handleHidden, isVisibleRef]);
+  }, [handleHidden]);
 
-  useUpdateEffect(() => {
-    if (isVisible) {
-      setTimeout(() => {
-        setTimeout(() => {
+  React.useEffect(() => {
+    let deferredTimer: ReturnType<typeof setTimeout> | undefined;
+
+    // NOTE: Preserve the two-turn entrance ordering. Each visibility
+    // schedule owns its timers and cancels them when visibility changes.
+    const visibilityTimer = setTimeout(() => {
+      if (isVisible) {
+        deferredTimer = setTimeout(() => {
           if (!isVisibleRef.current || !isMountedRef.current) {
             return;
           }
 
           void handleVisible().catch(reportAudioError);
         }, 0);
-      }, 0);
-    } else {
-      setTimeout(() => {
+      } else {
         if (isVisibleRef.current || !isMountedRef.current) {
           return;
         }
 
         void handleHidden().catch(reportAudioError);
-      }, 0);
-    }
+      }
+    }, 0);
+
+    return () => {
+      clearTimeout(visibilityTimer);
+      clearTimeout(deferredTimer);
+    };
   }, [isVisible, isVisibleRef, isMountedRef, handleVisible, handleHidden]);
 
   return (
@@ -458,12 +454,7 @@ const CommandView = React.forwardRef(function CommandView(
             exit={{ opacity: 0 }}
             value={countdownProgress}
             max={100}
-            className={twMerge(
-              "absolute top-0 z-[100] h-2 w-full appearance-none rounded-none",
-              "[&::-moz-progress-bar]:bg-gray-900",
-              "[&::-webkit-progress-bar]:rounded-none [&::-webkit-progress-bar]:bg-gray-900/20",
-              "[&::-webkit-progress-value]:rounded-none [&::-webkit-progress-value]:bg-gray-900",
-            )}
+            className="absolute top-0 z-[100] h-2 w-full appearance-none rounded-none [&::-moz-progress-bar]:bg-gray-900 [&::-webkit-progress-bar]:rounded-none [&::-webkit-progress-bar]:bg-gray-900/20 [&::-webkit-progress-value]:rounded-none [&::-webkit-progress-value]:bg-gray-900"
           />
         )}
       </AnimatePresence>
