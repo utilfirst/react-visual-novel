@@ -1,10 +1,10 @@
-import {NextAdapter} from 'next-query-params'
-import type {AppProps} from 'next/app'
-import Head from 'next/head'
-import {QueryParamProvider} from 'use-query-params'
-import '../__generated__/index.css'
+import { NextAdapter } from "next-query-params";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { QueryParamProvider } from "use-query-params";
+import "../__generated__/index.css";
 
-export default function MyApp({Component, pageProps}: AppProps) {
+export default function MyApp(props: AppProps) {
   return (
     <>
       <Head>
@@ -13,8 +13,8 @@ export default function MyApp({Component, pageProps}: AppProps) {
       </Head>
 
       <QueryParamProvider adapter={NextAdapter}>
-        <Component {...pageProps} />
+        <props.Component {...props.pageProps} />
       </QueryParamProvider>
     </>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import type {CommandAudioConfig} from '../components'
-import {Command} from '../components'
-import type {Statement} from '../contexts'
+import type { CommandAudioConfig } from "#components/index.ts";
+import { Command } from "#components/index.ts";
+import type { Statement } from "#contexts/index.ts";
 
-export interface PlayProps {
-  audio?: CommandAudioConfig
-  hide?: number | ((statement: Statement) => boolean)
-}
+export type PlayProps = {
+  audio?: CommandAudioConfig;
+  hide?: number | ((statement: Statement) => boolean);
+};
 
-export function Play({audio, hide}: PlayProps) {
+export function Play(props: PlayProps) {
   return (
     <Command
       name="Play"
-      behavior={['skippable_timed', {durationMs: 0}]}
-      audio={audio}
-      hide={hide}
+      behavior={["skippable_timed", { durationMs: 0 }]}
+      audio={props.audio}
+      hide={props.hide}
     >
       {() => null}
     </Command>
-  )
+  );
 }

@@ -1,43 +1,43 @@
-import type {CommandProps} from '../components'
-import {Command} from '../components'
-import type {ImageViewProps} from './views'
-import {ImageView} from './views'
+import type { ImageViewProps } from "#commands/views/index.ts";
+import { ImageView } from "#commands/views/index.ts";
+import type { CommandProps } from "#components/index.ts";
+import { Command } from "#components/index.ts";
 
-export type ShowSource = Omit<ImageViewProps, 'controls'>
+export type ShowSource = Omit<ImageViewProps, "controls">;
 
-export interface ShowProps
-  extends Pick<CommandProps, 'audio' | 'hide' | 'next' | 'zIndex'> {
-  src: string | ShowSource | Array<string | ShowSource>
-  durationMs?: number
-}
+export type ShowProps = Pick<
+  CommandProps,
+  "audio" | "hide" | "next" | "zIndex"
+> & {
+  src: string | ShowSource | (string | ShowSource)[];
+  durationMs?: number;
+};
 
-export function Show({
-  src: srcProp,
-  durationMs = 4000,
-  audio,
-  hide,
-  next,
-  zIndex,
-}: ShowProps) {
+export function Show(props: ShowProps) {
+  const { src: srcProp } = props;
+  const durationMs = props.durationMs ?? 4000;
+
   const normalizedSrcs = (Array.isArray(srcProp) ? srcProp : [srcProp]).map(
-    (src): ShowSource => (typeof src === 'object' ? src : {uri: src}),
-  )
+    (src): ShowSource => (typeof src === "object" ? src : { uri: src }),
+  );
+
   return (
     <Command
       name="Show"
-      behavior={['skippable_timed', {durationMs}]}
-      audio={audio}
-      hide={hide}
-      next={next}
-      zIndex={zIndex}
+      behavior={["skippable_timed", { durationMs }]}
+      audio={props.audio}
+      hide={props.hide}
+      next={props.next}
+      zIndex={props.zIndex}
     >
       {(controls) => (
         <>
           {normalizedSrcs.map((src, idx) => (
+            // oxlint-disable-next-line react/no-array-index-key -- Repeated image URIs occupy distinct ordered layers, identified by their source position.
             <ImageView key={`${src.uri}_${idx}`} controls={controls} {...src} />
           ))}
         </>
       )}
     </Command>
-  )
+  );
 }

@@ -1,48 +1,48 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer components {
   .rvn-text {
-    @apply font-script text-center;
+    @apply text-center font-script;
   }
-  .rvn-text[data-size='md'] {
+  .rvn-text[data-size="md"] {
     @apply text-base leading-none;
   }
-  .rvn-text[data-size='lg'] {
+  .rvn-text[data-size="lg"] {
     @apply text-xl leading-none;
   }
-  .rvn-text[data-size='xl'] {
+  .rvn-text[data-size="xl"] {
     @apply text-3xl leading-none;
   }
 
   .rvn-tag {
-    @apply font-script rounded-md px-1 text-center text-base;
+    @apply rounded-md px-1 text-center font-script text-base;
   }
 
   .rvn-menu-label {
-    @apply font-script text-center text-lg;
+    @apply text-center font-script text-lg;
   }
 
   .rvn-menu-item-surface {
-    @apply btn-ghost btn border;
+    @apply btn btn-ghost border;
   }
 
   .rvn-menu-item-button {
-    @apply font-script btn-ghost btn h-auto min-h-0 animate-bounce-gentle py-2 shadow-md;
+    @apply btn btn-ghost h-auto min-h-0 animate-bounce-gentle py-2 font-script shadow-md;
   }
-  .rvn-menu-item-button[data-size='md'] {
+  .rvn-menu-item-button[data-size="md"] {
     @apply btn-lg text-base;
   }
-  .rvn-menu-item-button[data-size='lg'] {
+  .rvn-menu-item-button[data-size="lg"] {
     @apply btn-xl text-2xl;
   }
 
   .rvn-title {
-    @apply font-script font-semibold text-center text-5xl;
+    @apply text-center font-script text-5xl font-semibold;
   }
 
   .rvn-icon-button {
-    @apply btn-ghost btn-circle btn bg-base-100 text-xl shadow-md hover:bg-base-200;
+    @apply btn btn-circle btn-ghost bg-base-100 text-xl shadow-md hover:bg-base-200;
   }
 }

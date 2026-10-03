@@ -1,111 +1,108 @@
-import React from 'react'
-import {isFragment} from 'react-is'
-import {StatementProvider} from '../contexts'
+import { StatementProvider } from "#contexts/index.ts";
+import React from "react";
+import { isFragment } from "react-is";
 
-export interface BranchProps {
-  children?: React.ReactElement[] | React.ReactElement
-}
+export type BranchProps = {
+  children?: React.ReactElement[] | React.ReactElement;
+};
 
-export function Branch({children: childrenProp}: BranchProps) {
+export function Branch(props: BranchProps) {
   const statements = React.useMemo(
-    () => unwrapStatements(childrenProp),
-    [childrenProp],
-  )
+    () => unwrapStatements(props.children),
+    [props.children],
+  );
+
   return (
     <>
-      {statements.map((child, idx) => (
+      {statements.map((child, statementIndex) => (
         <StatementProvider
           key={child.key}
-          statementIndex={idx}
+          statementIndex={statementIndex}
           statementLabel={
-            child.type === Label ? (child.props as LabelProps).label : null
+            React.isValidElement<LabelProps>(child) && child.type === Label
+              ? child.props.label
+              : null
           }
         >
           {child}
         </StatementProvider>
       ))}
     </>
-  )
+  );
 }
 
-// MARK: Label
+export type LabelProps = {
+  label: string;
+  children: React.ReactNode;
+};
 
-export interface LabelProps {
-  label: string
-  children: React.ReactNode
+export function Label(props: LabelProps) {
+  return props.children;
 }
-
-export function Label({children}: LabelProps) {
-  return <>{children}</>
-}
-
-// MARK: Helpers
 
 function unwrapStatements(children: React.ReactNode): React.ReactElement[] {
-  return flattenChildren(children)
-    .filter(React.isValidElement)
-    .flatMap((c) => {
-      if (c.type === Label) {
-        const props = c.props as LabelProps
-        const subchildren = unwrapStatements(props.children)
+  return flattenChildren({ children })
+    .filter((child) => React.isValidElement(child))
+    .flatMap((child) => {
+      if (React.isValidElement<LabelProps>(child) && child.type === Label) {
+        const subchildren = unwrapStatements(child.props.children);
+
         return [
-          <Label key={props.label} label={props.label}>
+          <Label key={child.props.label} label={child.props.label}>
             {subchildren[0]}
           </Label>,
-          ...subchildren
-            .slice(1)
-            .map((el) =>
-              React.cloneElement(el, {key: `${props.label}.${el.key}`}),
-            ),
-        ]
+          ...subchildren.slice(1).map((element) =>
+            // oxlint-disable-next-line react/no-clone-element -- Labels must prefix child keys to preserve statement identity across nested branches.
+            React.cloneElement(element, {
+              key: `${child.props.label}.${element.key}`,
+            }),
+          ),
+        ];
       }
-      return [c]
-    })
+
+      return [child];
+    });
 }
 
-/**
- * Similar to [React's built-in `Children.toArray` method](https://reactjs.org/docs/react-api.html#reactchildrentoarray),
- * this utility takes children and returns them as an array for introspection or filtering.
- *
- * Different from `Children.toArray`, it will flatten arrays and `React.Fragment`s into a regular, one-dimensional
- * array while ensuring element and fragment keys are preserved, unique, and stable between renders.
- *
- * Copied from https://github.com/grrowl/react-keyed-flatten-children (since ESM import doesn't work with the module)
- */
-function flattenChildren(
-  children: React.ReactNode,
-  depth: number = 0,
-  keys: Array<string | number> = [],
-): React.ReactNode[] {
-  return React.Children.toArray(children).reduce(
-    (acc: React.ReactNode[], node) => {
-      if (isFragment(node)) {
-        acc.push(
-          ...flattenChildren(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-            node.props.children,
-            depth + 1,
-            /**
-             * No need for index fallback, React will always assign keys
-             * See: https://reactjs.org/docs/react-api.html#reactchildrentoarray
-             */
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            keys.concat(node.key!),
-          ),
-        )
-      } else {
-        if (React.isValidElement(node)) {
-          acc.push(
-            React.cloneElement(node, {
-              key: keys.concat(String(node.key)).join('.'),
-            }),
-          )
-        } else if (typeof node === 'string' || typeof node === 'number') {
-          acc.push(node)
-        }
+type FlattenChildrenOptions = {
+  children: React.ReactNode;
+  depth?: number;
+  keys?: (string | number)[];
+};
+
+// NOTE: Flatten nested fragments while retaining React-assigned keys.
+function flattenChildren(options: FlattenChildrenOptions): React.ReactNode[] {
+  const depth = options.depth ?? 0;
+  const keys = options.keys ?? [];
+
+  // oxlint-disable-next-line react/no-react-children -- The Branch API consumes a React child tree and must preserve React's key assignment.
+  return React.Children.toArray(options.children).reduce(
+    (children: React.ReactNode[], node) => {
+      if (
+        React.isValidElement<{ children?: React.ReactNode }>(node) &&
+        isFragment(node)
+      ) {
+        children.push(
+          ...flattenChildren({
+            children: node.props.children,
+            depth: depth + 1,
+            // NOTE: Children.toArray assigns a key to every element.
+            keys: keys.concat(String(node.key)),
+          }),
+        );
+      } else if (React.isValidElement(node)) {
+        children.push(
+          // oxlint-disable-next-line react/no-clone-element -- Flattened fragment children need their enclosing key path to remain unique.
+          React.cloneElement(node, {
+            key: keys.concat(String(node.key)).join("."),
+          }),
+        );
+      } else if (typeof node === "string" || typeof node === "number") {
+        children.push(node);
       }
-      return acc
+
+      return children;
     },
     [],
-  )
+  );
 }

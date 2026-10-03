@@ -1,0 +1,18 @@
+diff --git a/package.json b/package.json
+index 84ed4eb8a5598c2abc852c2a902bfa0d7709a9bc..67d1c30e64b99bddd1815db97a776dca81050416 100644
+--- a/package.json
++++ b/package.json
+@@ -26,7 +26,12 @@
+   "license": "MIT",
+   "author": "Damien Seguin (https://github.com/dmnsgn)",
+   "type": "module",
+-  "exports": "./lib/index.js",
++  "exports": {
++    ".": {
++      "types": "./types/index.d.ts",
++      "default": "./lib/index.js"
++    }
++  },
+   "main": "lib/index.js",
+   "types": "types/index.d.ts",
+   "scripts": {

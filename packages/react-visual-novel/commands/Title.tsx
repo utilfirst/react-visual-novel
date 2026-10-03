@@ -1,41 +1,43 @@
-import {motion} from 'framer-motion'
-import type {CommandProps} from '../components'
-import {Command} from '../components'
+import type { CommandProps } from "#components/index.ts";
+import { Command } from "#components/index.ts";
+import { motion } from "framer-motion";
 
-export interface TitleProps extends Pick<CommandProps, 'hide'> {
-  children: string
-  durationMs?: number
-}
+export type TitleProps = Pick<CommandProps, "hide"> & {
+  children: string;
+  durationMs?: number;
+};
 
-export function Title({children, durationMs = 4000, hide}: TitleProps) {
+export function Title(props: TitleProps) {
+  const durationMs = props.durationMs ?? 4000;
+
   return (
     <Command
       name="Title"
-      behavior={['skippable_timed', {durationMs}]}
-      hide={hide}
+      behavior={["skippable_timed", { durationMs }]}
+      hide={props.hide}
     >
       {(controls) => (
         <div className="flex flex-1 flex-col justify-center p-8">
           <motion.span
             variants={{
-              initial: {opacity: 0},
+              initial: { opacity: 0 },
               entrance: {
                 opacity: 1,
-                transition: {duration: 4},
+                transition: { duration: 4 },
               },
               exit: {
                 opacity: 0,
-                transition: {duration: 0.5, ease: 'easeOut'},
+                transition: { duration: 0.5, ease: "easeOut" },
               },
             }}
             initial="initial"
             animate={controls}
             className="rvn-title"
           >
-            {children}
+            {props.children}
           </motion.span>
         </div>
       )}
     </Command>
-  )
+  );
 }

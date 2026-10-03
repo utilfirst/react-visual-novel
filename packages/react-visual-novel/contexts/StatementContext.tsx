@@ -1,92 +1,106 @@
-import React from 'react'
-import type {Statement} from './BranchContext'
-import {useBranchContext} from './BranchContext'
+import React from "react";
+import type {
+  Statement,
+  StatementRegistrationCleanup,
+} from "./BranchContext.tsx";
+import { useBranchContext } from "./BranchContext.tsx";
 
-export interface StatementContextValue {
-  register: (statement: Omit<Statement, 'index' | 'label'>) => void
-  statementIndex: number
-  statementLabel: string | null
+export type StatementContextValue = {
+  register: (
+    statement: Omit<Statement, "index" | "label">,
+  ) => StatementRegistrationCleanup;
+  statementIndex: number;
+  statementLabel: string | null;
   /** Is this the current statement? */
-  focused: boolean
+  focused: boolean;
   /** Is this statement still shown but not necessarily focused? */
-  visible: boolean
-}
+  visible: boolean;
+};
 
-const StatementContext = React.createContext<StatementContextValue | null>(null)
+const StatementContext = React.createContext<StatementContextValue | null>(
+  null,
+);
 
-export interface StatementProviderProps {
-  statementIndex: number
-  statementLabel?: string | null
-  children: React.ReactNode
-}
+export type StatementProviderProps = {
+  statementIndex: number;
+  statementLabel?: string | null;
+  children: React.ReactNode;
+};
 
-export function StatementProvider({
-  statementIndex,
-  statementLabel = null,
-  children,
-}: StatementProviderProps) {
-  const branchCtx = useBranchContext()
-  const [statement, setStatement] = React.useState<Statement | null>(null)
+export function StatementProvider(props: StatementProviderProps) {
+  const { statementIndex } = props;
+  const statementLabel = props.statementLabel ?? null;
+
+  const branchCtx = useBranchContext();
+
+  const [statement, setStatement] = React.useState<Statement | null>(null);
+
   const register = React.useCallback(
-    (_stmt: Omit<Statement, 'index' | 'label'>) => {
+    (_stmt: Omit<Statement, "index" | "label">) => {
       const stmt = {
         ..._stmt,
         index: statementIndex,
         label: statementLabel,
-      }
-      setStatement(stmt)
-      return branchCtx.registerStatement(stmt)
+      };
+
+      setStatement(stmt);
+      return branchCtx.registerStatement(stmt);
     },
     [branchCtx, statementIndex, statementLabel],
-  )
+  );
+
   const ctx = React.useMemo((): StatementContextValue => {
-    const focused = branchCtx.focusedStatementIndex === statementIndex
-    let visible = focused
+    const focused = branchCtx.focusedStatementIndex === statementIndex;
+    let visible = focused;
     if (branchCtx.focusedStatementIndex > statementIndex) {
       if (statement?.hide === -1) {
-        visible = true
-      } else if (typeof statement?.hide === 'number') {
+        visible = true;
+      } else if (typeof statement?.hide === "number") {
         visible =
-          branchCtx.focusedStatementIndex <= statementIndex + statement.hide
-      } else if (typeof statement?.hide === 'function') {
-        visible = true
-        let currStatementIndex = statementIndex + 1
-        let currStatement = branchCtx.getStatement(currStatementIndex)
+          branchCtx.focusedStatementIndex <= statementIndex + statement.hide;
+      } else if (typeof statement?.hide === "function") {
+        visible = true;
+
+        let currStatementIndex = statementIndex + 1;
+        let currStatement = branchCtx.getStatement(currStatementIndex);
         while (
           currStatementIndex <= branchCtx.focusedStatementIndex &&
           currStatement != null
         ) {
           if (statement.hide(currStatement)) {
-            visible = false
-            break
+            visible = false;
+            break;
           } else {
-            currStatementIndex += 1
-            currStatement = branchCtx.getStatement(currStatementIndex)
+            currStatementIndex += 1;
+            currStatement = branchCtx.getStatement(currStatementIndex);
           }
         }
       }
     }
+
     return {
       register,
       statementIndex,
       statementLabel,
       focused,
       visible,
-    }
-  }, [branchCtx, register, statement, statementIndex, statementLabel])
+    };
+  }, [branchCtx, register, statement, statementIndex, statementLabel]);
+
   return (
     <StatementContext.Provider value={ctx}>
-      {children}
+      {props.children}
     </StatementContext.Provider>
-  )
+  );
 }
 
 export function useStatementContext() {
-  const ctx = React.useContext(StatementContext)
+  const ctx = React.useContext(StatementContext);
   if (!ctx) {
     throw new Error(
-      '`useStatementContext` can only be used inside a Command component',
-    )
+      "`useStatementContext` can only be used inside a Command component",
+    );
   }
-  return ctx
+
+  return ctx;
 }

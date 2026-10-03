@@ -1,6 +1,6 @@
-**/__generated__/**
-**/vendor/**
-/demo/.next/**
-/demo/public/**
-/packages/*/dist
-pnpm-lock.yaml
+# Tracked historical records, vendor code, and tool-owned output.
+/CHANGELOG.md
+/demo/CHANGELOG.md
+/packages/react-visual-novel/CHANGELOG.md
+/packages/react-visual-novel/contexts/internal/vendor/
+/pnpm-lock.yaml

@@ -1,7 +1,7 @@
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
-const MyGame = dynamic(() => import('game/MyGame'), {ssr: false})
+const MyGame = dynamic(() => import("#game/MyGame.tsx"), { ssr: false });
 
 export default function Play() {
-  return <MyGame />
+  return <MyGame />;
 }

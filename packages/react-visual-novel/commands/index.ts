@@ -1,9 +1,7 @@
-// codegen:start {preset: barrel, include: "./{*.{ts,tsx},!(internal)/index.{ts,tsx}}"}
-export * from './Menu'
-export * from './Play'
-export * from './Say'
-export * from './Scene'
-export * from './Show'
-export * from './Title'
-export * from './views/index'
-// codegen:end
+export * from "#commands/views/index.ts";
+export * from "./Menu.tsx";
+export * from "./Play.tsx";
+export * from "./Say.tsx";
+export * from "./Scene.tsx";
+export * from "./Show.tsx";
+export * from "./Title.tsx";

@@ -1,0 +1,8 @@
+[tools]
+"aqua:pnpm/pnpm" = "11.21.0"
+"core:node" = "24.15.0"
+
+[settings]
+lockfile = true
+lockfile_platforms = ["macos-arm64", "linux-x64"]
+npm.package_manager = "pnpm"

@@ -1,3 +1,12 @@
+import type { SoundName } from "#contexts/index.ts";
+import {
+  BranchProvider,
+  GameProvider,
+  useGameContext,
+} from "#contexts/index.ts";
+import type { Result } from "#lib/index.ts";
+import { usePreloadAssets } from "#lib/index.ts";
+import type { Branches, BranchId } from "#types.ts";
 import {
   ArrowCounterClockwise as ArrowCounterClockwiseIcon,
   ArrowLeft as ArrowLeftIcon,
@@ -6,74 +15,71 @@ import {
   Play as PlayIcon,
   SpeakerHigh as SpeakerHighIcon,
   SpeakerSlash as SpeakerSlashIcon,
-} from 'phosphor-react'
-import React from 'react'
-import type {SoundName} from '../contexts'
-import {BranchProvider, GameProvider, useGameContext} from '../contexts'
-import type {Result} from '../lib'
-import {usePreloadAssets} from '../lib'
-import type {Branches, BranchId} from '../types'
+} from "phosphor-react";
+import React from "react";
 
-export interface GameProps {
-  assets: Record<string, string | {src: string}>
-  branches: Branches
-  initialBranchId: BranchId
-  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void
-  onPlaySound?: (name: SoundName) => void
-  onGoHome?: () => void
+export type GameProps = {
+  assets: Record<
+    string,
+    | string
+    | {
+        src: string;
+      }
+  >;
+  branches: Branches & Record<string, React.ComponentType>;
+  initialBranchId: BranchId;
+  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
+  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void;
+  onPlaySound?: (name: SoundName) => void;
+  onGoHome?: () => void;
+  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   children?: (
     render: () => React.ReactNode,
     preloadRes: Result<Error, undefined>,
     preloadProgress: number,
-  ) => React.ReactNode
-}
+  ) => React.ReactNode;
+};
 
-export function Game({
-  assets,
-  branches,
-  initialBranchId,
-  onLinkClick,
-  onPlaySound,
-  onGoHome,
-  children,
-}: GameProps) {
+export function Game(props: GameProps) {
   return (
     <GameProvider
-      initialBranchId={initialBranchId}
-      onLinkClick={onLinkClick}
-      onPlaySound={onPlaySound}
-      onGoHome={onGoHome}
+      initialBranchId={props.initialBranchId}
+      onLinkClick={props.onLinkClick}
+      onPlaySound={props.onPlaySound}
+      onGoHome={props.onGoHome}
     >
       <GameView
-        assets={assets}
-        branches={branches}
-        initialBranchId={initialBranchId}
+        assets={props.assets}
+        branches={props.branches}
+        initialBranchId={props.initialBranchId}
       >
-        {children}
+        {props.children}
       </GameView>
     </GameProvider>
-  )
+  );
 }
 
-// MARK: GameView
-
-interface GameViewProps {
-  assets: Record<string, string | {src: string}>
-  branches: Branches
-  initialBranchId: BranchId
+type GameViewProps = {
+  assets: Record<
+    string,
+    | string
+    | {
+        src: string;
+      }
+  >;
+  branches: Branches & Record<string, React.ComponentType>;
+  initialBranchId: BranchId;
+  // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   children?: (
     render: () => React.ReactNode,
     preloadRes: Result<Error, undefined>,
     preloadProgress: number,
-  ) => React.ReactNode
-}
+  ) => React.ReactNode;
+};
 
-function GameView({
-  assets,
-  branches,
-  initialBranchId,
-  children = (render) => render(),
-}: GameViewProps) {
+function GameView(props: GameViewProps) {
+  const children = props.children ?? renderGame;
+
   const {
     focusedLocation,
     muted,
@@ -85,21 +91,30 @@ function GameView({
     canGoBack,
     goHome,
     playSound,
-  } = useGameContext()
-  const [preloaded, setPreloaded] = React.useState(false)
-  const [preloadRes, preloadProgress] = usePreloadAssets(assets, {
-    onLoaded: () => setPreloaded(true),
-  })
+  } = useGameContext();
+
+  const [preloaded, setPreloaded] = React.useState(false);
+
+  const [preloadRes, preloadProgress] = usePreloadAssets(props.assets, {
+    onLoaded: () => {
+      setPreloaded(true);
+    },
+  });
+
   return (
     <>
       <div className="absolute z-[120] flex w-full p-4">
-        <div className="flex flex-1 space-x-2">
+        <div className="flex flex-1 gap-2">
           {preloaded && canGoBack() && (
             <button
-              onMouseEnter={() => playSound('mouseover')}
+              type="button"
+              aria-label="Previous statement"
+              onMouseEnter={() => {
+                playSound("mouseover");
+              }}
               onClick={() => {
-                playSound('click')
-                goBack()
+                playSound("click");
+                goBack();
               }}
               className="rvn-icon-button"
             >
@@ -108,13 +123,17 @@ function GameView({
           )}
         </div>
 
-        <div className="flex flex-1 justify-end space-x-2">
+        <div className="flex flex-1 justify-end gap-2">
           {preloaded && (
             <button
-              onMouseEnter={() => playSound('mouseover')}
+              type="button"
+              aria-label="Restart game"
+              onMouseEnter={() => {
+                playSound("mouseover");
+              }}
               onClick={() => {
-                playSound('click')
-                goToLocation(initialBranchId, 0)
+                playSound("click");
+                goToLocation(props.initialBranchId, 0);
               }}
               className="rvn-icon-button"
             >
@@ -124,10 +143,14 @@ function GameView({
 
           {goHome && (
             <button
-              onMouseEnter={() => playSound('mouseover')}
+              type="button"
+              aria-label="Go home"
+              onMouseEnter={() => {
+                playSound("mouseover");
+              }}
               onClick={() => {
-                playSound('click')
-                goHome()
+                playSound("click");
+                goHome();
               }}
               className="rvn-icon-button"
             >
@@ -137,14 +160,19 @@ function GameView({
         </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 z-[120] space-x-2">
+      <div className="absolute bottom-4 right-4 z-[120] flex gap-2">
         {preloaded && (
           <>
             <button
-              onMouseEnter={() => playSound('mouseover')}
+              type="button"
+              aria-label={muted ? "Unmute audio" : "Mute audio"}
+              aria-pressed={muted}
+              onMouseEnter={() => {
+                playSound("mouseover");
+              }}
               onClick={() => {
-                playSound('click')
-                setMuted(!muted)
+                playSound("click");
+                setMuted(!muted);
               }}
               className="rvn-icon-button"
             >
@@ -152,10 +180,15 @@ function GameView({
             </button>
 
             <button
-              onMouseEnter={() => playSound('mouseover')}
+              type="button"
+              aria-label={paused ? "Resume playback" : "Pause playback"}
+              aria-pressed={paused}
+              onMouseEnter={() => {
+                playSound("mouseover");
+              }}
               onClick={() => {
-                playSound('click')
-                setPaused(!paused)
+                playSound("click");
+                setPaused(!paused);
               }}
               className="rvn-icon-button"
             >
@@ -168,12 +201,12 @@ function GameView({
       {children(
         () => (
           <div className="flex h-full w-full overflow-hidden">
-            {Object.entries(branches).map(
+            {Object.entries(props.branches).map(
               ([branchId, BranchComp]) =>
                 branchId === focusedLocation.branchId && (
                   <BranchProvider
                     key={branchId}
-                    branchId={branchId as BranchId}
+                    branchId={focusedLocation.branchId}
                   >
                     <BranchComp />
                   </BranchProvider>
@@ -185,27 +218,36 @@ function GameView({
         preloadProgress,
       )}
     </>
-  )
+  );
 }
-
-// MARK: Helpers
 
 export function prepareBranches<
   TRawBranches extends Record<string, React.ComponentType>,
 >(_branches: TRawBranches) {
-  const branches = Object.fromEntries(
+  const entries = Object.fromEntries(
     Object.entries(_branches)
-      .filter(([exportName]) => exportName.startsWith('Branch'))
+      .filter(([exportName]) => exportName.startsWith("Branch"))
       .map(([exportName, exportVal]) => [
-        exportName.replace(BRANCH_PREFIX_RE, ''),
+        exportName.replace(BRANCH_PREFIX_RE, ""),
         exportVal,
       ]),
-  ) as {
-    [K in keyof typeof _branches as K extends `Branch${infer TId}`
-      ? TId
-      : never]: typeof _branches[K]
-  }
-  return branches
+  );
+
+  // SAFETY: The filter keeps Branch-prefixed names and the mapping strips only that prefix, preserving each component value.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Object.fromEntries cannot retain the mapped key relationship.
+  const branches = entries as {
+    [
+      K in keyof typeof _branches as K extends `Branch${infer TId}`
+        ? TId
+        : never
+    ]: (typeof _branches)[K];
+  };
+
+  return branches;
 }
 
-const BRANCH_PREFIX_RE = /^Branch/
+function renderGame(render: () => React.ReactNode) {
+  return render();
+}
+
+const BRANCH_PREFIX_RE = /^Branch/u;

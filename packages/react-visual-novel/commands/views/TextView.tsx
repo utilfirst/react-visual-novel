@@ -1,109 +1,117 @@
-import type {AnimationControls} from 'framer-motion'
-import {motion} from 'framer-motion'
-import React from 'react'
-import {twMerge} from 'tailwind-merge'
 import type {
   CommandViewAnimation,
   CommandViewColorScheme,
-} from '../../components'
-import {useBranchContext, useGameContext} from '../../contexts'
-import type {CharGroup} from './char-group'
-import type {Frame} from './frame'
-import {styleForFrame} from './frame'
+} from "#components/index.ts";
+import { useBranchContext, useGameContext } from "#contexts/index.ts";
+import type { AnimationControls } from "framer-motion";
+import { motion } from "framer-motion";
+import React from "react";
+import { twMerge } from "tailwind-merge";
+import type { CharGroup } from "./char-group.ts";
+import type { Frame } from "./frame.ts";
+import { styleForFrame } from "./frame.ts";
 
-export type TextPlacement = 'top' | 'middle' | 'bottom'
+export type TextPlacement = "top" | "middle" | "bottom";
 
-export interface TextViewProps {
-  groups: CharGroup[]
-  controls: AnimationControls
-  tag?: string | {text: string; color?: string; style?: React.CSSProperties}
-  placement?: TextPlacement
-  style?: React.CSSProperties
-  frame?: Frame
-  scheme?: CommandViewColorScheme
-}
+export type TextViewProps = {
+  groups: CharGroup[];
+  controls: AnimationControls;
+  tag?:
+    | string
+    | {
+        text: string;
+        color?: string;
+        style?: React.CSSProperties;
+      };
+  placement?: TextPlacement;
+  style?: React.CSSProperties;
+  frame?: Frame;
+  scheme?: CommandViewColorScheme;
+};
 
-export function TextView({
-  groups,
-  controls,
-  tag,
-  placement = 'top',
-  style,
-  frame,
-  scheme,
-}: TextViewProps) {
-  const {handleLinkClick, playSound} = useGameContext()
-  const {containerRect} = useBranchContext()
-  const length = groups.flatMap((g) => g.chars).length
-  const size: 'md' | 'lg' | 'xl' = (() => {
+export function TextView(props: TextViewProps) {
+  const { controls, tag } = props;
+  const placement = props.placement ?? "top";
+
+  const { handleLinkClick, playSound } = useGameContext();
+  const { containerRect } = useBranchContext();
+
+  const length = props.groups.flatMap((g) => g.chars).length;
+
+  const size: "md" | "lg" | "xl" = (() => {
     if (length > 90) {
-      return 'md'
+      return "md";
     }
     if (length > 40) {
-      return 'lg'
+      return "lg";
     }
-    return 'xl'
-  })()
-  const fontSize = `${containerRect?.width / REFERENCE_SIZE[0]}em`
+
+    return "xl";
+  })();
+
+  const fontSize = `${containerRect.width / REFERENCE_SIZE[0]}em`;
+
   return (
     <div
       className={twMerge(
-        'pointer-events-none absolute inset-0 flex flex-col p-8 py-20',
+        "pointer-events-none absolute inset-0 flex flex-col p-8 py-20",
         {
-          top: 'justify-start',
-          middle: 'justify-center',
-          bottom: 'justify-end',
+          top: "justify-start",
+          middle: "justify-center",
+          bottom: "justify-end",
         }[placement],
       )}
     >
-      <div className="pointer-events-auto z-10 flex flex-col items-center space-y-2">
-        {tag && (
+      <div className="pointer-events-auto z-10 flex flex-col items-center gap-3">
+        {tag !== undefined && tag !== "" && (
           <motion.span
             variants={{
-              initial: {opacity: 0},
+              initial: { opacity: 0 },
               entrance: {
                 opacity: 1,
-                transition: {duration: 1},
+                transition: { duration: 1 },
               },
               exit: {
                 opacity: 0,
-                transition: {duration: 0.5, ease: 'easeOut'},
+                transition: { duration: 0.5, ease: "easeOut" },
               },
             }}
             initial="initial"
             animate={controls}
-            className="rvn-tag mb-1 whitespace-pre-wrap"
+            className="rvn-tag whitespace-pre-wrap"
             style={{
-              ...(typeof tag === 'object' &&
-                tag.color && {
+              ...(typeof tag === "object" &&
+                tag.color !== undefined &&
+                tag.color !== "" && {
                   backgroundColor: tag.color,
-                  color: 'white',
+                  color: "white",
                 }),
-              ...(typeof tag === 'object' && tag.style),
+              ...(typeof tag === "object" && tag.style),
             }}
           >
-            {typeof tag === 'string' ? tag : tag.text}
+            {typeof tag === "string" ? tag : tag.text}
           </motion.span>
         )}
 
         <div
           data-size={size}
-          data-scheme={scheme}
+          data-scheme={props.scheme}
           className="rvn-text whitespace-pre-wrap"
           style={{
-            ...style,
-            ...(frame && styleForFrame({containerRect}, frame)),
+            ...props.style,
+            ...(props.frame && styleForFrame({ containerRect }, props.frame)),
           }}
         >
-          {groups.map((group, groupIdx) => {
+          {props.groups.map((group, groupIdx) => {
             switch (group.type) {
-              case 'text':
+              case "text": {
                 return (
+                  // oxlint-disable-next-line react/no-array-index-key -- Markdown groups have no IDs and may contain repeated empty links. Their source position identifies each group.
                   <React.Fragment key={groupIdx}>
                     {group.chars.map((char, charIdx) => (
                       <motion.span
                         key={`${char}_${group.startIndex + charIdx}`}
-                        style={{fontSize}}
+                        style={{ fontSize }}
                         variants={charAnimation}
                         initial="initial"
                         animate={controls}
@@ -113,23 +121,25 @@ export function TextView({
                       </motion.span>
                     ))}
                   </React.Fragment>
-                )
-              case 'link':
+                );
+              }
+              case "link": {
                 return (
                   <a
+                    // oxlint-disable-next-line react/no-array-index-key -- The source position distinguishes repeated Markdown links without an ID.
                     key={groupIdx}
                     href={group.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(event) => {
-                      event.stopPropagation()
-                      playSound('click')
-                      handleLinkClick(group.url, group.chars.join(''), event)
+                      event.stopPropagation();
+                      playSound("click");
+                      handleLinkClick(group.url, group.chars.join(""), event);
                     }}
-                    className="-m-4 p-4 underline"
+                    className="relative underline before:absolute before:-inset-4 before:content-['']"
                     style={{
                       fontSize,
-                      textUnderlineOffset: size ? '6px' : '4px',
+                      textUnderlineOffset: "6px",
                     }}
                   >
                     {group.chars.map((char, charIdx) => (
@@ -144,25 +154,33 @@ export function TextView({
                       </motion.span>
                     ))}
                   </a>
-                )
+                );
+              }
+              default: {
+                const unsupported: never = group;
+
+                throw new Error(
+                  `Unsupported character group: ${String(unsupported)}`,
+                );
+              }
             }
           })}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const charAnimation: CommandViewAnimation = {
-  initial: {opacity: 0},
+  initial: { opacity: 0 },
   entrance: (idx) => ({
     opacity: 1,
-    transition: {delay: 0.5 + 0.05 * idx},
+    transition: { delay: 0.5 + 0.05 * idx },
   }),
   exit: {
     opacity: 0,
-    transition: {duration: 0.5, ease: 'easeOut'},
+    transition: { duration: 0.5, ease: "easeOut" },
   },
-}
+};
 
-const REFERENCE_SIZE = [375, 667] as const
+const REFERENCE_SIZE = [375, 667] as const;

@@ -1,27 +1,24 @@
-import type {CommandProps} from '../components'
-import {Command} from '../components'
-import type {ImageViewProps, MenuViewProps} from './views'
-import {ImageView, MenuView} from './views'
+import type { ImageViewProps, MenuViewProps } from "#commands/views/index.ts";
+import { ImageView, MenuView } from "#commands/views/index.ts";
+import type { CommandProps } from "#components/index.ts";
+import { Command } from "#components/index.ts";
 
-export interface MenuProps
-  extends Pick<CommandProps, 'audio' | 'hide' | 'next' | 'zIndex'>,
-    Omit<MenuViewProps, 'controls'> {
-  image?: string | Omit<ImageViewProps, 'controls'>
-}
+export type MenuProps = Pick<
+  CommandProps,
+  "audio" | "hide" | "next" | "zIndex"
+> &
+  Omit<MenuViewProps, "controls"> & {
+    image?: string | Omit<ImageViewProps, "controls">;
+  };
 
-export function Menu({
-  image,
-  audio,
-  hide,
-  next,
-  zIndex,
-  ...menuProps
-}: MenuProps) {
-  const imageProps = typeof image === 'string' ? {uri: image} : image
+export function Menu(props: MenuProps) {
+  const { image, audio, hide, next, zIndex, ...menuProps } = props;
+  const imageProps = typeof image === "string" ? { uri: image } : image;
+
   return (
     <Command
       name="Menu"
-      behavior={['non_skippable']}
+      behavior={["non_skippable"]}
       audio={audio}
       hide={hide}
       next={next}
@@ -34,5 +31,5 @@ export function Menu({
         </>
       )}
     </Command>
-  )
+  );
 }

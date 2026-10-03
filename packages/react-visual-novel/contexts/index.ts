@@ -1,5 +1,3 @@
-// codegen:start {preset: barrel, include: "./{*.{ts,tsx},!(internal)/index.{ts,tsx}}"}
-export * from './BranchContext'
-export * from './GameContext'
-export * from './StatementContext'
-// codegen:end
+export * from "./BranchContext.tsx";
+export * from "./GameContext.tsx";
+export * from "./StatementContext.tsx";
