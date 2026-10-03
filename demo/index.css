@@ -1,6 +1,18 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import "../packages/react-visual-novel/scrims.css";
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    @apply bg-surface text-black;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
 
 @layer components {
   .rvn-text {
@@ -24,18 +36,42 @@
     @apply text-center font-script text-lg;
   }
 
-  .rvn-menu-item-surface {
-    @apply btn btn-ghost border;
+  .rvn-menu-item-surface,
+  .rvn-menu-item-button,
+  .rvn-icon-button {
+    @apply inline-flex h-12 min-h-12 shrink-0 cursor-pointer select-none flex-wrap items-center justify-center rounded-sm border border-transparent bg-transparent px-4 text-center text-sm/[1] font-semibold uppercase no-underline transition duration-200 ease-in-out;
+    color: currentColor;
+  }
+
+  .rvn-menu-item-surface:hover,
+  .rvn-menu-item-button:hover {
+    background-color: rgb(0 0 0 / 20%);
+  }
+
+  .rvn-menu-item-surface:focus-visible,
+  .rvn-menu-item-button:focus-visible,
+  .rvn-icon-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .rvn-menu-item-surface:active:hover,
+  .rvn-menu-item-surface:active:focus,
+  .rvn-menu-item-button:active:hover,
+  .rvn-menu-item-button:active:focus,
+  .rvn-icon-button:active:hover,
+  .rvn-icon-button:active:focus {
+    animation: none;
   }
 
   .rvn-menu-item-button {
-    @apply btn btn-ghost h-auto min-h-0 animate-bounce-gentle py-2 font-script shadow-md;
+    @apply h-auto min-h-0 animate-bounce-gentle py-2 font-script shadow-md;
   }
   .rvn-menu-item-button[data-size="md"] {
-    @apply btn-lg text-base;
+    @apply h-16 min-h-16 px-6 text-base/6;
   }
   .rvn-menu-item-button[data-size="lg"] {
-    @apply btn-xl text-2xl;
+    @apply text-2xl/8;
   }
 
   .rvn-title {
@@ -43,6 +79,19 @@
   }
 
   .rvn-icon-button {
-    @apply btn btn-circle btn-ghost bg-base-100 text-xl shadow-md hover:bg-base-200;
+    @apply size-12 rounded-full bg-surface p-0 text-xl/7 shadow-md hover:bg-surface-hover;
+  }
+
+  .rvn-preload-progress {
+    @apply relative h-2 w-full appearance-none overflow-hidden rounded bg-black/20;
+  }
+  .rvn-preload-progress::-webkit-progress-bar {
+    @apply rounded bg-black/20;
+  }
+  .rvn-preload-progress::-webkit-progress-value {
+    @apply rounded bg-black;
+  }
+  .rvn-preload-progress::-moz-progress-bar {
+    @apply rounded bg-black;
   }
 }

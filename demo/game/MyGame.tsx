@@ -48,23 +48,27 @@ export default function MyGame() {
         {(render, res, progress) => {
           if (res.status === "loading") {
             return (
-              <div className="prose flex h-full w-full max-w-none flex-col justify-center p-8">
-                <h1 className="text-center text-xl font-bold">Loading…</h1>
+              <div className="flex h-full w-full flex-col justify-center gap-4 p-8">
+                <h1 className="text-balance text-center text-xl/7 font-bold">
+                  Loading…
+                </h1>
 
                 <progress
                   value={progress * 100}
                   max={100}
-                  className="progress w-full"
+                  className="rvn-preload-progress"
                 />
               </div>
             );
           }
           if (res.status === "failure") {
             return (
-              <div className="prose flex h-full w-full max-w-none flex-col justify-center p-8">
-                <h1 className="text-xl font-bold">Unable to preload assets</h1>
+              <div className="flex h-full w-full flex-col justify-center gap-4 p-8">
+                <h1 className="text-balance text-xl/7 font-bold">
+                  Unable to preload assets
+                </h1>
 
-                <pre className="alert alert-error items-start whitespace-pre-line font-mono">
+                <pre className="w-full whitespace-pre-line rounded bg-error p-4 font-mono text-sm/6 text-error-content">
                   {res.error.message}
                 </pre>
               </div>

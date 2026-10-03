@@ -16,7 +16,6 @@
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "../packages/react-visual-novel/tooling.d.ts"
+    ".next/dev/types/**/*.ts"
   ]
 }

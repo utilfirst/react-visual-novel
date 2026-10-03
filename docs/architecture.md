@@ -12,7 +12,7 @@ This document owns the library and demonstration boundaries and their state rela
 
 `packages/react-visual-novel` is the published browser package. Its ESM entry exports commands, components, contexts, types, and asset preloading. Type declarations accompany the entry. `Branches` is an augmentation point for host-defined branch identifiers. Existing `dist/index.css` and `dist/index.js` imports remain supported through the package exports.
 
-Tsdown bundles library source and leaves dependencies and peers external. Tailwind generates the library utility stylesheet separately. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its theme. The host application owns its component styling and query parameter provider.
+Tsdown bundles library source and leaves dependencies and peers external. Tailwind generates the library utility stylesheet separately. The library and demo import shared scrim CSS. The demo supplies the `rvn-*` component treatments in `demo/index.css` and compiles them with its local theme. The host application owns its component styling and query parameter provider.
 
 The demo consumes the workspace package through the same package entry used by installed consumers. It uses the Next.js Pages Router, client-only game loading, and webpack asset modules for imported MP3 URLs. Its commands select webpack to preserve that media contract.
 
