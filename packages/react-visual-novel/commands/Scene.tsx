@@ -4,6 +4,7 @@ import type {
   CommandViewAnimation,
 } from "#components/Command.tsx";
 import { Command } from "#components/Command.tsx";
+import type { Statement } from "#contexts/BranchContext.tsx";
 import type { CSSProperties } from "react";
 
 export type SceneSource = {
@@ -31,7 +32,7 @@ export function Scene(props: SceneProps) {
       name="Scene"
       behavior={["skippable_timed", { durationMs }]}
       audio={props.audio}
-      hide={(s) => s.command === "Scene"}
+      hide={isScene}
     >
       {(controls) => (
         <>
@@ -63,4 +64,8 @@ export function Scene(props: SceneProps) {
       )}
     </Command>
   );
+}
+
+function isScene(statement: Statement) {
+  return statement.command === "Scene";
 }

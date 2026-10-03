@@ -20,6 +20,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -67,7 +68,14 @@ type CommandAudioOperation = {
 
 export function Command(props: CommandProps) {
   const { audio: audioSrc } = props;
-  const behavior = props.behavior ?? defaultBehavior;
+  const suppliedBehavior = props.behavior ?? defaultBehavior;
+  const behaviorType = suppliedBehavior[0];
+
+  const behaviorDuration =
+    suppliedBehavior[0] === "skippable_timed"
+      ? suppliedBehavior[1].durationMs
+      : 0;
+
   const hide = props.hide ?? 0;
   const next = props.next ?? 1;
   const zIndex = props.zIndex ?? "auto";
@@ -76,6 +84,16 @@ export function Command(props: CommandProps) {
   const viewRef = useRef<CommandViewInstance>(null);
   const isMountedRef = useRef(false);
   const audioOperationRef = useRef<CommandAudioOperation | null>(null);
+
+  // NOTE: Authors can create an equivalent tuple on every render. Registration
+  // follows its meaning instead of re-registering on tuple identity changes.
+  const behavior = useMemo<StatementBehavior>(
+    () =>
+      behaviorType === "skippable_timed"
+        ? [behaviorType, { durationMs: behaviorDuration }]
+        : [behaviorType],
+    [behaviorType, behaviorDuration],
+  );
 
   const whileVisibleAudio = useAudio(
     audioSrc?.whileVisible !== undefined && audioSrc.whileVisible !== ""
