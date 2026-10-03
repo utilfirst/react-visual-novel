@@ -51,12 +51,14 @@ export default function MyGame() {
         initialBranchId="Intro"
         onPlaySound={(sound) => {
           switch (sound) {
-            case "click": {
-              feedbackAudioRef.current?.click.play();
-              break;
-            }
+            case "click":
             case "mouseover": {
-              feedbackAudioRef.current?.mouseover.play();
+              const player = feedbackAudioRef.current?.[sound];
+              if (player?.state() === "unloaded") {
+                player.load();
+              }
+
+              player?.play();
               break;
             }
             case "skip":
