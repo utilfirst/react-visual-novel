@@ -210,8 +210,8 @@ function _getAudio(_src: AudioSource): AudioPlayer {
 }
 
 type AudioPlayerMetadata = {
-  playedAt: number;
   playId: symbol;
+  requestId: symbol;
 };
 
 type AudioChannel = {
@@ -239,15 +239,18 @@ function makeChannel(): AudioChannel {
     play: async (audio: AudioPlayer) => {
       const currentMetadata = playlist.get(audio);
       if (currentMetadata !== undefined) {
-        playlist.set(audio, { ...currentMetadata, playedAt: Date.now() });
+        playlist.set(audio, {
+          ...currentMetadata,
+          requestId: Symbol("audio request"),
+        });
         return;
       }
 
       const prevAudios = [...playlist.keys()];
 
       const metadata: AudioPlayerMetadata = {
-        playedAt: Date.now(),
         playId: Symbol("audio play"),
+        requestId: Symbol("audio request"),
       };
 
       playlist.set(audio, metadata);
@@ -280,21 +283,16 @@ function makeChannel(): AudioChannel {
       }
     },
     stop: async (audio: AudioPlayer) => {
-      if (!playlist.has(audio)) {
+      const requestId = playlist.get(audio)?.requestId;
+      if (requestId === undefined) {
         return;
       }
-
-      // Prevent audio from stopping if it was played recently
-      const stoppedAt = Date.now();
 
       await delay(CHANNEL_DEBOUNCE_INTERVAL_MS);
 
-      if (!playlist.has(audio)) {
-        return;
-      }
-
-      const metadata = playlist.get(audio);
-      if (metadata === undefined || metadata.playedAt > stoppedAt) {
+      // NOTE: Playback renewed during the debounce supersedes this stop.
+      // Request identity preserves ordering even within one clock tick.
+      if (playlist.get(audio)?.requestId !== requestId) {
         return;
       }
 
