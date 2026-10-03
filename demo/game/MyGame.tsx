@@ -1,7 +1,7 @@
 import * as assets from "#assets/index.ts";
 import { bgSolidJpg, clickMp3, mouseoverMp3 } from "#assets/index.ts";
 import { Howl } from "howler";
-import React from "react";
+import { useEffect, useRef } from "react";
 import { Branch, Game, prepareBranches, Say, Scene } from "react-visual-novel";
 
 function BranchIntro() {
@@ -23,12 +23,12 @@ declare module "react-visual-novel" {
 }
 
 export default function MyGame() {
-  const feedbackAudioRef = React.useRef<{
+  const feedbackAudioRef = useRef<{
     click: Howl;
     mouseover: Howl;
   } | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const feedbackAudio = {
       click: new Howl({ src: clickMp3, preload: false }),
       mouseover: new Howl({ src: mouseoverMp3, preload: false }),

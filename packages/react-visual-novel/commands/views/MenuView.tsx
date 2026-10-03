@@ -6,7 +6,8 @@ import { useBranchContext, useGameContext } from "#contexts/index.ts";
 import type { BranchId } from "#types.ts";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
-import React from "react";
+import type { CSSProperties } from "react";
+import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import type { Frame } from "./frame.ts";
 import { styleForFrame } from "./frame.ts";
@@ -32,7 +33,7 @@ export type MenuViewProps = {
   label?: string;
   size?: MenuSize;
   placement?: MenuPlacement;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   scheme?: CommandViewColorScheme;
   controls: ReturnType<typeof useAnimation>;
 };
@@ -47,7 +48,7 @@ export function MenuView(props: MenuViewProps) {
   const { containerRect, goToStatement, goToNextStatement } =
     useBranchContext();
 
-  const ctx = React.useMemo(
+  const ctx = useMemo(
     (): MenuContext => ({
       goToBranch,
       goToLocation,

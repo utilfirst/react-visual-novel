@@ -14,7 +14,7 @@ import type { CommandProps } from "#components/index.ts";
 import { Command } from "#components/index.ts";
 import type { StatementBehavior } from "#contexts/index.ts";
 import { motion } from "framer-motion";
-import React from "react";
+import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 export type SayProps = Pick<
@@ -46,7 +46,9 @@ export function Say(props: SayProps) {
   } = props;
 
   const text = dedentDialogue(children);
-  const groups = React.useMemo(() => charGroupsForMarkdown(text), [text]);
+
+  const groups = useMemo(() => charGroupsForMarkdown(text), [text]);
+
   const length = groups.flatMap((g) => g.chars).length;
   const imageProps = typeof image === "string" ? { uri: image } : image;
 

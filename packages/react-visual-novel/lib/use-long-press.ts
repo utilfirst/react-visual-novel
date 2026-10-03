@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useRef } from "react";
 import { useEventCallback } from "./use-event-callback.ts";
 
 type LongPressOptions = {
@@ -7,14 +7,10 @@ type LongPressOptions = {
 };
 
 export function useLongPress(options: LongPressOptions) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const isPressedRef = useRef(false);
+  const isLongPressRef = useRef(false);
   const onStart = useEventCallback(options.onStart);
-
-  const timerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
-
-  const isPressedRef = React.useRef(false);
-  const isLongPressRef = React.useRef(false);
 
   const finish = useEventCallback(() => {
     clearTimeout(timerRef.current);
@@ -38,7 +34,7 @@ export function useLongPress(options: LongPressOptions) {
     }, 400);
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("pointerup", finish);
     window.addEventListener("pointercancel", finish);
 

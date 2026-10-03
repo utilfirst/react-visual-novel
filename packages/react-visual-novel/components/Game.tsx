@@ -16,7 +16,8 @@ import {
   SpeakerHighIcon,
   SpeakerSlashIcon,
 } from "@phosphor-icons/react";
-import React from "react";
+import type { ComponentType, MouseEvent, ReactNode } from "react";
+import { useMemo } from "react";
 
 export type GameProps = {
   assets: Record<
@@ -26,22 +27,22 @@ export type GameProps = {
         src: string;
       }
   >;
-  branches: Branches & Record<string, React.ComponentType>;
+  branches: Branches & Record<string, ComponentType>;
   initialBranchId: BranchId;
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void;
+  onLinkClick?: (href: string, name: string, event: MouseEvent) => void;
   onPlaySound?: (name: SoundName) => void;
   onGoHome?: () => void;
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   children?: (
-    render: () => React.ReactNode,
+    render: () => ReactNode,
     preloadRes: Result<Error, undefined>,
     preloadProgress: number,
-  ) => React.ReactNode;
+  ) => ReactNode;
 };
 
 export function Game(props: GameProps) {
-  const branchIds = React.useMemo(
+  const branchIds = useMemo(
     () => Object.keys(props.branches),
     [props.branches],
   );
@@ -211,7 +212,7 @@ function GameView(props: GameViewProps) {
 }
 
 export function prepareBranches<
-  TRawBranches extends Record<string, React.ComponentType>,
+  TRawBranches extends Record<string, ComponentType>,
 >(_branches: TRawBranches) {
   const entries = Object.fromEntries(
     Object.entries(_branches)
@@ -235,7 +236,7 @@ export function prepareBranches<
   return branches;
 }
 
-function renderGame(render: () => React.ReactNode) {
+function renderGame(render: () => ReactNode) {
   return render();
 }
 

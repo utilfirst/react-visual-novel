@@ -1,9 +1,10 @@
-import React from "react";
+import { useLayoutEffect, useState } from "react";
 
 export function useMeasure<TElement extends Element>() {
-  const [element, setElement] = React.useState<TElement | null>(null);
-  const [rect, setRect] = React.useState<DOMRectReadOnly>();
-  React.useLayoutEffect(() => {
+  const [element, setElement] = useState<TElement | null>(null);
+  const [rect, setRect] = useState<DOMRectReadOnly>();
+
+  useLayoutEffect(() => {
     if (element === null) {
       return undefined;
     }
@@ -34,5 +35,6 @@ export function useMeasure<TElement extends Element>() {
       }
     };
   }, [element]);
+
   return [rect, setElement] as const;
 }

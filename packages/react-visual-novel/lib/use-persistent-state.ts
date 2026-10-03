@@ -1,4 +1,4 @@
-import React from "react";
+import { useLayoutEffect, useState } from "react";
 import { useEventCallback } from "./use-event-callback.ts";
 
 type PersistentStateOptions<T> = {
@@ -12,7 +12,7 @@ type PersistentStateOptions<T> = {
 const storageEvent = "rvn:storage";
 
 export function usePersistentState<T>(options: PersistentStateOptions<T>) {
-  const [value, setValue] = React.useState(() => readPersistentState(options));
+  const [value, setValue] = useState(() => readPersistentState(options));
 
   const readValue = useEventCallback((stored: string | null): T =>
     decodePersistentState({ ...options, stored }),
@@ -31,7 +31,7 @@ export function usePersistentState<T>(options: PersistentStateOptions<T>) {
     setValue(nextValue);
   });
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     const handleStorage = (event: StorageEvent) => {
       if (
         event.storageArea === window.localStorage &&
@@ -55,6 +55,7 @@ export function usePersistentState<T>(options: PersistentStateOptions<T>) {
       window.removeEventListener(storageEvent, handleLocalStorage);
     };
   }, [options.key, readValue, readStorage]);
+
   return [value, writeValue] as const;
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import { useSyncExternalStore } from "react";
 
 const locationListeners = new Set<() => void>();
 let restoreHistory: (() => void) | null = null;
@@ -9,7 +9,7 @@ export type GameLocationWriteOptions = {
 };
 
 export function useGameLocationId(initialLocationId: string) {
-  const locationId = React.useSyncExternalStore(
+  const locationId = useSyncExternalStore(
     subscribeGameLocation,
     readGameLocationId,
     readServerGameLocationId,

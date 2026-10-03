@@ -18,13 +18,21 @@ import {
 } from "#lib/use-persistent-state.ts";
 import type { BranchId } from "#types.ts";
 import { Howler } from "howler";
-import React from "react";
+import type { Dispatch, MouseEvent, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export type SoundName = "click" | "mouseover" | "skip" | "not_allowed";
 
 export type GameOptions = {
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void;
+  onLinkClick?: (href: string, name: string, event: MouseEvent) => void;
   onPlaySound?: (name: SoundName) => void;
   onGoHome?: () => void;
 };
@@ -32,31 +40,27 @@ export type GameOptions = {
 export type GameContextValue = {
   focusedLocation: GameLocation;
   muted: boolean;
-  setMuted: React.Dispatch<boolean>;
+  setMuted: Dispatch<boolean>;
   paused: boolean;
-  setPaused: React.Dispatch<boolean>;
+  setPaused: Dispatch<boolean>;
   goToBranch: (branchId: BranchId) => void;
   goToLocation: (branchId: BranchId, statementIndex: number) => void;
   goBack: () => boolean;
   canGoBack: () => boolean;
   goHome?: () => void;
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  handleLinkClick: (
-    href: string,
-    name: string,
-    event: React.MouseEvent,
-  ) => void;
+  handleLinkClick: (href: string, name: string, event: MouseEvent) => void;
   playSound: (name: SoundName) => void;
 };
 
-const GameContext = React.createContext<GameContextValue | null>(null);
+const GameContext = createContext<GameContextValue | null>(null);
 
 export type GameProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   initialBranchId: BranchId;
   branchIds?: readonly string[];
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
-  onLinkClick?: (href: string, name: string, event: React.MouseEvent) => void;
+  onLinkClick?: (href: string, name: string, event: MouseEvent) => void;
   onPlaySound?: (name: SoundName) => void;
   onGoHome?: () => void;
 };
@@ -77,7 +81,7 @@ export function GameProvider(props: GameProviderProps) {
   const [storedFocusedLocationId, setStoredFocusedLocationId] =
     useGameLocationId(makeGameLocationId(initialLocation));
 
-  const [focusedLocation, setFocusedLocation] = React.useState(() =>
+  const [focusedLocation, setFocusedLocation] = useState(() =>
     resolveGameLocation({
       location: parseGameLocation(storedFocusedLocationId),
       initialLocation,
@@ -85,7 +89,7 @@ export function GameProvider(props: GameProviderProps) {
     }),
   );
 
-  const [muted, setMuted] = React.useState(false);
+  const [muted, setMuted] = useState(false);
 
   const [paused, setPaused] = usePersistentState({
     key: "@GameContext/paused",
@@ -93,7 +97,8 @@ export function GameProvider(props: GameProviderProps) {
     decode: decodePaused,
   });
 
-  const historyRef = React.useRef<GameHistory | null>(null);
+  const historyRef = useRef<GameHistory | null>(null);
+
   if (historyRef.current === null) {
     // NOTE: History owns its mounted state. Storage is an initial snapshot
     // and a persistence target, not a second reactive history owner.
@@ -145,22 +150,6 @@ export function GameProvider(props: GameProviderProps) {
 
   const history = historyRef.current;
 
-  React.useEffect(() => {
-    // Howler creates its AudioContext when mute is first called.
-    Howler.mute(false);
-
-    // Keep the playback unlock listener mounted across mute toggles.
-    const handle = unmute(Howler.ctx, false, false);
-
-    return () => {
-      handle.dispose();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    Howler.mute(muted);
-  }, [muted]);
-
   const restoreQueryLocation = useEventCallback(() => {
     // NOTE: A child can repair bounds before this effect runs. Read the URL
     // at execution time and compare against the synchronous history owner.
@@ -191,17 +180,13 @@ export function GameProvider(props: GameProviderProps) {
     }
   });
 
-  React.useEffect(() => {
-    restoreQueryLocation();
-  }, [storedFocusedLocationId, props.branchIds, restoreQueryLocation]);
-
   const playSound = useEventCallback((name: SoundName) => {
     if (!muted) {
       props.onPlaySound?.(name);
     }
   });
 
-  const ctx = React.useMemo(
+  const ctx = useMemo(
     (): GameContextValue => ({
       focusedLocation,
       muted,
@@ -249,6 +234,26 @@ export function GameProvider(props: GameProviderProps) {
     ],
   );
 
+  useEffect(() => {
+    // Howler creates its AudioContext when mute is first called.
+    Howler.mute(false);
+
+    // Keep the playback unlock listener mounted across mute toggles.
+    const handle = unmute(Howler.ctx, false, false);
+
+    return () => {
+      handle.dispose();
+    };
+  }, []);
+
+  useEffect(() => {
+    Howler.mute(muted);
+  }, [muted]);
+
+  useEffect(() => {
+    restoreQueryLocation();
+  }, [storedFocusedLocationId, props.branchIds, restoreQueryLocation]);
+
   return (
     <GameContext.Provider value={ctx}>
       <GameHistoryContext.Provider value={history}>
@@ -259,7 +264,8 @@ export function GameProvider(props: GameProviderProps) {
 }
 
 export function useGameContext() {
-  const ctx = React.useContext(GameContext);
+  const ctx = useContext(GameContext);
+
   if (!ctx) {
     throw new Error(
       "`useGameContext` can only be used inside a Game component",
@@ -297,7 +303,7 @@ function resolveGameLocation(
 }
 
 // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional link callback contract.
-function openGameLink(href: string, _name: string, event: React.MouseEvent) {
+function openGameLink(href: string, _name: string, event: MouseEvent) {
   event.preventDefault();
   window.open(href, "_blank", "noopener,noreferrer");
 }

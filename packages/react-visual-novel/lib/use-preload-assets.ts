@@ -1,6 +1,6 @@
 import { useEventCallback } from "#lib/use-event-callback.ts";
 import asyncPreloader from "async-preloader";
-import React from "react";
+import { useEffect, useState } from "react";
 import { useResult } from "./use-result.ts";
 
 export function usePreloadAssets(
@@ -14,14 +14,13 @@ export function usePreloadAssets(
   } = {},
 ) {
   const [res, setRes] = useResult<Error, undefined>();
-
-  const [progress, setProgress] = React.useState(0);
+  const [progress, setProgress] = useState(0);
 
   const handleLoaded = useEventCallback(() => {
     onLoaded?.();
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const controller = new AbortController();
 
     setRes({ status: "loading" });
@@ -77,6 +76,7 @@ export function usePreloadAssets(
       cancelLoad();
     };
   }, [assets, concurrency, handleLoaded, setRes]);
+
   return [res, progress] as const;
 }
 

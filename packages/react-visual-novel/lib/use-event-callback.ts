@@ -1,15 +1,18 @@
-import React from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 export function useEventCallback<TArgs extends unknown[], TResult>(
   callback: (...args: TArgs) => TResult,
 ): (...args: TArgs) => TResult {
-  const callbackRef = React.useRef(callback);
-  React.useLayoutEffect(() => {
-    callbackRef.current = callback;
-  });
+  const callbackRef = useRef(callback);
 
-  return React.useCallback(
+  const eventCallback = useCallback(
     (...args: TArgs) => callbackRef.current(...args),
     [],
   );
+
+  useLayoutEffect(() => {
+    callbackRef.current = callback;
+  });
+
+  return eventCallback;
 }

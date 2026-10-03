@@ -1,4 +1,11 @@
-import React from "react";
+import type { ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import type {
   Statement,
   StatementRegistrationCleanup,
@@ -17,14 +24,12 @@ export type StatementContextValue = {
   visible: boolean;
 };
 
-const StatementContext = React.createContext<StatementContextValue | null>(
-  null,
-);
+const StatementContext = createContext<StatementContextValue | null>(null);
 
 export type StatementProviderProps = {
   statementIndex: number;
   statementLabel?: string | null;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function StatementProvider(props: StatementProviderProps) {
@@ -32,12 +37,11 @@ export function StatementProvider(props: StatementProviderProps) {
   const statementLabel = props.statementLabel ?? null;
 
   const branchCtx = useBranchContext();
-
-  const [statement, setStatement] = React.useState<Statement | null>(null);
+  const [statement, setStatement] = useState<Statement | null>(null);
 
   const registerStatement = branchCtx.registerStatement;
 
-  const register = React.useCallback(
+  const register = useCallback(
     (definition: Omit<Statement, "index" | "label">) => {
       const registeredStatement: Statement = {
         ...definition,
@@ -53,7 +57,7 @@ export function StatementProvider(props: StatementProviderProps) {
     [registerStatement, statementIndex, statementLabel],
   );
 
-  const ctx = React.useMemo((): StatementContextValue => {
+  const ctx = useMemo((): StatementContextValue => {
     const focused = branchCtx.focusedStatementIndex === statementIndex;
     let visible = focused;
     if (branchCtx.focusedStatementIndex > statementIndex) {
@@ -99,7 +103,8 @@ export function StatementProvider(props: StatementProviderProps) {
 }
 
 export function useStatementContext() {
-  const ctx = React.useContext(StatementContext);
+  const ctx = useContext(StatementContext);
+
   if (!ctx) {
     throw new Error(
       "`useStatementContext` can only be used inside a Command component",

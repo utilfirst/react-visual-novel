@@ -5,7 +5,8 @@ import type {
 import { useBranchContext, useGameContext } from "#contexts/index.ts";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
-import React from "react";
+import type { CSSProperties } from "react";
+import { Fragment } from "react";
 import { twMerge } from "tailwind-merge";
 import type { CharGroup } from "./char-group.ts";
 import type { Frame } from "./frame.ts";
@@ -21,10 +22,10 @@ export type TextViewProps = {
     | {
         text: string;
         color?: string;
-        style?: React.CSSProperties;
+        style?: CSSProperties;
       };
   placement?: TextPlacement;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   frame?: Frame;
   scheme?: CommandViewColorScheme;
 };
@@ -107,7 +108,7 @@ export function TextView(props: TextViewProps) {
               case "text": {
                 return (
                   // oxlint-disable-next-line react/no-array-index-key -- Markdown groups have no IDs and may contain repeated empty links. Their source position identifies each group.
-                  <React.Fragment key={groupIdx}>
+                  <Fragment key={groupIdx}>
                     {group.chars.map((char, charIdx) => (
                       <motion.span
                         key={`${char}_${group.startIndex + charIdx}`}
@@ -120,7 +121,7 @@ export function TextView(props: TextViewProps) {
                         {char}
                       </motion.span>
                     ))}
-                  </React.Fragment>
+                  </Fragment>
                 );
               }
               case "link": {

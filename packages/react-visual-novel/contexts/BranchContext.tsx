@@ -3,7 +3,15 @@ import { useEventCallback } from "#lib/use-event-callback.ts";
 import { useLongPress } from "#lib/use-long-press.ts";
 import { useMeasure } from "#lib/use-measure.ts";
 import type { BranchId } from "#types.ts";
-import React from "react";
+import type { ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { twMerge } from "tailwind-merge";
 import { useGameContext } from "./GameContext.tsx";
 
@@ -39,11 +47,11 @@ export type BranchContextValue = {
   goToNextStatement: (plusIndex?: number) => void;
 };
 
-const BranchContext = React.createContext<BranchContextValue | null>(null);
+const BranchContext = createContext<BranchContextValue | null>(null);
 
 export type BranchProviderProps = {
   branchId: BranchId;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function BranchProvider(props: BranchProviderProps) {
@@ -52,7 +60,8 @@ export function BranchProvider(props: BranchProviderProps) {
   const { focusedLocation, goToLocation, goBack, canGoBack, playSound } =
     useGameContext();
 
-  const gameHistory = React.useContext(GameHistoryContext);
+  const gameHistory = useContext(GameHistoryContext);
+
   if (gameHistory === null) {
     throw new Error("`BranchProvider` requires a GameProvider history");
   }
@@ -60,12 +69,14 @@ export function BranchProvider(props: BranchProviderProps) {
   const focusedStatementIndex =
     focusedLocation.branchId === branchId ? focusedLocation.statementIndex : 0;
 
-  const statementByIndex = React.useRef(new Map<number, Statement>()).current;
-  const statementByLabel = React.useRef(new Map<string, Statement>()).current;
+  const ignoreClickRef = useRef(false);
+
+  const statementByIndex = useRef(new Map<number, Statement>()).current;
+  const statementByLabel = useRef(new Map<string, Statement>()).current;
 
   const [containerRect, containerRef] = useMeasure<HTMLDivElement>();
 
-  const registerStatement = React.useCallback(
+  const registerStatement = useCallback(
     (statement: Statement) => {
       if (
         statement.label !== null &&
@@ -97,25 +108,6 @@ export function BranchProvider(props: BranchProviderProps) {
     [statementByIndex, statementByLabel],
   );
 
-  React.useEffect(() => {
-    // NOTE: Child command effects register before this parent effect. Reset
-    // invalid destinations instead of retaining them in the back stack.
-    const firstStatementIndex = statementByIndex.keys().next().value;
-    if (
-      firstStatementIndex !== undefined &&
-      !statementByIndex.has(focusedStatementIndex)
-    ) {
-      const location = { branchId, statementIndex: firstStatementIndex };
-      gameHistory.reset(location);
-    }
-  }, [
-    branchId,
-    containerRect,
-    focusedStatementIndex,
-    gameHistory,
-    statementByIndex,
-  ]);
-
   const goToNextStatement = useEventCallback((plusIndex?: number) => {
     const focusedStatement = statementByIndex.get(focusedStatementIndex);
 
@@ -136,7 +128,7 @@ export function BranchProvider(props: BranchProviderProps) {
     }
   });
 
-  const ctx = React.useMemo(
+  const ctx = useMemo(
     (): BranchContextValue | null =>
       containerRect
         ? {
@@ -170,8 +162,6 @@ export function BranchProvider(props: BranchProviderProps) {
     ],
   );
 
-  const ignoreClickRef = React.useRef(false);
-
   const advanceStatement = useEventCallback(() => {
     const statement = statementByIndex.get(focusedStatementIndex);
     if (statement?.behavior[0].startsWith("skippable") === true) {
@@ -192,6 +182,25 @@ export function BranchProvider(props: BranchProviderProps) {
       statementByIndex.get(focusedStatementIndex)?.resume();
     },
   });
+
+  useEffect(() => {
+    // NOTE: Child command effects register before this parent effect. Reset
+    // invalid destinations instead of retaining them in the back stack.
+    const firstStatementIndex = statementByIndex.keys().next().value;
+    if (
+      firstStatementIndex !== undefined &&
+      !statementByIndex.has(focusedStatementIndex)
+    ) {
+      const location = { branchId, statementIndex: firstStatementIndex };
+      gameHistory.reset(location);
+    }
+  }, [
+    branchId,
+    containerRect,
+    focusedStatementIndex,
+    gameHistory,
+    statementByIndex,
+  ]);
 
   return (
     // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- This ancestor delegates stage clicks. The advance button supplies keyboard activation, and choices stop propagation.
@@ -254,7 +263,8 @@ export function BranchProvider(props: BranchProviderProps) {
 }
 
 export function useBranchContext() {
-  const ctx = React.useContext(BranchContext);
+  const ctx = useContext(BranchContext);
+
   if (!ctx) {
     throw new Error(
       "`useBranchContext` can only be used inside a Game component",

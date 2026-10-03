@@ -1,7 +1,7 @@
-import React from "react";
+import { useState } from "react";
 
 export function useResult<E, D>(initial?: Result<E, D>) {
-  return React.useState<Result<E, D>>(initial ?? { status: "loading" });
+  return useState<Result<E, D>>(initial ?? { status: "loading" });
 }
 
 export type Result<E, D> =
