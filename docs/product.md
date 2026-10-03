@@ -15,7 +15,7 @@ Branches contain commands for scenes, images, dialogue, titles, audio, and choic
 
 ## Playback
 
-The player preloads supplied assets and exposes loading progress and its result to its render callback. Commands expose timed, manually skippable, and non-skippable behavior. Player controls mute audio, pause timed progression, revisit history, restart the initial branch, and invoke an optional home action. Link and sound callbacks let the host application supply their effects.
+The player preloads supplied assets and exposes loading progress and failure to its render callback. Commands expose timed, manually skippable, and non-skippable behavior. Player controls mute audio, pause timed progression, revisit history, restart the initial branch, and invoke an optional home action. Link and sound callbacks let the host application supply their effects.
 
 The demonstration in `demo/game/MyGame.tsx` exercises the package through its published entry and generated stylesheet. Host applications supply the query parameter provider required by `use-query-params`.
 

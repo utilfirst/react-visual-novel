@@ -64,13 +64,19 @@ async function preloadAssets(
   } = {},
 ) {
   let loadedCount = 0;
-  await PromisePool.withConcurrency(concurrency)
+
+  const { errors } = await PromisePool.withConcurrency(concurrency)
     .for(srcs)
     .process(async (src) => {
       await asyncPreloader.loadItem({ src });
       loadedCount += 1;
       onProgress?.(loadedCount / srcs.length);
     });
+
+  // PromisePool collects item failures instead of rejecting its operation.
+  if (errors.length > 0) {
+    throw new AggregateError(errors, "Unable to preload assets");
+  }
 }
 
 function scheduleIdleCallback(callback: IdleRequestCallback) {

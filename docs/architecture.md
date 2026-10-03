@@ -26,13 +26,13 @@ The release workflow packages a checked version tag and passes its tarball to a 
 
 `BranchContext` registers statements, measures the branch container, resolves labels, and advances playback. `StatementContext` derives focus and visibility from the branch location and each command's hiding rule. `Command` connects statement registration to animation, timing, and audio playback.
 
-Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. Asset preloading exposes progress and a result through the game render callback. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
+Audio players are cached by source configuration. Named audio channels coordinate interruption and overlap. Asset preloading reports progress and failure through the game render callback. The vendor unmute helper supplies iOS audio behavior. Its retained source bytes stay outside lint and formatting.
 
 ## Trust and failure
 
 Host assets, React children, and callbacks enter through public component contracts. Query parameters and browser storage are persisted inputs whose identifiers and keys must survive maintenance changes. Markdown text is rendered as React content rather than raw HTML. Unsupported syntax is reported by the parser owner.
 
-The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. The preload result reports operation errors. Individual asset failures collected by the pool remain an unresolved loading boundary. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
+The library requires browser APIs and host-supplied peers. The demo loads the game with server rendering disabled. Missing providers throw at the context hook boundary. Asset failures are presented through the preload result. Browser playback and interaction are verified with developer-provided runtime evidence unless rendered evidence is explicitly requested.
 
 ## Implementation owners
 
