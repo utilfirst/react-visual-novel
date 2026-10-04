@@ -4,7 +4,7 @@ import { MenuView } from "#commands/views/MenuView.tsx";
 import { Game } from "#components/Game.tsx";
 import { BranchProvider, useBranchContext } from "#contexts/BranchContext.tsx";
 import { GameProvider, useGameContext } from "#contexts/GameContext.tsx";
-import { useNavigation } from "#lib/use-navigation.ts";
+import { useNavigation } from "./use-navigation.ts";
 
 export type GameAuthoring<TBranchId extends string> = {
   Game: typeof Game<TBranchId>;

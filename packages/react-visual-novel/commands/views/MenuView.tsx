@@ -4,7 +4,8 @@ import type {
 } from "#components/Command.tsx";
 import { useBranchContext } from "#contexts/BranchContext.tsx";
 import { useGameContext } from "#contexts/GameContext.tsx";
-import { type Navigation, useNavigation } from "#lib/use-navigation.ts";
+import type { Navigation } from "#lib/use-navigation.ts";
+import { useNavigation } from "#lib/use-navigation.ts";
 import type { BranchId } from "#types.ts";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
