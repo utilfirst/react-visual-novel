@@ -22,6 +22,7 @@
     "packages/react-visual-novel/node_modules/**": true,
     "pnpm-lock.yaml": true
   },
+  "js/ts.experimental.useTsgo": false,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "tailwindCSS.classFunctions": ["twMerge", "tv"]
