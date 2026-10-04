@@ -28,7 +28,10 @@ export function Menu(props: MenuProps) {
     >
       {(controls) => (
         <>
-          {imageProps && <ImageView controls={controls} {...imageProps} />}
+          {imageProps !== undefined && (
+            <ImageView controls={controls} {...imageProps} />
+          )}
+
           <MenuView controls={controls} {...menuProps} />
         </>
       )}

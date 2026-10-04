@@ -52,6 +52,20 @@ export function TextView(props: TextViewProps) {
   })();
 
   const fontSize = `${containerRect.width / REFERENCE_SIZE[0]}em`;
+  const tagStyle: CSSProperties = {};
+  if (typeof tag === "object") {
+    if (tag.color !== undefined && tag.color !== "") {
+      tagStyle.backgroundColor = tag.color;
+      tagStyle.color = "white";
+    }
+
+    Object.assign(tagStyle, tag.style);
+  }
+
+  const style: CSSProperties = { ...props.style };
+  if (props.frame !== undefined) {
+    Object.assign(style, styleForFrame({ containerRect }, props.frame));
+  }
 
   return (
     <div
@@ -81,15 +95,7 @@ export function TextView(props: TextViewProps) {
             initial="initial"
             animate={controls}
             className="rvn-tag whitespace-pre-wrap"
-            style={{
-              ...(typeof tag === "object" &&
-                tag.color !== undefined &&
-                tag.color !== "" && {
-                  backgroundColor: tag.color,
-                  color: "white",
-                }),
-              ...(typeof tag === "object" && tag.style),
-            }}
+            style={tagStyle}
           >
             {typeof tag === "string" ? tag : tag.text}
           </motion.span>
@@ -99,10 +105,7 @@ export function TextView(props: TextViewProps) {
           data-size={size}
           data-scheme={props.scheme}
           className="rvn-text whitespace-pre-wrap"
-          style={{
-            ...props.style,
-            ...(props.frame && styleForFrame({ containerRect }, props.frame)),
-          }}
+          style={style}
         >
           {props.groups.map((group, groupIdx) => {
             switch (group.type) {

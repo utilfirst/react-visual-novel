@@ -13,6 +13,13 @@ export type ImageViewProps = {
 
 export function ImageView(props: ImageViewProps) {
   const animation = props.animation ?? imageAnimation;
+  const style: CSSProperties = {};
+  if (props.align === "top" || props.align === "bottom") {
+    style.width = "100%";
+    style[props.align] = 0;
+  }
+
+  Object.assign(style, props.style);
 
   return (
     <motion.div
@@ -26,17 +33,7 @@ export function ImageView(props: ImageViewProps) {
         src={props.uri}
         alt=""
         className="absolute max-w-none"
-        style={{
-          ...(props.align === "top" && {
-            width: "100%",
-            top: 0,
-          }),
-          ...(props.align === "bottom" && {
-            width: "100%",
-            bottom: 0,
-          }),
-          ...props.style,
-        }}
+        style={style}
       />
     </motion.div>
   );

@@ -73,7 +73,7 @@ export function Say(props: SayProps) {
     >
       {(controls) => (
         <>
-          {scrim && (
+          {scrim === true && (
             <motion.div
               variants={{
                 initial: { opacity: 0 },
@@ -101,7 +101,9 @@ export function Say(props: SayProps) {
             />
           )}
 
-          {imageProps && <ImageView controls={controls} {...imageProps} />}
+          {imageProps !== undefined && (
+            <ImageView controls={controls} {...imageProps} />
+          )}
 
           <TextView
             groups={groups}
@@ -111,7 +113,7 @@ export function Say(props: SayProps) {
             {...textProps}
           />
 
-          {menuProps && (
+          {menuProps !== undefined && (
             <MenuView
               placement={placement === "bottom" ? "top" : "bottom"}
               scheme={scheme}

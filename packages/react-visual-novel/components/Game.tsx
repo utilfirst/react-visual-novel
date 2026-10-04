@@ -124,7 +124,7 @@ function GameView(props: GameViewProps) {
             </button>
           )}
 
-          {goHome && (
+          {goHome !== undefined && (
             <button
               type="button"
               aria-label="Go home"

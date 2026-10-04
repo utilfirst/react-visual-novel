@@ -253,7 +253,7 @@ export function BranchProvider(props: BranchProviderProps) {
         style={{ color: "rgba(0, 0, 0, .35)" }}
       />
 
-      {ctx && (
+      {ctx !== null && (
         <BranchContext.Provider value={ctx}>
           {props.children}
         </BranchContext.Provider>
