@@ -28,6 +28,7 @@ This workspace publishes a browser React visual novel library and contains a Nex
 | `docs/product.md` | Product | Visual novel capabilities or public usage | Accepted visual novel capabilities or public usage |
 | `docs/architecture.md` | Architecture | Package boundaries, context state, public exports, or build topology | Package boundaries, context state, public exports, or build topology |
 | `docs/ui-design.md` | UI design | Shared command presentation or player interactions | Shared command presentation or player interactions |
+| `docs/provenance.md` | Provenance record | Adding or changing externally derived material | Append a newest-first entry for source identity, adoption, or derived ownership changes and preserve existing records |
 | `docs/runbooks/release.md` | Runbook | Release preparation, tag pushes, or package publication | Release targets, approval boundaries, execution, or verification |
 
 - Read `packages/react-visual-novel/index.ts`, `types.ts`, and `package.json` before changing the public package surface.
