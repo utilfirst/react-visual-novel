@@ -4,26 +4,18 @@ import type {
 } from "#components/Command.tsx";
 import { useBranchContext } from "#contexts/BranchContext.tsx";
 import { useGameContext } from "#contexts/GameContext.tsx";
-import type { BranchId } from "#types.ts";
+import { type Navigation, useNavigation } from "#lib/use-navigation.ts";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";
-import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import type { Frame } from "./frame.ts";
 import { styleForFrame } from "./frame.ts";
 
-type MenuContext = {
-  goToBranch: (branchId: BranchId) => void;
-  goToStatement: (statementLabel: string) => void;
-  goToLocation: (branchId: BranchId, statementIndex: number) => void;
-  goToNextStatement: (plusIndex?: number) => void;
-};
-
 export type Choice = {
   label: string;
   frame?: Frame;
-  onClick: (ctx: MenuContext) => void;
+  onClick: (ctx: Navigation) => void;
 };
 
 export type MenuSize = "md" | "lg";
@@ -44,20 +36,9 @@ export function MenuView(props: MenuViewProps) {
   const size = props.size ?? "md";
   const placement = props.placement ?? "bottom";
 
-  const { goToBranch, goToLocation, playSound } = useGameContext();
-
-  const { containerRect, goToStatement, goToNextStatement } =
-    useBranchContext();
-
-  const ctx = useMemo(
-    (): MenuContext => ({
-      goToBranch,
-      goToLocation,
-      goToStatement,
-      goToNextStatement,
-    }),
-    [goToBranch, goToLocation, goToStatement, goToNextStatement],
-  );
+  const { playSound } = useGameContext();
+  const { containerRect } = useBranchContext();
+  const ctx = useNavigation();
 
   return (
     <div

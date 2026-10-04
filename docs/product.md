@@ -11,7 +11,7 @@ react-visual-novel lets authors compose browser visual novels from React compone
 
 Authors provide named branches, assets, and an initial branch to `Game`. `prepareBranches` derives branch identifiers from component names beginning with `Branch`. The `Branches` interface supports declaration merging so branch destinations can be checked in author code.
 
-Branches contain commands for scenes, images, dialogue, titles, audio, and choices. Labels name statement destinations. Empty labels contribute no statements. Choice callbacks can change branches, jump to a statement, or advance playback. The command components and their exported types own the exact props.
+Branches contain commands for scenes, images, dialogue, titles, audio, and choices. Labels name statement destinations. Empty labels contribute no statements. Choice callbacks can change branches, jump to a statement, or advance playback. Custom commands can read the same navigation operations through `useNavigation` and type their callbacks with `Navigation`. The command components and their exported types own the exact props.
 
 ## Playback
 

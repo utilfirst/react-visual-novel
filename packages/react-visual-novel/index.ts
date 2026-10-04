@@ -15,5 +15,6 @@ export * from "#components/Game.tsx";
 export * from "#contexts/BranchContext.tsx";
 export * from "#contexts/GameContext.tsx";
 export * from "#contexts/StatementContext.tsx";
+export { useNavigation, type Navigation } from "#lib/use-navigation.ts";
 export { usePreloadAssets } from "#lib/use-preload-assets.ts";
 export type * from "./types.ts";
