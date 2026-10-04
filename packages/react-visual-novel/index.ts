@@ -11,6 +11,7 @@ export * from "#commands/views/MenuView.tsx";
 export * from "#commands/views/TextView.tsx";
 export * from "#components/Branch.tsx";
 export * from "#components/Command.tsx";
+export * from "#components/CommandSurface.tsx";
 export * from "#components/Game.tsx";
 export * from "#contexts/BranchContext.tsx";
 export * from "#contexts/GameContext.tsx";
