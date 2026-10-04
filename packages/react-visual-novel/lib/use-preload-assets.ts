@@ -58,7 +58,7 @@ export function usePreloadAssets(
         if (!controller.signal.aborted) {
           setRes({
             status: "failure",
-            error: error instanceof Error ? error : new Error(String(error)),
+            error: normalizeException(error),
           });
         }
       }
@@ -117,10 +117,9 @@ async function preloadAssets(options: PreloadAssetsOptions) {
         loadedCount += 1;
         options.onProgress(loadedCount / srcs.length);
       } catch (error) {
-        const failure = new Error(
-          error instanceof Error ? error.message : String(error),
-          { cause: error },
-        );
+        const failure = new Error(normalizeException(error).message, {
+          cause: error,
+        });
 
         errors.push(Object.assign(failure, { item: src, raw: error }));
       }
@@ -139,6 +138,14 @@ async function preloadAssets(options: PreloadAssetsOptions) {
   if (errors.length > 0) {
     throw new AggregateError(errors, "Unable to preload assets");
   }
+}
+
+function normalizeException(cause: unknown): Error {
+  if (cause instanceof Error) {
+    return cause;
+  }
+
+  return new Error(String(cause), { cause });
 }
 
 function scheduleIdleCallback(callback: () => void) {
