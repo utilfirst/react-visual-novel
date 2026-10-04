@@ -8,10 +8,10 @@ The workspace contains the published library in `packages/react-visual-novel` an
 
 ## Installation
 
-Use React 18 or 19 and install the audio peer:
+Use React 18 or 19 and install the audio and animation peers:
 
 ```shell
-npm install react-visual-novel howler
+npm install react-visual-novel howler framer-motion
 ```
 
 ## Quickstart
@@ -46,7 +46,7 @@ export default function MyGame() {
 }
 ```
 
-`createGame` scopes choice callbacks and navigation hooks to one game without global declarations. Existing `Branches` declaration merging remains supported. Name reusable destinations with `GameLocation<keyof typeof branches>` and pass them to `goToLocation(location)`. Positional `goToLocation(branchId, statementIndex)` calls retain their meaning.
+`createGame` scopes choice callbacks and navigation hooks to one game without global declarations. Existing `Branches` declaration merging remains supported. Name reusable destinations with `GameLocation<keyof typeof branches>` and pass them to `goToLocation(location)`. Positional `goToLocation(branchId, statementIndex)` calls retain their meaning. The host and library share the installed Motion peer so custom command animation controls use one implementation.
 
 The generated stylesheet uses Tailwind CSS 4 and requires Safari 16.4+, Chrome 111+, and Firefox 128+. It supplies utilities and shared scrims without a global reset. Host applications supply the `rvn-*` component treatments shown in `demo/index.css`.
 
