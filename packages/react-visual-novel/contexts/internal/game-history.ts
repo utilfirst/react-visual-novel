@@ -1,9 +1,9 @@
 import type { GameLocation } from "./game-location.ts";
 
 export type GameHistory = {
-  peek: () => GameLocation;
-  push: (location: GameLocation) => void;
-  reset: (location: GameLocation) => void;
+  peek: () => GameLocation<string>;
+  push: (location: GameLocation<string>) => void;
+  reset: (location: GameLocation<string>) => void;
   goBack: () => boolean;
   canGoBack: () => boolean;
 };
@@ -12,9 +12,9 @@ export function makeGameHistory({
   locations,
   onChange,
 }: {
-  locations: GameLocation[];
+  locations: GameLocation<string>[];
   onChange?: (
-    newLocations: GameLocation[],
+    newLocations: GameLocation<string>[],
     operation: "push" | "reset" | "back",
   ) => void;
 }): GameHistory {

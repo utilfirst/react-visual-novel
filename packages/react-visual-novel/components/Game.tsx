@@ -3,7 +3,7 @@ import type { GameOptions } from "#contexts/GameContext.tsx";
 import { GameProvider, useGameContext } from "#contexts/GameContext.tsx";
 import type { Result } from "#lib/result.ts";
 import { usePreloadAssets } from "#lib/use-preload-assets.ts";
-import type { Branches, BranchId } from "#types.ts";
+import type { BranchId } from "#types.ts";
 import {
   ArrowCounterClockwiseIcon,
   ArrowLeftIcon,
@@ -16,7 +16,7 @@ import {
 import type { ComponentType, ReactNode } from "react";
 import { useMemo } from "react";
 
-export type GameProps = GameOptions & {
+export type GameProps<TBranchId extends string = BranchId> = GameOptions & {
   assets: Record<
     string,
     | string
@@ -24,8 +24,8 @@ export type GameProps = GameOptions & {
         src: string;
       }
   >;
-  branches: Branches & Record<string, ComponentType>;
-  initialBranchId: BranchId;
+  branches: Record<TBranchId, ComponentType> & Record<string, ComponentType>;
+  initialBranchId: TBranchId;
   // oxlint-disable-next-line utilfirst/prefer-options-parameter -- Preserve the published positional callback contract.
   children?: (
     render: () => ReactNode,
@@ -34,7 +34,9 @@ export type GameProps = GameOptions & {
   ) => ReactNode;
 };
 
-export function Game(props: GameProps) {
+export function Game<TBranchId extends string = BranchId>(
+  props: GameProps<TBranchId>,
+) {
   const branchIds = useMemo(
     () => Object.keys(props.branches),
     [props.branches],
@@ -60,7 +62,7 @@ export function Game(props: GameProps) {
 }
 
 type GameViewProps = Pick<
-  GameProps,
+  GameProps<string>,
   "assets" | "branches" | "initialBranchId" | "children"
 >;
 
@@ -78,7 +80,7 @@ function GameView(props: GameViewProps) {
     canGoBack,
     goHome,
     playSound,
-  } = useGameContext();
+  } = useGameContext<string>();
 
   const [preloadRes, preloadProgress] = usePreloadAssets(props.assets);
 

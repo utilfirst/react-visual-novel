@@ -36,8 +36,8 @@ export type Statement = {
   resume: () => void;
 };
 
-export type BranchContextValue = {
-  branchId: BranchId;
+export type BranchContextValue<TBranchId extends string = BranchId> = {
+  branchId: TBranchId;
   containerRect: DOMRectReadOnly;
   registerStatement: (statement: Statement) => StatementRegistrationCleanup;
   getStatement: (statementIndex: number) => Statement | undefined;
@@ -47,18 +47,20 @@ export type BranchContextValue = {
   goToNextStatement: (plusIndex?: number) => void;
 };
 
-const BranchContext = createContext<BranchContextValue | null>(null);
+const BranchContext = createContext<BranchContextValue<string> | null>(null);
 
-export type BranchProviderProps = {
-  branchId: BranchId;
+export type BranchProviderProps<TBranchId extends string = BranchId> = {
+  branchId: TBranchId;
   children: ReactNode;
 };
 
-export function BranchProvider(props: BranchProviderProps) {
+export function BranchProvider<TBranchId extends string = BranchId>(
+  props: BranchProviderProps<TBranchId>,
+) {
   const { branchId } = props;
 
   const { focusedLocation, goToLocation, goBack, canGoBack, playSound } =
-    useGameContext();
+    useGameContext<string>();
 
   const gameHistory = useContext(GameHistoryContext);
 
@@ -129,7 +131,7 @@ export function BranchProvider(props: BranchProviderProps) {
   });
 
   const ctx = useMemo(
-    (): BranchContextValue | null =>
+    (): BranchContextValue<string> | null =>
       containerRect
         ? {
             branchId,
@@ -262,7 +264,9 @@ export function BranchProvider(props: BranchProviderProps) {
   );
 }
 
-export function useBranchContext() {
+export function useBranchContext<
+  TBranchId extends string = BranchId,
+>(): BranchContextValue<TBranchId> {
   const ctx = useContext(BranchContext);
 
   if (!ctx) {
@@ -271,5 +275,7 @@ export function useBranchContext() {
     );
   }
 
-  return ctx;
+  // SAFETY: The selected authoring scope describes the enclosing branch provider. The runtime context shares one string-based representation across scopes.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- React contexts cannot retain a host's generic branch scope.
+  return ctx as BranchContextValue<TBranchId>;
 }

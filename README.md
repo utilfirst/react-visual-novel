@@ -21,7 +21,7 @@ Compose branches and commands directly. The game synchronizes its `location` que
 ```tsx
 import * as assets from "./assets/index.ts";
 import { bgSolidJpg } from "./assets/index.ts";
-import { Branch, Game, prepareBranches, Say, Scene } from "react-visual-novel";
+import { Branch, createGame, prepareBranches, Scene } from "react-visual-novel";
 import "react-visual-novel/dist/index.css";
 
 function BranchIntro() {
@@ -35,10 +35,7 @@ function BranchIntro() {
 
 const branches = prepareBranches({ BranchIntro });
 
-type MyBranches = typeof branches;
-declare module "react-visual-novel" {
-  interface Branches extends MyBranches {}
-}
+const { Game, Say } = createGame<keyof typeof branches>();
 
 export default function MyGame() {
   return (
@@ -48,6 +45,8 @@ export default function MyGame() {
   );
 }
 ```
+
+`createGame` scopes choice callbacks and navigation hooks to one game without global declarations. Existing `Branches` declaration merging remains supported. Name reusable destinations with `GameLocation<keyof typeof branches>` and pass them to `goToLocation(location)`. Positional `goToLocation(branchId, statementIndex)` calls retain their meaning.
 
 The generated stylesheet uses Tailwind CSS 4 and requires Safari 16.4+, Chrome 111+, and Firefox 128+. It supplies utilities and shared scrims without a global reset. Host applications supply the `rvn-*` component treatments shown in `demo/index.css`.
 

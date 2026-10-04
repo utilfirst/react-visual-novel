@@ -5,6 +5,7 @@ import type {
 import { useBranchContext } from "#contexts/BranchContext.tsx";
 import { useGameContext } from "#contexts/GameContext.tsx";
 import { type Navigation, useNavigation } from "#lib/use-navigation.ts";
+import type { BranchId } from "#types.ts";
 import type { useAnimation } from "framer-motion";
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";
@@ -12,17 +13,17 @@ import { twMerge } from "tailwind-merge";
 import type { Frame } from "./frame.ts";
 import { styleForFrame } from "./frame.ts";
 
-export type Choice = {
+export type Choice<TBranchId extends string = BranchId> = {
   label: string;
   frame?: Frame;
-  onClick: (ctx: Navigation) => void;
+  onClick: (ctx: Navigation<TBranchId>) => void;
 };
 
 export type MenuSize = "md" | "lg";
 export type MenuPlacement = "top" | "middle" | "bottom";
 
-export type MenuViewProps = {
-  choices: Choice[];
+export type MenuViewProps<TBranchId extends string = BranchId> = {
+  choices: Choice<TBranchId>[];
   label?: string;
   size?: MenuSize;
   placement?: MenuPlacement;
@@ -31,14 +32,16 @@ export type MenuViewProps = {
   controls: ReturnType<typeof useAnimation>;
 };
 
-export function MenuView(props: MenuViewProps) {
+export function MenuView<TBranchId extends string = BranchId>(
+  props: MenuViewProps<TBranchId>,
+) {
   const { label, scheme } = props;
   const size = props.size ?? "md";
   const placement = props.placement ?? "bottom";
 
   const { playSound } = useGameContext();
   const { containerRect } = useBranchContext();
-  const ctx = useNavigation();
+  const ctx = useNavigation<TBranchId>();
 
   return (
     <div

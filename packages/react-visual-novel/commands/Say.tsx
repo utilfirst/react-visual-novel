@@ -8,23 +8,26 @@ import { TextView } from "#commands/views/TextView.tsx";
 import type { CommandProps } from "#components/Command.tsx";
 import { Command } from "#components/Command.tsx";
 import type { StatementBehavior } from "#contexts/BranchContext.tsx";
+import type { BranchId } from "#types.ts";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
-export type SayProps = Pick<
+export type SayProps<TBranchId extends string = BranchId> = Pick<
   CommandProps,
   "audio" | "hide" | "next" | "zIndex"
 > &
   Omit<TextViewProps, "groups" | "controls"> & {
     children: string;
     image?: string | Omit<ImageViewProps, "controls">;
-    menu?: Choice[] | Omit<MenuViewProps, "controls">;
+    menu?: Choice<TBranchId>[] | Omit<MenuViewProps<TBranchId>, "controls">;
     durationMs?: number;
     scrim?: boolean;
   };
 
-export function Say(props: SayProps) {
+export function Say<TBranchId extends string = BranchId>(
+  props: SayProps<TBranchId>,
+) {
   const {
     children,
     placement,

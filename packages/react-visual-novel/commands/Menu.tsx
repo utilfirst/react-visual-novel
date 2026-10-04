@@ -4,16 +4,19 @@ import type { MenuViewProps } from "#commands/views/MenuView.tsx";
 import { MenuView } from "#commands/views/MenuView.tsx";
 import type { CommandProps } from "#components/Command.tsx";
 import { Command } from "#components/Command.tsx";
+import type { BranchId } from "#types.ts";
 
-export type MenuProps = Pick<
+export type MenuProps<TBranchId extends string = BranchId> = Pick<
   CommandProps,
   "audio" | "hide" | "next" | "zIndex"
 > &
-  Omit<MenuViewProps, "controls"> & {
+  Omit<MenuViewProps<TBranchId>, "controls"> & {
     image?: string | Omit<ImageViewProps, "controls">;
   };
 
-export function Menu(props: MenuProps) {
+export function Menu<TBranchId extends string = BranchId>(
+  props: MenuProps<TBranchId>,
+) {
   const { image, audio, hide, next, zIndex, ...menuProps } = props;
   const imageProps = typeof image === "string" ? { uri: image } : image;
 

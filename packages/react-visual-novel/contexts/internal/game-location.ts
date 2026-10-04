@@ -1,15 +1,17 @@
 import type { BranchId } from "#types.ts";
 
-export type GameLocation = {
-  branchId: BranchId;
+export type GameLocation<TBranchId extends string = BranchId> = {
+  branchId: TBranchId;
   statementIndex: number;
 };
 
-export function makeGameLocationId(location: GameLocation) {
-  return `${String(location.branchId)}-${location.statementIndex}`;
+export function makeGameLocationId(location: GameLocation<string>) {
+  return `${location.branchId}-${location.statementIndex}`;
 }
 
-export function parseGameLocation(locationId: string): GameLocation | null {
+export function parseGameLocation(
+  locationId: string,
+): GameLocation<string> | null {
   // NOTE: Branch names can contain hyphens. Only the final separator owns
   // the statement index. Legacy branch-only URLs still select statement zero.
   const separatorIndex = locationId.lastIndexOf("-");
@@ -29,18 +31,18 @@ export function parseGameLocation(locationId: string): GameLocation | null {
     return null;
   }
 
-  // SAFETY: Serialized IDs contain a nonempty branch name. The host's declaration-merging registry has no runtime representation, so rendering resolves the branch.
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Preserve the host-defined branch type at the persisted identifier boundary.
-  const branchId = branchName as BranchId;
+  const branchId = branchName;
   return { branchId, statementIndex };
 }
 
-export function decodeGameLocations(value: unknown): GameLocation[] | null {
+export function decodeGameLocations(
+  value: unknown,
+): GameLocation<string>[] | null {
   if (!Array.isArray(value) || value.length === 0) {
     return null;
   }
 
-  const locations: GameLocation[] = [];
+  const locations: GameLocation<string>[] = [];
   const storedLocations: readonly unknown[] = value;
   for (const location of storedLocations) {
     if (
@@ -57,10 +59,7 @@ export function decodeGameLocations(value: unknown): GameLocation[] | null {
       return null;
     }
 
-    // SAFETY: Stored branch names are validated strings. Hosts augment the
-    // branch registry at compile time, and rendering resolves names at runtime.
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- Persisted names cross the declaration-merging boundary.
-    const branchId = location.branchId as BranchId;
+    const branchId = location.branchId;
     locations.push({ branchId, statementIndex: location.statementIndex });
   }
 

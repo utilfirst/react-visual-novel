@@ -40,14 +40,17 @@ export type GameOptions = {
   onGoHome?: () => void;
 };
 
-export type GameContextValue = {
-  focusedLocation: GameLocation;
+export type GameContextValue<TBranchId extends string = BranchId> = {
+  focusedLocation: GameLocation<TBranchId>;
   muted: boolean;
   setMuted: Dispatch<boolean>;
   paused: boolean;
   setPaused: Dispatch<boolean>;
-  goToBranch: (branchId: BranchId) => void;
-  goToLocation: (branchId: BranchId, statementIndex: number) => void;
+  goToBranch: (branchId: TBranchId) => void;
+  goToLocation: {
+    (location: GameLocation<TBranchId>): void;
+    (branchId: TBranchId, statementIndex: number): void;
+  };
   goBack: () => boolean;
   canGoBack: () => boolean;
   goHome?: () => void;
@@ -56,16 +59,19 @@ export type GameContextValue = {
   playSound: (name: SoundName) => void;
 };
 
-const GameContext = createContext<GameContextValue | null>(null);
+const GameContext = createContext<GameContextValue<string> | null>(null);
 
-export type GameProviderProps = GameOptions & {
-  children: ReactNode;
-  initialBranchId: BranchId;
-  branchIds?: readonly string[];
-};
+export type GameProviderProps<TBranchId extends string = BranchId> =
+  GameOptions & {
+    children: ReactNode;
+    initialBranchId: TBranchId;
+    branchIds?: readonly string[];
+  };
 
-export function GameProvider(props: GameProviderProps) {
-  const initialLocation: GameLocation = {
+export function GameProvider<TBranchId extends string = BranchId>(
+  props: GameProviderProps<TBranchId>,
+) {
+  const initialLocation: GameLocation<string> = {
     branchId: props.initialBranchId,
     statementIndex: 0,
   };
@@ -74,7 +80,7 @@ export function GameProvider(props: GameProviderProps) {
     props.branchIds !== undefined &&
     !props.branchIds.includes(props.initialBranchId)
   ) {
-    throw new Error(`Unknown initial branch: ${String(props.initialBranchId)}`);
+    throw new Error(`Unknown initial branch: ${props.initialBranchId}`);
   }
 
   const [storedFocusedLocationId, setStoredFocusedLocationId] =
@@ -186,7 +192,7 @@ export function GameProvider(props: GameProviderProps) {
   });
 
   const ctx = useMemo(
-    (): GameContextValue => ({
+    (): GameContextValue<string> => ({
       focusedLocation,
       muted,
       setMuted,
@@ -197,7 +203,20 @@ export function GameProvider(props: GameProviderProps) {
           history.push({ branchId, statementIndex: 0 });
         }
       },
-      goToLocation: (branchId, statementIndex) => {
+      goToLocation: (
+        destination: string | GameLocation<string>,
+        index?: number,
+      ) => {
+        const branchId =
+          typeof destination === "string" ? destination : destination.branchId;
+
+        const statementIndex =
+          typeof destination === "string" ? index : destination.statementIndex;
+
+        if (statementIndex === undefined) {
+          throw new Error("A statement index is required");
+        }
+
         // NOTE: Earlier calls can move history before React renders again.
         const currentLocation = history.peek();
         if (
@@ -262,7 +281,9 @@ export function GameProvider(props: GameProviderProps) {
   );
 }
 
-export function useGameContext() {
+export function useGameContext<
+  TBranchId extends string = BranchId,
+>(): GameContextValue<TBranchId> {
   const ctx = useContext(GameContext);
 
   if (!ctx) {
@@ -271,7 +292,9 @@ export function useGameContext() {
     );
   }
 
-  return ctx;
+  // SAFETY: The selected authoring scope describes the enclosing provider's branch registry. The runtime context shares one string-based representation across scopes.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- React contexts cannot retain a host's generic branch scope.
+  return ctx as GameContextValue<string> & GameContextValue<TBranchId>;
 }
 
 function decodePaused(value: unknown): boolean | null {
@@ -279,14 +302,14 @@ function decodePaused(value: unknown): boolean | null {
 }
 
 type ResolveGameLocationOptions = {
-  location: GameLocation | null;
-  initialLocation: GameLocation;
+  location: GameLocation<string> | null;
+  initialLocation: GameLocation<string>;
   branchIds?: readonly string[];
 };
 
 function resolveGameLocation(
   options: ResolveGameLocationOptions,
-): GameLocation {
+): GameLocation<string> {
   const location = options.location;
   if (
     location === null ||
