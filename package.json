@@ -23,10 +23,10 @@
     "release-check-tag": "node scripts/check-release-tag.ts"
   },
   "devDependencies": {
-    "@types/node": "24.13.3",
-    "@utilfirst/eslint-plugin": "0.4.8",
+    "@types/node": "24.19.1",
+    "@utilfirst/eslint-plugin": "0.4.11",
     "@utilfirst/prettier-plugin": "0.1.2",
-    "oxlint": "1.85.0",
+    "oxlint": "1.87.0",
     "oxlint-tsgolint": "7.0.2003",
     "prettier": "3.9.9",
     "prettier-plugin-organize-imports": "4.3.0",
@@ -34,7 +34,7 @@
     "prettier-plugin-sh": "0.20.2",
     "prettier-plugin-sort-json": "4.2.0",
     "prettier-plugin-tailwindcss": "0.8.1",
-    "publint": "0.3.24",
+    "publint": "0.3.25",
     "typescript": "6.0.3"
   },
   "packageManager": "pnpm@11.21.0",
