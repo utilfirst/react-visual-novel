@@ -13,6 +13,10 @@ patchedDependencies:
   async-preloader@7.0.0: patches/async-preloader@7.0.0.patch
 
 minimumReleaseAgeExclude:
+  # Immediate adoption approved for the Motion 14.2.0 upgrade.
+  - "framer-motion@14.2.0"
+  - "motion-dom@14.2.0"
+  - "motion-utils@14.1.1"
   # Immediate adoption approved for the 2026-10-14 dependency upgrade.
   - "@oxc-project/types@0.154.0"
   - "@oxlint-tsgolint/darwin-arm64@7.0.2004"
