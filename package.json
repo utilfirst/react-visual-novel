@@ -23,12 +23,12 @@
     "release-check-tag": "node scripts/check-release-tag.ts"
   },
   "devDependencies": {
-    "@types/node": "24.19.1",
+    "@types/node": "24.19.2",
     "@utilfirst/eslint-plugin": "0.4.11",
     "@utilfirst/prettier-plugin": "0.1.2",
-    "oxlint": "1.87.0",
-    "oxlint-tsgolint": "7.0.2003",
-    "prettier": "3.9.9",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "prettier": "3.9.10",
     "prettier-plugin-organize-imports": "4.3.0",
     "prettier-plugin-packagejson": "3.0.2",
     "prettier-plugin-sh": "0.20.2",
